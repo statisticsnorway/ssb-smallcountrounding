@@ -23,5 +23,5 @@ This is performed by an algorithm inspired by partial least squares regression (
 
 Heldal, J.: The European Census Hub 2011 Hypercubes - Norwegian SDC Experiences. In: Work Session on Statistical Data Confidentiality (2017), Skopje, The former Yugoslav Republic of Macedonia, September 20-22 , 2017.
 
-Langsrud, Ø. and  Johan Heldal, J.: An Algorithm for Small Count Rounding of Tabular Data Øyvind Langsrud. 
+Langsrud, Ø. and  Johan Heldal, J.: An Algorithm for Small Count Rounding of Tabular Data. 
 To be presented at: Privacy in statistical databases, Valencia, Spain. September 26-28, 2018.
