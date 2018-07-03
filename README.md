@@ -8,7 +8,7 @@ library(devtools)                                     # Load package containing 
 install_github("statisticsnorway/SSBtools")           # Install SSBtools from GitHub
 install_github("statisticsnorway/SmallCountRounding") # Install SmallCountRounding from GitHub
 library(SmallCountRounding)                           # Load SmallCountRounding 
-?HierarchyCompute                                     # Help documentation of function RoundViaDummy
+?RoundViaDummy                                        # Help documentation of function RoundViaDummy
 ```
 
 -----------
