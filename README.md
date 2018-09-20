@@ -25,3 +25,4 @@ Heldal, J.: The European Census Hub 2011 Hypercubes - Norwegian SDC Experiences.
 
 Langsrud, Ø. and  Johan Heldal, J.: An Algorithm for Small Count Rounding of Tabular Data. 
 To be presented at: Privacy in statistical databases, Valencia, Spain. September 26-28, 2018.
+ [Full-text available at Researchgate.](https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data)
