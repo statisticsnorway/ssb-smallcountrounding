@@ -5,7 +5,7 @@
 
 ```r
 library(devtools)                                     # Load package containing install_github
-install_github("statisticsnorway/SSBtools")           # Install SSBtools from GitHub
+install_github("statisticsnorway/SSBtools")           # Install SSBtools from GitHub (Now same as on CRAN)
 install_github("statisticsnorway/SmallCountRounding") # Install SmallCountRounding from GitHub
 library(SmallCountRounding)                           # Load SmallCountRounding 
 ?RoundViaDummy                                        # Help documentation of function RoundViaDummy
@@ -25,4 +25,10 @@ Heldal, J.: The European Census Hub 2011 Hypercubes - Norwegian SDC Experiences.
 
 Langsrud, Ø. and  Johan Heldal, J.: An Algorithm for Small Count Rounding of Tabular Data. 
 To be presented at: Privacy in statistical databases, Valencia, Spain. September 26-28, 2018.
- [Full-text available at Researchgate.](https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data)
+ [Full-text](https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data)
+ and
+[presentation](https://www.researchgate.net/publication/327916165_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data_-_Presentation) 
+ available at Researchgate.
+ 
+ 
+ 
