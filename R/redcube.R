@@ -31,7 +31,6 @@
 #' 
 #' @author Johan Heldal, November 2017
 #'
-#' @examples
 redcube <- function(A,d,b=3,micro=TRUE,nin="n") {
   AD <- aggrtab(A,d,micro=micro,nin=nin,nout=nin)
   A <- AD[[1]]

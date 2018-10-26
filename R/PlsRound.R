@@ -1,6 +1,6 @@
 #' Small Count Rounding of Tabular Data
 #'
-#' Rounding à la Heldal via a dummy matrix and by an algorithm inspired by PLS
+#' Small count rounding via a dummy matrix and by an algorithm inspired by PLS
 #'
 #' Small count rounding of necessary inner cells are performed so that all small frequencies of cross-classifications to be published 
 #' (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. 
@@ -9,7 +9,7 @@
 #' @encoding UTF8
 #'
 #' @param data Input data, data.frame or matrix
-#' @param freqVar Variable(s) holding counts (name or number)
+#' @param freqVar Variable holding counts (name or number)
 #' @param formula Model formula defining publishable cells
 #' @param roundBase roundBase
 #' @param singleRandom Single random draw when TRUE (instead of algorithm)
@@ -32,10 +32,11 @@
 #' @export
 #'
 #' @examples
-#' RoundViaDummy(EasyData('z2'), 'ant', ~region + hovedint + fylke*hovedint + kostragr*hovedint, 10)
+#' RoundViaDummy(SmallCountData('z2'), 
+#'               'ant', ~region + hovedint + fylke*hovedint + kostragr*hovedint, 10)
 #' mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
-#' a <- RoundViaDummy(EasyData('z3'), 'ant', mf, 5)
-#' b <- RoundViaDummy(EasyData('sosialFiktiv'), 'ant', mf, 4)
+#' a <- RoundViaDummy(SmallCountData('z3'), 'ant', mf, 5)
+#' b <- RoundViaDummy(SmallCountData('sosialFiktiv'), 'ant', mf, 4)
 #' print(cor(b[[2]]),digits=12) # Correlation between original and rounded
 RoundViaDummy <- function(data, freqVar, formula, roundBase = 3, singleRandom = FALSE,
                           crossTable=TRUE, total = "Total",  maxIterRows = 1000, maxIter = 1E7) {
@@ -92,7 +93,7 @@ IntegerCbind = function(original,rounded){ # To ensure integer when integer inpu
 #'
 #' All factor levels included
 #'
-#' @param formula
+#' @param formula formula
 #' @param data data frame
 #' @param mf model frame (alternative input instead of data)
 #' @param allFactor When TRUE all variables are coerced to factor
@@ -100,12 +101,14 @@ IntegerCbind = function(original,rounded){ # To ensure integer when integer inpu
 #' @param formulaSums When TRUE, sparse matrix via FormulaSums()
 #'
 #' @return model matrix created via model.matrix(), sparse.model.matrix() or FormulaSums()
+#' @importFrom stats model.frame model.matrix
+#' @importFrom Matrix sparse.model.matrix
 #' @export
 #' @keywords internal
 #'
 #' @examples
-#'   EasyData("z1")
-#'   z1 <- ModelMatrix(~region*hovedint,z1)
+#'   z1 <- SmallCountData("z1")
+#'   ModelMatrix(~region*hovedint,z1)
 ModelMatrix <- function(formula, data = NULL, mf = model.frame(formula, data = data), allFactor = TRUE, sparse = FALSE, formulaSums=FALSE) {
   if(formulaSums)
     return(FormulaSums(formula, data = data,
@@ -138,8 +141,10 @@ AddEmptyLevel <- function(x) factor(x, levels = c("tullnull", levels(x)))
 #' @param yInnerExact Original yInner (when iteration)
 #' @param yPublishExact Original yPublish (when iteration)
 #'
-#' @return
-#' @export
+#' @return rounded versions of yInner and yPublish
+#' @importFrom  Matrix Matrix
+#' @importFrom  methods as
+#' 
 #' @keywords internal
 PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crossprod(x, yInner)[, 1, drop = TRUE],
                            singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000) { # maxIter henger sammen med maxIterRows
@@ -238,99 +243,6 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   list(roundInner = roundInner, roundPublish = roundPublish)
 }
 
-
-
-
-Pls1RoundOld <- function(x, y, roundBase = 3, removeOneCols = FALSE, printInc = TRUE, yPls = NULL, nR = NULL, random = TRUE,dgT=TRUE, tApp=FALSE, wD=TRUE) {
-  # dgT med eller uten tApp/wD er muligheter ved for lite minne til roundBasecrossprod
-  # wD fungerer raskt!!
-  if(printInc) {cat("-"); flush.console()}
-  if (is.matrix(x))
-    x <- Matrix(x)  # Sparse matrix
-  if (removeOneCols)
-    x <- x[, (colSums(x) > 1), drop = FALSE]
-  if (is.null(yPls))
-    yPls <- t(as.matrix(Matrix::crossprod(x, Matrix(y, ncol = 1))))
-  yR <- rep(0, length(y))
-  if (random)
-    ind <- as.list(sample.int(length(y))) else ind <- as.list(seq_len(length(y)))
-  if (is.null(nR))
-    nR <- round(sum(y)/roundBase)
-  if(printInc) {cat("*"); flush.console()}
-  #startTime <- Sys.time()
-  if(dgT){
-    dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix")   ## Flaskehals ved store data
-    dgTi <- dgTBase@i +1L
-    dgTj <- dgTBase@j +1L
-    dgTx <- dgTBase@x
-    rm(dgTBase)
-    if(tApp){
-      dgTi <- tapply(dgTi,dgTj,function(x)x,simplify = FALSE) # Noe bedre enn tapply?
-      dgTx <- tapply(dgTx,dgTj,function(x)x,simplify = FALSE)
-      rm(dgTj)
-    }
-    if(wD){
-      dd = diff(dgTj)
-      if(length(dd)>0){
-      if(max(dd)>1 | min(dd)<0){
-        warning("Not required sorting in dgTMatrix. Manual sorting will be done.")
-        ord <- order(dgTj)
-        dgTj <- dgTj[ord]
-        dgTi <- dgTi[ord]
-        dgTx <- dgTx[ord]
-        dd = diff(dgTj)
-      }
-      wd <- c(1L,1L+which(dd==1L),length(dgTj)+1L)
-      } else
-        wd <- c(1L,2L)
-      GetInd <- function(i,x){matlabColon(x[i],x[i+1L]-1L)}
-    }
-  }
-  else
-    roundBasecrossprod <- as.matrix(roundBase * Matrix::tcrossprod(x))  # Much faster with as.matrix here
-    #roundBasecrossprod <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix")  # Relativt treg
-  if(printInc) {cat("*"); flush.console()}
-  for (i in 1:nR) {
-    if (printInc)
-      if (i%%max(1, round(nR/10)) == 0) {
-        cat(".")
-        flush.console()
-      }
-    if (i > 1){
-      if(dgT){
-        if(tApp | wD){
-          if(wD){
-            ii = GetInd(ik,wd)
-            ix = dgTi[ii]
-            coe[ix] <- coe[ix] - dgTx[ii]
-          }
-          else{
-            ix = dgTi[[ik]]
-            coe[ix] <- coe[ix] - dgTx[[ik]]
-          }
-        }
-        else
-        {
-          ii = dgTj==ik  # byttet om dgTj og dgTi
-          ix = dgTi[ii]
-          coe[ix] <- coe[ix] - dgTx[ii]
-        }
-      }
-      else
-        coe <- coe - roundBasecrossprod[, ik, drop = FALSE]
-    }
-    else
-      coe <- Matrix::tcrossprod(x, yPls)
-    k <- which.max(coe[as.integer(ind)])
-    ik <- ind[[k]]
-    yR[ik] <- roundBase
-    ind[k] <- NULL
-  }
-  if(printInc) {cat("="); flush.console()}
-  #endTime <- Sys.time()
-  #print(difftime(endTime,startTime ))
-  yR
-}
 
 
 

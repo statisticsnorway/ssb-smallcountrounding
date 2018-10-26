@@ -35,7 +35,7 @@ All factor levels included. Constructed by calling fac2sparse() repeatedly inste
 Hierarchical variables handled when constructing cross table. Column names constructed from the cross table.
 }
 \examples{
-  z1 <- EasyData("z1")
+  z1 <- SmallCountData("z1")
   ModelMatrix(~region*hovedint,z1)
 }
 \keyword{internal}

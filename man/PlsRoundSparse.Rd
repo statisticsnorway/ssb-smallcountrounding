@@ -23,6 +23,9 @@ PlsRoundSparse(x, roundBase = 3, yInner, yPublish = Matrix::crossprod(x,
 
 \item{yPublishExact}{Original yPublish (when iteration)}
 }
+\value{
+rounded versions of yInner and yPublish
+}
 \description{
 Avrunder basert på en algoritme inspirert av PLS-regresjon som forutsetter dummy matrise (Model matrix)
 }

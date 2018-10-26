@@ -1,12 +1,12 @@
 Package: SmallCountRounding
 Type: Package
 Title: Small Count Rounding of Tabular Data
-Version: 0.1.0
-Date: 2018-07-03
+Version: 0.2
+Date: 2018-10-17
 Author: Øyvind Langsrud and Johan Heldal
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
-Depends: R (>= 3.0.0), SSBtools, easySdcTable, Matrix
-Description: The function RoundViaDummy() performs small count rounding of necessary inner cells so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed.
+Depends: R (>= 3.0.0), SSBtools, Matrix, methods
+Description:A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive. The function RoundViaDummy() performs small count rounding of necessary inner cells so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed. The methodology is described in Langsrud and Heldal (2018) <https://www.researchgate.net/publication/327768398>.
 License: Apache License 2.0 | file LICENSE
 RoxygenNote: 6.0.1
 Encoding: UTF-8

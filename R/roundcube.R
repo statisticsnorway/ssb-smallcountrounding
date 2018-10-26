@@ -27,9 +27,10 @@
 #'    
 #' @keywords internal    
 #' 
+#' @importFrom stats runif
+#' 
 #' @author Johan Heldal, January 2018
 #'
-#' @examples
 roundcube <- function(rc,sort,control,minit,maxit,maxdiff,seed) {
   A <- rc[[1]]  # The hypercube dataframe with all cells and variables..
   B <- rc[[2]]  # The reduced dataframe.

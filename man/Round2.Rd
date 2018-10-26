@@ -3,7 +3,7 @@
 \encoding{UTF8}
 \name{Round2}
 \alias{Round2}
-\title{Rounding à la Heldal by various methods}
+\title{Small count rounding by various methods}
 \usage{
 Round2(data, control, ..., method = c("roundtabs", "viadummy", "viadummyAll"))
 }
@@ -23,8 +23,10 @@ Output from  \code{\link{makeroundtabs}} or \code{\link{RoundViaDummy2}}
 Run \code{makeroundtabs()} or \code{RoundViaDummy2()}
 }
 \examples{
-z <-EasyData('sosialFiktiv')
-d <- list(c("region","mnd") , c("hovedint","mnd2") , c("fylke","hovedint","mnd2") , c("kostragr","hovedint","mnd"))
+\dontrun{
+z <- SmallCountData("sosialFiktiv")
+d <- list(c("region","mnd") , c("hovedint","mnd2") , c("fylke","hovedint","mnd2") , 
+          c("kostragr","hovedint","mnd"))
 con <- MakeControl(d,z)
 sor <- names(z)[c(4,5,3,2,1)]
 
@@ -50,7 +52,8 @@ Lists2formula(d2,con) # Without knowing data
 Lists2formula(d2,data=z) # Without control
 Lists2formula(d2,data=z) # Without control and data
 }
+}
 \seealso{
-\code{\link{RoundKostra}}, \code{\link{RoundViaDummy}}, \code{\link{Lists2formula}}, \code{\link{MakeControl}}, \code{\link{FindMaxDiff}}
+\code{RoundKostra} (SSB internal), \code{\link{RoundViaDummy}}, \code{\link{Lists2formula}}, \code{\link{MakeControl}}, \code{\link{FindMaxDiff}}
 }
 \keyword{internal}

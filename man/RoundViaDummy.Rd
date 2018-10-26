@@ -12,7 +12,7 @@ RoundViaDummy(data, freqVar, formula, roundBase = 3, singleRandom = FALSE,
 \arguments{
 \item{data}{Input data, data.frame or matrix}
 
-\item{freqVar}{Variable(s) holding counts (name or number)}
+\item{freqVar}{Variable holding counts (name or number)}
 
 \item{formula}{Model formula defining publishable cells}
 
@@ -35,7 +35,7 @@ In each matrix the first and the second column contains, respectively, original 
 By default the cross table is the third element of the output list.
 }
 \description{
-Rounding à la Heldal via a dummy matrix and by an algorithm inspired by PLS
+Small count rounding via a dummy matrix and by an algorithm inspired by PLS
 }
 \details{
 Small count rounding of necessary inner cells are performed so that all small frequencies of cross-classifications to be published 
@@ -49,10 +49,11 @@ To avoid problems, not more than maxIterRows cells are rounded in each iteration
 The iteration limit (maxIter) is by default set to be high since a low number of maxIterRows may need a high number of iterations.
 }
 \examples{
-RoundViaDummy(EasyData('z2'), 'ant', ~region + hovedint + fylke*hovedint + kostragr*hovedint, 10)
+RoundViaDummy(SmallCountData('z2'), 
+              'ant', ~region + hovedint + fylke*hovedint + kostragr*hovedint, 10)
 mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
-a <- RoundViaDummy(EasyData('z3'), 'ant', mf, 5)
-b <- RoundViaDummy(EasyData('sosialFiktiv'), 'ant', mf, 4)
+a <- RoundViaDummy(SmallCountData('z3'), 'ant', mf, 5)
+b <- RoundViaDummy(SmallCountData('sosialFiktiv'), 'ant', mf, 4)
 print(cor(b[[2]]),digits=12) # Correlation between original and rounded
 }
 \seealso{

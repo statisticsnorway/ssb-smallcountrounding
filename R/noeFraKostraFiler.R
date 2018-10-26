@@ -23,7 +23,7 @@
 
 #' Finding hierarchical variable groups
 #'
-#' As HierarchicalGroups() with eachName = TRUE, but output belonging at same mainName are combined.
+#' As HierarchicalGroups() with eachName = TRUE, but output belonging to same mainName are combined.
 #'
 #' @param x Matrix or data frame containing the variables
 #'
@@ -40,7 +40,7 @@ HierarchicalGroups2 <- function(x){
 
 #' Finding hierarchical variable groups
 #'
-#' As HierarchicalGroups() with eachName = FALSE, but output belonging at same mainName are combined.
+#' As HierarchicalGroups() with eachName = FALSE, but output belonging to same mainName are combined.
 #'
 #' @param x Matrix or data frame containing the variables
 #'
@@ -69,7 +69,7 @@ HierarchicalGroups3 <- function(x){
 #' @export
 #'
 #' @examples
-#'  z3 <- EasyData("z3")
+#'  z3 <- SmallCountData("z3")
 #'  MakeHierFormula(z3[,-7])
 #'  MakeHierFormula(z3[,-7],n=2)
 #'  MakeHierFormula(z3[,-7],n=0)
@@ -149,17 +149,18 @@ MakeFreq <- function(x,freqName="freq"){
 #' @param stringEmpty String used when input is empty (can be set to NULL)
 #'
 #' @return Character vector or possibly same vector as input
-#' @export
 #' @details Each row in input will be combined to a single string using sep.
 #'
 #' @keywords internal
 #'
 #' @examples
+#' \dontrun{
 #' MatrixPaste(matrix(1:12,3,4))
 #' MatrixPaste(1:5)
 #' MatrixPaste(1:5, forceCharacter=TRUE)
 #' MatrixPaste(matrix(integer(0),3,0))
 #' MatrixPaste(NULL)
+#' }
 MatrixPaste = function(x, sep="_", forceCharacter=FALSE, stringEmpty = " "){
   if(is.null(x)) return(stringEmpty)
   if(NCOL(x)==0) return(rep(stringEmpty,NROW(x)))
@@ -172,7 +173,6 @@ MatrixPaste = function(x, sep="_", forceCharacter=FALSE, stringEmpty = " "){
 }
 
 #' @rdname MatrixPaste
-#' @export
 #' @keywords internal
 MatrixPaste1 = function(x,stringEmpty = "1") MatrixPaste(x,stringEmpty = stringEmpty)
 

@@ -7,7 +7,14 @@
 Lists2formula(d, control = NULL, data = NULL)
 }
 \arguments{
-\item{data}{}
+\item{d}{d}
+
+\item{control}{control}
+
+\item{data}{data}
+}
+\value{
+formula as string
 }
 \description{
 Make formula from input parameters to makeroundtabs()

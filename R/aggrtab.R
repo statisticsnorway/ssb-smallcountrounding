@@ -18,7 +18,6 @@
 #' 
 #' @author Johan Heldal, November 2017
 #'
-#' @examples
 aggrtab <- function(A,d,micro=TRUE,nin="n",nout="n") {
   #
   # Construct the vector Avars of all variables names entering the problem

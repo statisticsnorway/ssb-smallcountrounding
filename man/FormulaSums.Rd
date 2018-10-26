@@ -41,8 +41,9 @@ Hierarchical variables handled when constructing cross table.
 Column names constructed from the cross table.
 }
 \examples{
-  z2 = EasyData("z2")
+  z2 = SmallCountData("z2")
   FormulaSums(ant~region + fylke*hovedint + kostragr*hovedint ,z2)
   FormulaSums(~region + fylke*hovedint + kostragr*hovedint,z2)
-  FormulaSums(ant~region + fylke*hovedint + kostragr*hovedint,z2, crossTable=TRUE, makeModelMatrix=TRUE)
+  FormulaSums(ant~region + fylke*hovedint + kostragr*hovedint,z2, 
+              crossTable=TRUE, makeModelMatrix=TRUE)
 }

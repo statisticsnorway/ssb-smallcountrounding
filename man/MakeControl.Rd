@@ -13,6 +13,9 @@ MakeControl(d, data, level = 2)
 
 \item{level}{Interaction level}
 }
+\value{
+list
+}
 \description{
 Make suggested control - input to makeroundtabs()
 }

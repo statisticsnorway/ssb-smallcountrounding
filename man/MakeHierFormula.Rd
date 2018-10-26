@@ -24,7 +24,7 @@ Formula as character string
 Make model formula from data taking into account hierarchical variables
 }
 \examples{
- z3 <- EasyData("z3")
+ z3 <- SmallCountData("z3")
  MakeHierFormula(z3[,-7])
  MakeHierFormula(z3[,-7],n=2)
  MakeHierFormula(z3[,-7],n=0)

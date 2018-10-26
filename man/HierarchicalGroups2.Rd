@@ -13,6 +13,6 @@ HierarchicalGroups2(x)
 List containing the groups.
 }
 \description{
-As HierarchicalGroups() with eachName = TRUE, but output belonging at same mainName are combined.
+As HierarchicalGroups() with eachName = TRUE, but output belonging to same mainName are combined.
 }
 \keyword{internal}

@@ -7,7 +7,18 @@
 FindMaxDiff(data, control, original, rounded, datareturn = FALSE)
 }
 \arguments{
-\item{datareturn}{}
+\item{data}{data}
+
+\item{control}{control}
+
+\item{original}{original}
+
+\item{rounded}{rounded}
+
+\item{datareturn}{datareturn}
+}
+\value{
+maxdiff and nMaxdiff
 }
 \description{
 Calculate maxdiff  nMaxdiff

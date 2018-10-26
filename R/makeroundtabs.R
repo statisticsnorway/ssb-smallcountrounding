@@ -44,7 +44,6 @@
 #' 
 #' @author Johan Heldal, January 2018
 #'
-#' @examples
 makeroundtabs <- function(A,b=3,d,micro="TRUE",sort,control,nin="n",nout="n",minit=3,maxit=3,
                           maxdiff=5,seed) {
   #

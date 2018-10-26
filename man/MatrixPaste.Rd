@@ -28,10 +28,12 @@ Combining columns of a matrix
 Each row in input will be combined to a single string using sep.
 }
 \examples{
+\dontrun{
 MatrixPaste(matrix(1:12,3,4))
 MatrixPaste(1:5)
 MatrixPaste(1:5, forceCharacter=TRUE)
 MatrixPaste(matrix(integer(0),3,0))
 MatrixPaste(NULL)
+}
 }
 \keyword{internal}

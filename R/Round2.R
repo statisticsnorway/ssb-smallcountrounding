@@ -1,4 +1,4 @@
-#' Rounding à la Heldal by various methods
+#' Small count rounding by various methods
 #'
 #' Run \code{makeroundtabs()} or \code{RoundViaDummy2()}
 #'
@@ -15,11 +15,13 @@
 #' 
 #' @keywords internal 
 #'
-#' @seealso \code{\link{RoundKostra}}, \code{\link{RoundViaDummy}}, \code{\link{Lists2formula}}, \code{\link{MakeControl}}, \code{\link{FindMaxDiff}}
+#' @seealso \code{RoundKostra} (SSB internal), \code{\link{RoundViaDummy}}, \code{\link{Lists2formula}}, \code{\link{MakeControl}}, \code{\link{FindMaxDiff}}
 #'
 #' @examples
-#' z <-EasyData('sosialFiktiv')
-#' d <- list(c("region","mnd") , c("hovedint","mnd2") , c("fylke","hovedint","mnd2") , c("kostragr","hovedint","mnd"))
+#' \dontrun{
+#' z <- SmallCountData("sosialFiktiv")
+#' d <- list(c("region","mnd") , c("hovedint","mnd2") , c("fylke","hovedint","mnd2") , 
+#'           c("kostragr","hovedint","mnd"))
 #' con <- MakeControl(d,z)
 #' sor <- names(z)[c(4,5,3,2,1)]
 #'
@@ -44,6 +46,7 @@
 #' Lists2formula(d2,con) # Without knowing data
 #' Lists2formula(d2,data=z) # Without control
 #' Lists2formula(d2,data=z) # Without control and data
+#' }
 Round2 <- function(data,control,...,method=c("roundtabs","viadummy","viadummyAll")){
   method <- match.arg(method)
   if(method=="roundtabs"){
@@ -75,11 +78,10 @@ AddSim <- function(x) paste("~",x,sep="")
 #' @param data data.frame
 #' @param level Interaction level
 #'
-#' @return
+#' @return list 
 #' @export
 #' @keywords internal
 #'
-#' @examples
 MakeControl <- function(d,data,level=2){
   n = length(d)
   hg = vector("list", n)
@@ -97,15 +99,14 @@ MakeControl <- function(d,data,level=2){
 
 #' Make formula from input parameters to makeroundtabs()
 #'
-#' @param d
-#' @param control
-#' @param data
+#' @param d d
+#' @param control control
+#' @param data data
 #'
-#' @return
+#' @return formula as string
 #' @export
 #' @keywords internal
 #'
-#' @examples
 Lists2formula <- function(d,control=NULL,data=NULL){
   if(is.null(data)){
     if(is.null(control))
@@ -144,12 +145,12 @@ RoundViaDummy2dots <- function(data,..., b, d, nin, micro=FALSE,control=NULL,all
 #'
 #' RoundViaDummy with input as makeroundtabs
 #'
-#' @param data
-#' @param b
-#' @param d
-#' @param nin
-#' @param micro
-#' @param control
+#' @param data data
+#' @param b b
+#' @param d d
+#' @param nin nin
+#' @param micro micro
+#' @param control control
 #' @param allTerms Use all interaction terms in formula instead of using control
 #' @param singleRandom Single random draw when TRUE (instead of algorithm)
 #'
@@ -157,7 +158,6 @@ RoundViaDummy2dots <- function(data,..., b, d, nin, micro=FALSE,control=NULL,all
 #' @export
 #' @keywords internal
 #'
-#' @examples
 RoundViaDummy2 <- function(data, b, d, nin, micro=FALSE,control=NULL,allTerms=FALSE,singleRandom = FALSE){
   if(micro)
     data = MakeFreq(data,nin)
@@ -177,17 +177,16 @@ RoundViaDummy2 <- function(data, b, d, nin, micro=FALSE,control=NULL,allTerms=FA
 
 #' Calculate maxdiff  nMaxdiff
 #'
-#' @param data
-#' @param control
-#' @param original
-#' @param rounded
-#' @param datareturn
+#' @param data data
+#' @param control control
+#' @param original original
+#' @param rounded rounded
+#' @param datareturn datareturn
 #'
-#' @return
+#' @return maxdiff and nMaxdiff
 #' @export
 #' @keywords internal
 #'
-#' @examples
 FindMaxDiff <- function(data,control,original,rounded,datareturn=FALSE){
   #m = ModelMatrix(as.formula(AddSim(List2string(control))),data,formulaSums=TRUE)
   m = FormulaSums(as.formula(AddSim(List2string(control))),data = data,makeNames=datareturn)

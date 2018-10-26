@@ -8,6 +8,8 @@ ModelMatrix(formula, data = NULL, mf = model.frame(formula, data = data),
   allFactor = TRUE, sparse = FALSE, formulaSums = FALSE)
 }
 \arguments{
+\item{formula}{formula}
+
 \item{data}{data frame}
 
 \item{mf}{model frame (alternative input instead of data)}
@@ -25,7 +27,7 @@ model matrix created via model.matrix(), sparse.model.matrix() or FormulaSums()
 All factor levels included
 }
 \examples{
-  EasyData("z1")
-  z1 <- ModelMatrix(~region*hovedint,z1)
+  z1 <- SmallCountData("z1")
+  ModelMatrix(~region*hovedint,z1)
 }
 \keyword{internal}

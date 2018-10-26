@@ -8,6 +8,18 @@ RoundViaDummy2(data, b, d, nin, micro = FALSE, control = NULL,
   allTerms = FALSE, singleRandom = FALSE)
 }
 \arguments{
+\item{data}{data}
+
+\item{b}{b}
+
+\item{d}{d}
+
+\item{nin}{nin}
+
+\item{micro}{micro}
+
+\item{control}{control}
+
 \item{allTerms}{Use all interaction terms in formula instead of using control}
 
 \item{singleRandom}{Single random draw when TRUE (instead of algorithm)}

@@ -19,14 +19,21 @@
 #'
 #' @return
 #'   A matrix of sums, a sparse model matrix or a list of three elements (model matrix, cross table and sums).
+#'   
+#' @importFrom stats aggregate as.formula delete.response terms update
+#' @importFrom Matrix fac2sparse
+#' @importFrom SSBtools CharacterDataFrame matlabColon RowGroups
+#' @importFrom utils flush.console
 #'
 #' @export
 #'
+#'
 #' @examples
-#'   z2 = EasyData("z2")
+#'   z2 = SmallCountData("z2")
 #'   FormulaSums(ant~region + fylke*hovedint + kostragr*hovedint ,z2)
 #'   FormulaSums(~region + fylke*hovedint + kostragr*hovedint,z2)
-#'   FormulaSums(ant~region + fylke*hovedint + kostragr*hovedint,z2, crossTable=TRUE, makeModelMatrix=TRUE)
+#'   FormulaSums(ant~region + fylke*hovedint + kostragr*hovedint,z2, 
+#'               crossTable=TRUE, makeModelMatrix=TRUE)
 FormulaSums = function(formula, data = data,
                              makeNames=TRUE, crossTable=FALSE, total = "Total", printInc=TRUE,
                              dropResponse = FALSE,
@@ -89,7 +96,7 @@ FormulaSums = function(formula, data = data,
 
 
 
-  firstROW = easySdcTable:::CharacterDataFrame(data[1,hgid,drop=FALSE])
+  firstROW = CharacterDataFrame(data[1,hgid,drop=FALSE])
 
   firstROW = as.matrix(firstROW)
 
@@ -163,8 +170,8 @@ FormulaSums = function(formula, data = data,
     if(makeNames| crossTable){
       #rg = RowGroups(data[ ,ck,drop=FALSE],returnGroups  =TRUE)
       ur = rg[[2]]
-      if(makeModelMatrix) m = rBind(m,fac2sparse(rg[[1]]))
-      ur = easySdcTable:::CharacterDataFrame(ur)
+      if(makeModelMatrix) m = rbind(m,fac2sparse(rg[[1]])) # rBind 
+      ur = CharacterDataFrame(ur)
       ur = as.matrix(ur)
       fr = firstROW[rep(1,NROW(ur)), ,drop=FALSE]
       #rownames(fr) = NULL
@@ -178,7 +185,7 @@ FormulaSums = function(formula, data = data,
       allRows = rbind(allRows,fr)
     } else
       if(makeModelMatrix)
-        m = rBind(m,fac2sparse(RowGroups(data[ ,ck,drop=FALSE],returnGroups=FALSE)))
+        m = rbind(m,fac2sparse(RowGroups(data[ ,ck,drop=FALSE],returnGroups=FALSE))) # rBind 
   }
   #print(makeNames)
   if(makeNames){

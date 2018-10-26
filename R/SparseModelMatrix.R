@@ -19,7 +19,7 @@
 #' @keywords internal
 #'
 #' @examples
-#'   z1 <- EasyData("z1")
+#'   z1 <- SmallCountData("z1")
 #'   ModelMatrix(~region*hovedint,z1)
 SparseModelMatrix = function(formula, data = NULL, mf = model.frame(formula, data = data), hg=HierarchicalGroups3(mf),
                              makeColnames=TRUE, crossTable=FALSE, total = "Total", sep="-", printInc=TRUE){
@@ -45,7 +45,7 @@ SparseModelMatrix = function(formula, data = NULL, mf = model.frame(formula, dat
   #print(hgcol)
 
 
-  firstROW = easySdcTable:::CharacterDataFrame(mf[1,hgid,drop=FALSE])
+  firstROW = CharacterDataFrame(mf[1,hgid,drop=FALSE])
 
   firstROW = as.matrix(firstROW)
 
@@ -72,15 +72,15 @@ SparseModelMatrix = function(formula, data = NULL, mf = model.frame(formula, dat
     if(makeColnames| crossTable){
       rg = RowGroups(mf[ ,ck,drop=FALSE],returnGroups  =TRUE)
       ur = rg[[2]]
-      m = rBind(m,fac2sparse(rg[[1]]))
-      ur = easySdcTable:::CharacterDataFrame(ur)
+      m = rbind(m,fac2sparse(rg[[1]])) # rBind(
+      ur = CharacterDataFrame(ur)
       ur = as.matrix(ur)
       fr = firstROW[rep(1,NROW(ur)), ,drop=FALSE]
       #rownames(fr) = NULL
       fr[,hgcoli[ck]] = ur
       allRows = rbind(allRows,fr)
     } else
-      m = rBind(m,fac2sparse(RowGroups(mf[ ,ck,drop=FALSE],returnGroups=FALSE)))
+      m = rbind(m,fac2sparse(RowGroups(mf[ ,ck,drop=FALSE],returnGroups=FALSE))) # rBind(
   }
   if(makeColnames)
     rownames(m) <- MatrixPaste(allRows,sep=sep)
