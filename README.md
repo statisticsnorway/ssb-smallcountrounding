@@ -1,4 +1,5 @@
-# R package SmallCountRounding
+# R package SmallCountRounding 
+[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
 
 
 ### Small Count Rounding of Tabular Data 
