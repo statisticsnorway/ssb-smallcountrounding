@@ -5,7 +5,8 @@
 \alias{Round2}
 \title{Small count rounding by various methods}
 \usage{
-Round2(data, control, ..., method = c("roundtabs", "viadummy", "viadummyAll"))
+Round2(data, control, ..., method = c("roundtabs", "viadummy",
+  "viadummyAll"))
 }
 \arguments{
 \item{data}{Input data.frame. Same as input parameter \code{A} to \code{makeroundtabs()}}

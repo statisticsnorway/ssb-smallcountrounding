@@ -105,6 +105,8 @@ MakeControl <- function(d,data,level=2){
 #'
 #' @return formula as string
 #' @export
+#' @importFrom SSBtools HierarchicalGroups2 MakeHierFormula
+#' @importFrom  stats update
 #' @keywords internal
 #'
 Lists2formula <- function(d,control=NULL,data=NULL){
@@ -189,7 +191,7 @@ RoundViaDummy2 <- function(data, b, d, nin, micro=FALSE,control=NULL,allTerms=FA
 #'
 FindMaxDiff <- function(data,control,original,rounded,datareturn=FALSE){
   #m = ModelMatrix(as.formula(AddSim(List2string(control))),data,formulaSums=TRUE)
-  m = FormulaSums(as.formula(AddSim(List2string(control))),data = data,makeNames=datareturn)
+  m = FormulaSums(formula = as.formula(AddSim(List2string(control))),data = data,makeNames=datareturn)
   if(length(original)==1)
     original <-  as.matrix(data[,original,drop=FALSE])
   if(length(rounded)==1)

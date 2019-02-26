@@ -15,6 +15,7 @@
 #'      by aggregating over cells in A.
 #'      
 #' @keywords internal      
+#' @importFrom  stats aggregate
 #' 
 #' @author Johan Heldal, November 2017
 #'

@@ -19,9 +19,15 @@ The dataset
 Function that returns a dataset
 }
 \note{
-Currently, the function returns the same datasets as is included in the package easySdcTable.
+Except for \code{"europe6"}, \code{"eHrc"} and \code{"eDimList"}, the function returns the same datasets as is included in the package easySdcTable.
 }
 \examples{
- z  <- SmallCountData("sosialFiktiv")
+ SmallCountData("z1")
+ SmallCountData("e6")
+ SmallCountData("eHrc")      #  TauArgus coded hierarchies
+ SmallCountData("eDimList")  #  sdcTable coded hierarchies
 
+}
+\seealso{
+\code{\link{SSBtoolsData}}, \code{\link{Hrc2DimList}}
 }
