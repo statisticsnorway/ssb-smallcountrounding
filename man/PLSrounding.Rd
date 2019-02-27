@@ -78,9 +78,8 @@ PLSrounding(z, "freq", hierarchies = eHrc2)
 if (require(sdcHierarchies)) {
   z2 <- cbind(geo = c("11", "21", "22"), z[, 3:4], stringsAsFactors = FALSE)
   h2 <- list(
-    geo = hier_compute(inp = unique(z2$geo), dim_spec = c(1, 1), root = "Tot"),
-    year = hier_create(root = "Total", nodes = c("2018", "2019")))
-  print(h2)
-  PLSrounding(z2, "freq", hierarchies = lapply(h2, hier_convert))
+    geo = hier_compute(inp = unique(z2$geo), dim_spec = c(1, 1), root = "Tot", as = "df"),
+    year = hier_convert(hier_create(root = "Total", nodes = c("2018", "2019")), as = "df"))
+  PLSrounding(z2, "freq", hierarchies = h2)
 }
 }
