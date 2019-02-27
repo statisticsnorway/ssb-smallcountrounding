@@ -186,23 +186,23 @@ ModelMatrix <- function(formula, data = NULL, mf = model.frame(formula, data = d
 AddEmptyLevel <- function(x) factor(x, levels = c("tullnull", levels(x)))
 
 
-#' PlsRoundSparse
-#'
-#' Avrunder basert på en algoritme inspirert av PLS-regresjon som forutsetter dummy matrise (Model matrix)
-#'
-#' @param x Model matrix
-#' @param roundBase roundBase
-#' @param yInner    inner cells
-#' @param yPublish  cells to be published
-#' @param singleRandom Single random draw when TRUE
-#' @param yInnerExact Original yInner (when iteration)
-#' @param yPublishExact Original yPublish (when iteration)
-#'
-#' @return rounded versions of yInner and yPublish
-#' @importFrom  Matrix Matrix
-#' @importFrom  methods as
-#' 
-#' @keywords internal
+# PlsRoundSparse
+#
+# Avrunder basert på en algoritme inspirert av PLS-regresjon som forutsetter dummy matrise (Model matrix)
+#
+# @param x Model matrix
+# @param roundBase roundBase
+# @param yInner    inner cells
+# @param yPublish  cells to be published
+# @param singleRandom Single random draw when TRUE
+# @param yInnerExact Original yInner (when iteration)
+# @param yPublishExact Original yPublish (when iteration)
+#
+# @return rounded versions of yInner and yPublish
+# @importFrom  Matrix Matrix
+# @importFrom  methods as
+# 
+# @keywords internal
 PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crossprod(x, yInner)[, 1, drop = TRUE],
                            singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000) { # maxIter henger sammen med maxIterRows
 
