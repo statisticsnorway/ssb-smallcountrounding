@@ -39,6 +39,8 @@
 #' @importFrom stats as.formula
 #' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies
 #' @importFrom utils flush.console
+#' @importFrom  Matrix Matrix
+#' @importFrom  methods as
 #' @export
 #'
 #' @examples
