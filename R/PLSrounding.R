@@ -11,6 +11,7 @@
 #' @param roundBase Rounding base
 #' @param hierarchies List of hierarchies
 #' @param formula Model formula defining publishable cells
+#' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
@@ -23,6 +24,17 @@
 #'    \item{freqTable}{Matrix of frequencies of cell frequencies and absolute differences.
 #'    For example, row "\code{rounded}" and column "\code{pub.4+}" is the number of rounded 
 #'    inner cell frequencies greater than or equal to \code{4}.}
+#'    
+#' @seealso   \code{\link{RoundViaDummy}}, \code{\link{PLS2way}} 
+#' 
+#' @references 
+#' Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}. 
+#' Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. September 26-28, 2018.
+#' \url{https://www.researchgate.net/publication/327768398}
+#' 
+#' @encoding UTF8
+#' 
+#' @importFrom SSBtools CharacterDataFrame
 #' @export
 #'
 #' @examples
@@ -67,8 +79,33 @@
 #'     year = hier_convert(hier_create(root = "Total", nodes = c("2018", "2019")), as = "df"))
 #'   PLSrounding(z2, "freq", hierarchies = h2)
 #' }
-PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formula = NULL, ...) {
-  z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, ...)
+#' 
+#' # Use PLS2way to produce tables as in Langsrud and Heldal (2018) 
+#' # and to demonstrate parameters maxRound, 
+#' # zeroCandidates and identifyNew (see RoundViaDummy)
+#' exPSD <- SmallCountData("exPSD")
+#' set.seed(12345)  # To guarantee same output as in reference/comments
+#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols)
+#' PLS2way(a, "original")  # Table 1
+#' PLS2way(a)  # Table 2
+#' set.seed(12345)
+#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE)
+#' PLS2way(a)  # Table 3
+#' set.seed(12345)
+#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7)
+#' PLS2way(a)  # Values in col1 rounded
+#' set.seed(12345)
+#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
+#' PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
+PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formula = NULL, maxRound = roundBase-1, ...) {
+  
+  
+  if(!is.null(list(...)$Version)){   # For testing
+    z <- RoundViaDummy_Version_0.3.0(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, ...) 
+  } else {
+    z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, 
+                     maxRound = maxRound, ...)
+  }
   
   
   MakeDifference <- function(x) cbind(x, difference = x[, "rounded"] - x[, "original"])
@@ -87,7 +124,7 @@ PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formul
   inner_rootMeanSquare <- sqrt(mean((z$yInner[, "difference"])^2))
   publish_rootMeanSquare <- sqrt(mean((z$yPublish[, "difference"])^2))
   
-  freqTable <- cbind(TabCat(z$yInner, roundBase, "inn."), TabCat(z$yPublish, roundBase, "pub."))
+  freqTable <- cbind(TabCat(z$yInner, roundBase, "inn.", maxRound), TabCat(z$yPublish, roundBase, "pub.", maxRound))
   
   freqVarName <- names(data[1, freqVar, drop = FALSE])
   
@@ -95,8 +132,8 @@ PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formul
   
   if (!is.null(z$crossTable)) {
     cNames <- colnames(data)[colnames(data) %in% colnames(z$crossTable)]
-    out$inner <- cbind(data[, cNames, drop = FALSE], z$yInner)
-    out$publish <- cbind(as.data.frame(z$crossTable[, cNames, drop = FALSE]), z$yPublish)
+    out$inner <- cbind( CharacterDataFrame(data[, cNames, drop = FALSE]), z$yInner)
+    out$publish <- cbind(as.data.frame(z$crossTable[, cNames, drop = FALSE], stringsAsFactors = FALSE), z$yPublish)
     rownames(out$publish) <- NULL
   } else {
     out$inner <- as.data.frame(z$yInner)
@@ -108,10 +145,15 @@ PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formul
   }
   
   
-  out$metrics <- c(roundBase = roundBase, maxdiff = maxdiff, inner_HDutility = inner_HDutility, HDutility = publish_HDutility, 
+  out$metrics <- c(roundBase = roundBase, maxRound = maxRound, maxdiff = maxdiff, 
+                   inner_HDutility = inner_HDutility, HDutility = publish_HDutility, 
                    inner_meanAbsDiff = inner_meanAbsDiff, meanAbsDiff = publish_meanAbsDiff, 
                    inner_rootMeanSquare = inner_rootMeanSquare, rootMeanSquare = publish_rootMeanSquare)
   out$freqTable <- freqTable
+  
+  if (!is.null(z$x))
+    out$x <- z$x
+    
   out
   return(structure(out, class = "PLSrounded"))
 }
@@ -139,10 +181,10 @@ print.PLSrounded <- function(x, digits = max(getOption("digits") - 3, 3), ...) {
 }
 
 
-TabCat <- function(z, b, s) {
-  x <- rbind(original = table(ToCat(z[, "original"], b)), 
-             rounded = table(ToCat(z[, "rounded"], b)), 
-             absDiff = table(ToCat(abs(z[, "difference"]), b)))
+TabCat <- function(z, b, s, m) {
+  x <- rbind(original = table(ToCat(z[, "original"], b, m)), 
+             rounded = table(ToCat(z[, "rounded"], b, m)), 
+             absDiff = table(ToCat(abs(z[, "difference"]), b, m)))
   x <- x[, colnames(x) != "0.5", drop = FALSE]
   x <- cbind(x, all = NROW(z))
   colnames(x) <- paste(s, colnames(x), sep = "")
@@ -150,7 +192,9 @@ TabCat <- function(z, b, s) {
 }
 
 
-ToCat <- function(x, b) {
+ToCat <- function(x, b, m) {
+  if(m >= b)
+    return(ToCatm(x, b, m))
   x[x > b] <- b + 1
   x[x > 0 & x < b] <- 1 - as.numeric(b == 1)/2
   x <- factor(x, levels = c(0, 1 - as.numeric(b == 1)/2, b, b + 1))
@@ -160,6 +204,19 @@ ToCat <- function(x, b) {
   x
 }
 
+
+ToCatm <- function(x, b, m) {
+  x[x > m] <- m + 1
+  x[x > (b-1) & x<=m ] <- b 
+  x[x > 0 & x < b] <- 1 - as.numeric(b == 1)/2
+  x <- factor(x, levels = c(0, 1 - as.numeric(b == 1)/2, b, m + 1))
+  levels(x)[4] <- paste(levels(x)[4], "+", sep = "")
+  if (b > 2) 
+    levels(x)[2] <- paste(1, as.character(b - 1), sep = "-")
+  if(m > b)
+    levels(x)[3] <- paste(as.character(b), as.character(m), sep = "-")
+  x
+}
 
 #' @rdname HDutility 
 #' @export

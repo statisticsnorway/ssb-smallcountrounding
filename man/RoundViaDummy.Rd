@@ -8,7 +8,9 @@
 RoundViaDummy(data, freqVar, formula = NULL, roundBase = 3,
   singleRandom = FALSE, crossTable = TRUE, total = "Total",
   maxIterRows = 1000, maxIter = 1e+07, x = NULL,
-  hierarchies = NULL, ...)
+  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase - 1,
+  zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE,
+  step = 0, ...)
 }
 \arguments{
 \item{data}{Input data as a data frame (inner cells)}
@@ -35,6 +37,24 @@ When NULL, x must be supplied.}
 \item{hierarchies}{List of hierarchies, which can be converted by \code{\link{AutoHierarchies}}. 
 Thus, a single string as hierarchy input is assumed to be a total code. 
 Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using the categories in the data.}
+
+\item{xReturn}{Dummy matrix in output when TRUE (as input parameter \code{x})}
+
+\item{maxRound}{Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded.}
+
+\item{zeroCandidates}{When TRUE, inner cells in input with zero count (and multiple of roundBase when maxRound is in use)
+contributing to publishable cells will be included as candidates to obtain roundBase value. 
+With vector input, the rule is specified individually for each cell.}
+
+\item{forceInner}{When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded. 
+Can be combined with parameter zeroCandidates to allow zeros and roundBase multiples to be rounded up.}
+
+\item{identifyNew}{When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded 
+publishable cells are less than roundBase.}
+
+\item{step}{When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
+After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
+for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.}
 
 \item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}}}
 }
@@ -72,6 +92,28 @@ mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
 a <- RoundViaDummy(SmallCountData('z3'), 'ant', mf, 5)
 b <- RoundViaDummy(SmallCountData('sosialFiktiv'), 'ant', mf, 4)
 print(cor(b[[2]]),digits=12) # Correlation between original and rounded
+
+
+\dontrun{
+# Demonstrate parameters maxRound, zeroCandidates and forceInner 
+# by tabulating the inner cells that have been changed.
+z4 <- SmallCountData("sosialFiktiv")
+for (forceInner in c("FALSE", "z4$ant < 10")) 
+  for (zeroCandidates in c(FALSE, TRUE)) 
+    for (maxRound in c(2, 5)) {
+      set.seed(123)
+      a <- RoundViaDummy(z4, "ant", formula = mf, maxRound = maxRound, 
+                         zeroCandidates = zeroCandidates, 
+                         forceInner = eval(parse(text = forceInner)))
+      change <- a$yInner[, "original"] != a$yInner[, "rounded"]
+      cat("\\n\\n---------------------------------------------------\\n")
+      cat("      maxRound:", maxRound, "\\n")
+      cat("zeroCandidates:", zeroCandidates, "\\n")
+      cat("    forceInner:", forceInner, "\\n\\n")
+      print(table(original = a$yInner[change, "original"], rounded = a$yInner[change, "rounded"]))
+      cat("---------------------------------------------------\\n")
+    }
+}
 }
 \seealso{
 See the  user-friendly wrapper \code{\link{PLSrounding}}

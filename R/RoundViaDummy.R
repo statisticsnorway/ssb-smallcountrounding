@@ -23,6 +23,18 @@
 #' @param hierarchies List of hierarchies, which can be converted by \code{\link{AutoHierarchies}}. 
 #'        Thus, a single string as hierarchy input is assumed to be a total code. 
 #'        Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using the categories in the data.
+#' @param xReturn Dummy matrix in output when TRUE (as input parameter \code{x})
+#' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded.
+#' @param zeroCandidates When TRUE, inner cells in input with zero count (and multiple of roundBase when maxRound is in use)
+#'             contributing to publishable cells will be included as candidates to obtain roundBase value. 
+#'             With vector input, the rule is specified individually for each cell.   
+#' @param forceInner When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded. 
+#'                   Can be combined with parameter zeroCandidates to allow zeros and roundBase multiples to be rounded up.
+#' @param identifyNew  When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded 
+#'        publishable cells are less than roundBase.  
+#' @param step When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
+#'       After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
+#'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
 #' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}}        
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
@@ -56,9 +68,38 @@
 #' a <- RoundViaDummy(SmallCountData('z3'), 'ant', mf, 5)
 #' b <- RoundViaDummy(SmallCountData('sosialFiktiv'), 'ant', mf, 4)
 #' print(cor(b[[2]]),digits=12) # Correlation between original and rounded
+#' 
+#' 
+#' \dontrun{
+#' # Demonstrate parameters maxRound, zeroCandidates and forceInner 
+#' # by tabulating the inner cells that have been changed.
+#' z4 <- SmallCountData("sosialFiktiv")
+#' for (forceInner in c("FALSE", "z4$ant < 10")) 
+#'   for (zeroCandidates in c(FALSE, TRUE)) 
+#'     for (maxRound in c(2, 5)) {
+#'       set.seed(123)
+#'       a <- RoundViaDummy(z4, "ant", formula = mf, maxRound = maxRound, 
+#'                          zeroCandidates = zeroCandidates, 
+#'                          forceInner = eval(parse(text = forceInner)))
+#'       change <- a$yInner[, "original"] != a$yInner[, "rounded"]
+#'       cat("\n\n---------------------------------------------------\n")
+#'       cat("      maxRound:", maxRound, "\n")
+#'       cat("zeroCandidates:", zeroCandidates, "\n")
+#'       cat("    forceInner:", forceInner, "\n\n")
+#'       print(table(original = a$yInner[change, "original"], rounded = a$yInner[change, "rounded"]))
+#'       cat("---------------------------------------------------\n")
+#'     }
+#' }
 RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRandom = FALSE,
                           crossTable=TRUE, total = "Total",  maxIterRows = 1000, maxIter = 1E7,
-                          x = NULL,  hierarchies = NULL, ...) {
+                          x = NULL,  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase-1,
+                          zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE, step = 0,...) {
+  
+  maxBase <- maxRound + 1
+  
+  if(identifyNew)
+    if(maxBase<roundBase)
+      stop("maxRound cannot be smaller than roundBase-1 when identifyNew is TRUE")
 
   cat("[")
   flush.console()
@@ -125,9 +166,21 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
   
   yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
-  a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows)
+  a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
+                      maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step)
   cat("]\n")
   flush.console()
+  
+  if (xReturn){ # copy of code below with x as extra
+    if(crossTable){
+      return(list(yInner = IntegerCbind(original = yInner, rounded = a[[1]]),
+                  yPublish = cbind(original = yPublish, rounded = a[[2]][, 1, drop = TRUE]),
+                  crossTable = crossTab, x = x))
+    } else {
+      return(list(yInner = IntegerCbind(original = yInner, rounded = a[[1]]),
+         yPublish = cbind(original = yPublish, rounded = a[[2]][, 1, drop = TRUE]), x = x))
+    }
+  }
   
   
   if(crossTable)
@@ -188,28 +241,57 @@ ModelMatrix <- function(formula, data = NULL, mf = model.frame(formula, data = d
 AddEmptyLevel <- function(x) factor(x, levels = c("tullnull", levels(x)))
 
 
-# PlsRoundSparse
-#
-# Avrunder basert på en algoritme inspirert av PLS-regresjon som forutsetter dummy matrise (Model matrix)
-#
-# @param x Model matrix
-# @param roundBase roundBase
-# @param yInner    inner cells
-# @param yPublish  cells to be published
-# @param singleRandom Single random draw when TRUE
-# @param yInnerExact Original yInner (when iteration)
-# @param yPublishExact Original yPublish (when iteration)
-#
-# @return rounded versions of yInner and yPublish
-# @importFrom  Matrix Matrix
-# @importFrom  methods as
-# 
-# @keywords internal
+
 PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crossprod(x, yInner)[, 1, drop = TRUE],
-                           singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000) { # maxIter henger sammen med maxIterRows
+                           singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000, 
+                           maxBase = roundBase, zeroCandidates = FALSE, forceInner = FALSE,
+                           identifyNew = TRUE, step = 0,
+                           forceFromFirstIter = TRUE) { # maxIter henger sammen med maxIterRows
 
   yInnerExact <- yInner
   yPublishExact <- yPublish
+  
+
+  if(any(zeroCandidates)){
+    if(length(zeroCandidates)==1){
+      zeroCandidates =  (yInner %% roundBase) == 0
+    } else {
+      zeroCandidates <- zeroCandidates & (yInner %% roundBase) == 0
+    }
+  } else {
+    zeroCandidates <- rep(FALSE, length(yInner))
+  }  
+  
+  
+  if(any(forceInner)){
+    if(length(forceInner)==1){
+      forceInner <- rep(TRUE, length(yInner))
+    } else {
+      if(length(yInner) != length(forceInner))
+        stop("Wrong length of forceInner")
+    }
+    forceInner[((yInner %% roundBase) == 0) & !zeroCandidates] <- FALSE
+    #forceInner <- forceInner | zeroCandidates  
+  } else {
+    forceInner <- rep(FALSE, length(yInner))
+  }
+  
+
+  if(forceFromFirstIter){
+    create_supRowsForce <- TRUE
+  } else {
+    create_supRowsForce <- (maxBase != roundBase) |  !identifyNew  | any(zeroCandidates) | any(forceInner)
+  }
+  
+  
+  if(create_supRowsForce){  
+    maxBase = as.integer(maxBase)
+    suppPublish = yPublish < maxBase & yPublish > 0
+    suppInput <- yInner < maxBase & ( (yInner %% roundBase) > 0 | zeroCandidates )#  Indre celler med verdier som er 'undertrykkbare'
+    supRowsForce <- (Matrix::rowSums(x[, suppPublish, drop = FALSE]) > 0 & suppInput) | forceInner
+  } else {
+    supRowsForce <- rep(FALSE, length(yInner))
+  }
 
 
   i = 0
@@ -217,13 +299,24 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
     i = i+1
     if (i == 1)
       a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish,
-                                singleRandom = singleRandom, yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows)
+                                singleRandom = singleRandom, yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
+                                supRowsForce = supRowsForce, identifyNew = !forceFromFirstIter, step = step)
     else
-      a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = a[[1]], yPublish = a[[2]][, 1, drop = TRUE],
-                                singleRandom = singleRandom, yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows)
+      a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = a[[1]], yPublish = yPublish,
+                                singleRandom = singleRandom, 
+                                suppPublish = suppRoundPublish,
+                                yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
+                                supRowsForce = supRowsForce, identifyNew = identifyNew, step = step)
       # suppRoundPublish = roundPublish<roundBase & roundPublish>0
-      suppRoundPublish <- a[[2]] < roundBase & a[[2]] > 0
-      if (!any(suppRoundPublish))
+    
+      yPublish  <- a[[2]][, 1, drop = TRUE]
+      suppRoundPublish <- yPublish < roundBase & yPublish > 0
+      supRowsForce[a[[3]]] <- FALSE
+      if(!identifyNew){
+        if (!any(supRowsForce) )
+          return(a)
+      }
+      if (!any(suppRoundPublish) & !any(supRowsForce) )
         return(a)
   }
   stop("Iteration limit exceeded")
@@ -236,26 +329,33 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
                                      suppPublish = yPublish < roundBase & yPublish > 0, #  Publiserte celler som skal undertrykkes (men må bruke iterasjon)
                                      yInnerExact = yInner,
                                      yPublishExact = yPublish,
-                                  maxIterRows = 1000) {
+                                  maxIterRows = 1000, supRowsForce = rep(FALSE, length(yInner)), identifyNew = TRUE, step = 0) {
   Pls1RoundHere <- get0("Pls1RoundFromUser", ifnotfound = Pls1Round) # Hack som gjør det mulig å bytte ut Pls1Round med annen algoritme
 
-  roundBase = as.integer(roundBase)
+  roundBase <- as.integer(roundBase)
 
 
-  suppInput <- yInner < roundBase & yInner > 0  #  Indre celler med verdier som er 'undertrykkbare'
-
-  supRows <- Matrix::rowSums(x[, suppPublish, drop = FALSE]) > 0 & suppInput
+  if(identifyNew){
+    suppInput <- yInner < roundBase & yInner > 0  #  Indre celler med verdier som er 'undertrykkbare'
+    supRows <- (Matrix::rowSums(x[, suppPublish, drop = FALSE]) > 0 & suppInput) | supRowsForce 
+  } else {
+    supRows <- supRowsForce 
+  }
+  
+  
 
   printInc <- TRUE
 
-  if(!singleRandom)
-  if(sum(supRows)>maxIterRows){
-    randInd = sample.int(sum(supRows),maxIterRows)
-    supInds = which(supRows)
-    supRows[supRows] = FALSE
-    supRows[supInds[randInd]] = TRUE
+  if (!singleRandom) if (sum(supRows) > maxIterRows) {
+    randInd <- sample.int(sum(supRows), maxIterRows)
+    supInds <- which(supRows)
+    supRows[supRows] <- FALSE
+    supRows[supInds[randInd]] <- TRUE
     printInc <- FALSE
-    {cat("#"); flush.console()}
+    {
+      cat("#")
+      flush.console()
+    }
   }
 
 
@@ -277,39 +377,55 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
 
   yPublishCorrection <- yPublishExact[cols2] - yPublish[cols2]
   yPls <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySupp, ncol = 1))))
+  
+
+  
+  if (length(yPls) == 0 )   ## When 0 col in bSup
+    singleRandom = TRUE
+  
+  if (sum(supRowsForce) & length(yPls) & length(ySupp)) {
+    ySuppBase <- ySupp
+    ySupp <- ySupp%%roundBase
+    ySuppBase <- ySuppBase - ySupp
+    yPlsBase <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySuppBase, ncol = 1))))
+    yPls <- yPls - yPlsBase
+  } else {
+    ySuppBase <- 0
+  }
+  
+  
+  yPls2 <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySupp, ncol = 1))))
+  
+  
   correction <- TRUE  # -- For testing
   if (correction) {
     yPls <- yPls + yPublishCorrection
     nR <- round((sum(ySupp) + sum(yInnerExact) - sum(yInner))/roundBase)
-  } else nR <- round(sum(ySupp)/roundBase)
-
+  } else {
+    nR <- round(sum(ySupp)/roundBase)
+  }
   
-  if(length(yPls)==0)   ## When 0 col in bSup
-    singleRandom = TRUE
-
+  
 
   if (nR == 0 | singleRandom) {
     yR <- ySupp * 0L
     if (singleRandom)
       yR[sample.int(length(ySupp), nR)] <- roundBase
-  } else yR <- Pls1RoundHere(bSup, ySupp, roundBase = roundBase, yPls = yPls, nR = nR, printInc=printInc)
+  } else yR <- Pls1RoundHere(bSup, ySupp, roundBase = roundBase, yPls = yPls, nR = nR, printInc=printInc, step = step)
 
   # Legger inn i ikke-reduserte data
   roundInner <- yInner
-  roundInner[supRows] <- yR
+  roundInner[supRows] <- yR  + ySuppBase     ################################  ySuppBase   Ny
   roundPublish <- yPublish + Matrix::crossprod(bSupA, yR - ySupp)
 
-  list(roundInner = roundInner, roundPublish = roundPublish)
+  list(roundInner = roundInner, roundPublish = roundPublish, supRows = supRows)
 }
 
 
-
-
-
-Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TRUE, yPls = NULL, nR = NULL, random = TRUE,dgT=TRUE, wD=TRUE) {
+Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TRUE, yPls = NULL, nR = NULL, random = TRUE,dgT=TRUE, wD=TRUE, step = 0) {
   # dgT med eller uten tApp/wD er muligheter ved for lite minne til roundBasecrossprod
   # wD fungerer raskt!!
-  #cat("Pls1RoundFromUser")
+  # cat("Pls1RoundFromUser")
   if(printInc) {cat("-"); flush.console()}
   if (is.matrix(x))
     x <- Matrix(x)  # Sparse matrix
@@ -321,17 +437,17 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   if (random)
     ind <- as.list(sample.int(length(y)))
   else ind <- as.list(seq_len(length(y)))
-
+  
   indInv = vector("list",0)
-
+  
   if (is.null(nR))
     nR <- round(sum(y)/roundBase)
-
+  
   if(nR==0)
     return(yR)
   if(nR==length(y))
     return(rep(roundBase , length(y)))
-
+  
   if(printInc) {cat("*"); flush.console()}
   #startTime <- Sys.time()
   if(dgT){
@@ -361,61 +477,101 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
     roundBasecrossprod <- as.matrix(roundBase * Matrix::tcrossprod(x))  # Much faster with as.matrix here
   #roundBasecrossprod <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix")  # Relativt treg
   if(printInc) {cat("*"); flush.console()}
-  for (i in 1:nR) {
+  
+  
+  ind = as.integer(ind)
+  indInv = integer(0)
+  nBase = 0L
+  coe <- Matrix::tcrossprod(x, yPls)
+  
+  
+  UpBase = function(returnIf1 = FALSE){
+    pf = parent.frame()
+    k <- which.max(coe[ind])
+    ik <- ind[k]
+    if(returnIf1){ 
+      if(k==1){
+        return(FALSE)
+      }
+    }
+    pf$yR[ik] <- roundBase
+    pf$nBase <- nBase + 1L
+    pf$indInv <- c(ind[k],indInv)
+    pf$ind <- ind[-k]
+    ii = GetInd(ik,wd)
+    ix = dgTi[ii]
+    pf$coe[ix] <- coe[ix] - dgTx[ii]
+    TRUE
+  }
+  
+  DownBase = function(returnIf1 = FALSE){
+    pf = parent.frame()
+    k <- which.min(coe[as.integer(indInv)])
+    ik <- indInv[k]
+    if(returnIf1){ 
+      if(k==1){
+        return(FALSE)
+      }
+    }
+    pf$yR[ik] <- 0
+    pf$nBase <- nBase - 1L
+    pf$ind <- c(indInv[k],ind)
+    pf$indInv <- indInv[-k]
+    ii = GetInd(ik,wd)
+    ix = dgTi[ii]
+    pf$coe[ix] <- coe[ix] + dgTx[ii]
+    TRUE
+  }
+  
+  step = max(1L, as.integer(step))
+  
+  i = 0L
+  while(nBase<nR){
+    i = i + 1L
     if (printInc)
       if (i%%max(1, round(nR/10)) == 0) {
         cat(".")
         flush.console()
       }
-    if (i > 1){
-      ii = GetInd(ik,wd)
-      ix = dgTi[ii]
-      coe[ix] <- coe[ix] - dgTx[ii]
-    }
-    else
-      coe <- Matrix::tcrossprod(x, yPls)
-    k <- which.max(coe[as.integer(ind)])
-    ik <- ind[[k]]
-    yR[ik] <- roundBase
-    indInv <- c(ind[k],indInv)
-    ind[k] <- NULL
+    UpBase()
+    if(step > 1)
+      if(i%%step == 0){
+        doDown = TRUE
+        for(i in seq_len(round(step/2))){
+          if(doDown){ 
+            #cat("D")
+            doDown =DownBase(TRUE)  
+          } 
+        }
+        #cat("|\n")
+      }
   }
-  absminmaxA = Inf
-  absminmaxB = Inf
   for (i in 1:(nR+100)) {
     if (printInc)
       if (i%%max(1, round(nR/10)) == 0) {
         cat(":")
         flush.console()
       }
-    ii = GetInd(ik,wd)
-    ix = dgTi[ii]
-    coe[ix] <- coe[ix] - dgTx[ii]
-    k <- which.min(coe[as.integer(indInv)])
-    if(k==1){
+    doDown = TRUE
+    for(i in seq_len(step)){
+      if(doDown){ 
+        #cat("d")
+        doDown =DownBase(TRUE)   
+      } 
+    }
+    #cat("|\n")
+    if(nBase == nR){
       if(printInc) {cat("="); flush.console()}
       return(yR)
     }
-
-    ik <- indInv[[k]]
-    yR[ik] <- 0
-    ind <- c(indInv[k],ind)
-    indInv[k] <- NULL
-    ii = GetInd(ik,wd)
-    ix = dgTi[ii]
-    coe[ix] <- coe[ix] + dgTx[ii]
-    k <- which.max(coe[as.integer(ind)])
-    ik <- ind[[k]]
-    yR[ik] <- roundBase
-    indInv <- c(ind[k],indInv)
-    ind[k] <- NULL
+    while(nBase<nR){
+      UpBase()  
+    }
   }
-
   if(printInc) {cat("="); flush.console()}
-  #endTime <- Sys.time()
-  #print(difftime(endTime,startTime ))
   yR
 }
+
 
 
 

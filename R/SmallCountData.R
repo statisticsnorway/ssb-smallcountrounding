@@ -14,7 +14,7 @@ pkgEnvSmallCountData <- new.env(parent=emptyenv())
 #' @importFrom utils data
 #' @importFrom SSBtools Hrc2DimList
 #' 
-#' @note Except for \code{"europe6"}, \code{"eHrc"} and \code{"eDimList"}, the function returns the same datasets as is included in the package easySdcTable.
+#' @note Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as is included in the package easySdcTable.
 #' 
 #' @seealso \code{\link{SSBtoolsData}}, \code{\link{Hrc2DimList}}
 #'
@@ -23,6 +23,7 @@ pkgEnvSmallCountData <- new.env(parent=emptyenv())
 #'  SmallCountData("e6")
 #'  SmallCountData("eHrc")      #  TauArgus coded hierarchies
 #'  SmallCountData("eDimList")  #  sdcTable coded hierarchies
+#'  SmallCountData("exPSD")     #  Example data in presentation at Privacy in statistical databases
 #'
 SmallCountData <- function(dataset, path = NULL) {
   if (!is.null(path)) {
@@ -44,6 +45,12 @@ SmallCountData <- function(dataset, path = NULL) {
   }
   if(dataset == "eDimList"){
     return(Hrc2DimList(SmallCountData("eHrc"))) 
+  }
+  if(dataset == "exPSD"){
+    return(data.frame(rows = rep(paste("row", 1:3, sep = ""), 5), 
+                      cols = rep(paste("col", 1:5, sep = ""), each = 3), 
+                      freq = c(6, 1, 0, 0, 2, 1, 1, 3, 1, 3, 1, 0, 4, 2, 2), 
+                      stringsAsFactors = FALSE))
   }
   if (!exists(dataset, pkgEnvSmallCountData))
     data(list = dataset, package = "SmallCountRounding", envir = pkgEnvSmallCountData)

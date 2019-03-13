@@ -19,13 +19,14 @@ The dataset
 Function that returns a dataset
 }
 \note{
-Except for \code{"europe6"}, \code{"eHrc"} and \code{"eDimList"}, the function returns the same datasets as is included in the package easySdcTable.
+Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as is included in the package easySdcTable.
 }
 \examples{
  SmallCountData("z1")
  SmallCountData("e6")
  SmallCountData("eHrc")      #  TauArgus coded hierarchies
  SmallCountData("eDimList")  #  sdcTable coded hierarchies
+ SmallCountData("exPSD")     #  Example data in presentation at Privacy in statistical databases
 
 }
 \seealso{
