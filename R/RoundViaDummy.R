@@ -95,6 +95,18 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           x = NULL,  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase-1,
                           zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE, step = 0,...) {
   
+  
+  if(roundBase<1){
+    stop(paste("roundBase =", roundBase,"is not allowed"))
+  }
+  
+  if(roundBase == 1L){
+    warning("Special algorithm when roundBase is 1, forceInner and zeroCandidates set to TRUE.")
+    zeroCandidates = TRUE
+    forceInner = TRUE 
+    identifyNew = FALSE
+  }
+  
   maxBase <- maxRound + 1
   
   if(identifyNew)
@@ -121,8 +133,12 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
   if (!is.null(hierarchies) & is.null(x)) {
     x <- Hierarchies2ModelMatrix(data = data, hierarchies = hierarchies, crossTable = crossTable, total = total, ...)
-    crossTable <- x$crossTable
-    x <- x$modelMatrix
+    if(crossTable){ 
+      crossTable <- x$crossTable
+      x <- x$modelMatrix
+    } else {
+      crossTab <- NULL
+    }
   }
   
   ## code below is as before hierarchies introduced 
@@ -153,7 +169,7 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   } else {
     if(!is.logical(crossTable))
       crossTab <- crossTable
-    crossTable <- TRUE
+    crossTable <- !is.null(crossTab)
   }
   
   
@@ -161,6 +177,12 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   if(anyNA(x))      # With na.action='na.pass' and sparse = TRUE no NA's will be produced now (zeros instead) - package ‘Matrix’ version 1.2-11
     x[is.na(x)] =0  # The code here is made for possible change in later versions
   #print(difftime(Sys.time(),startTime))
+  
+  if(is.null(freqVar) & xReturn){
+    if(crossTable)
+      return(list(x = x, crossTable = crossTab))
+    return(x)
+  }
   
   yInner <- data[, freqVar]
   
@@ -385,7 +407,9 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   
   if (sum(supRowsForce) & length(yPls) & length(ySupp)) {
     ySuppBase <- ySupp
-    ySupp <- ySupp%%roundBase
+    if(roundBase > 1L) {
+      ySupp <- ySupp%%roundBase
+    }
     ySuppBase <- ySuppBase - ySupp
     yPlsBase <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySuppBase, ncol = 1))))
     yPls <- yPls - yPlsBase
@@ -409,9 +433,17 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
 
   if (nR == 0 | singleRandom) {
     yR <- ySupp * 0L
-    if (singleRandom)
-      yR[sample.int(length(ySupp), nR)] <- roundBase
-  } else yR <- Pls1RoundHere(bSup, ySupp, roundBase = roundBase, yPls = yPls, nR = nR, printInc=printInc, step = step)
+    if (singleRandom){
+      if(roundBase == 1L){
+        makeFreq <- MakeFreq(matrix(sample.int(length(ySupp), nR, replace=TRUE), ncol=1))
+        yR[makeFreq[,1]] <- makeFreq[,2]
+      } else {
+        yR[sample.int(length(ySupp), nR)] <- roundBase
+      }
+    }
+  } else {
+    yR <- Pls1RoundHere(bSup, ySupp, roundBase = roundBase, yPls = yPls, nR = nR, printInc=printInc, step = step)
+  }
 
   # Legger inn i ikke-reduserte data
   roundInner <- yInner
@@ -420,6 +452,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
 
   list(roundInner = roundInner, roundPublish = roundPublish, supRows = supRows)
 }
+
 
 
 Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TRUE, yPls = NULL, nR = NULL, random = TRUE,dgT=TRUE, wD=TRUE, step = 0) {
@@ -484,44 +517,90 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   nBase = 0L
   coe <- Matrix::tcrossprod(x, yPls)
   
-  
-  UpBase = function(returnIf1 = FALSE){
-    pf = parent.frame()
-    k <- which.max(coe[ind])
-    ik <- ind[k]
-    if(returnIf1){ 
-      if(k==1){
-        return(FALSE)
+  if (roundBase != 1L) {
+    UpBase <- function(returnIf1 = FALSE) {
+      pf <- parent.frame()
+      k <- which.max(coe[ind])
+      ik <- ind[k]
+      if (returnIf1) {
+        if (k == 1) {
+          return(FALSE)
+        }
       }
+      pf$yR[ik] <- roundBase
+      pf$nBase <- nBase + 1L
+      pf$indInv <- c(ind[k], indInv)
+      pf$ind <- ind[-k]
+      ii <- GetInd(ik, wd)
+      ix <- dgTi[ii]
+      pf$coe[ix] <- coe[ix] - dgTx[ii]
+      TRUE
     }
-    pf$yR[ik] <- roundBase
-    pf$nBase <- nBase + 1L
-    pf$indInv <- c(ind[k],indInv)
-    pf$ind <- ind[-k]
-    ii = GetInd(ik,wd)
-    ix = dgTi[ii]
-    pf$coe[ix] <- coe[ix] - dgTx[ii]
-    TRUE
+    
+    DownBase <- function(returnIf1 = FALSE) {
+      pf <- parent.frame()
+      k <- which.min(coe[as.integer(indInv)])
+      ik <- indInv[k]
+      if (returnIf1) {
+        if (k == 1) {
+          return(FALSE)
+        }
+      }
+      pf$yR[ik] <- 0
+      pf$nBase <- nBase - 1L
+      pf$ind <- c(indInv[k], ind)
+      pf$indInv <- indInv[-k]
+      ii <- GetInd(ik, wd)
+      ix <- dgTi[ii]
+      pf$coe[ix] <- coe[ix] + dgTx[ii]
+      TRUE
+    }
+  } else {   # roundBase == 1L
+    UpBase <- function(returnIf1 = FALSE) {
+      pf <- parent.frame()
+      k <- which.max(coe[ind])
+      ik <- ind[k]
+      if (returnIf1) {
+        if (k == 1) {
+          return(FALSE)
+        }
+      }
+      if (pf$yR[ik] == 0L) {
+        pf$indInv <- c(ind[k], indInv)
+      } else {
+        pf$indInv <- c(ind[k], indInv[indInv != ind[k]])
+      }
+      ### pf$ind <- ind[-k]
+      ii <- GetInd(ik, wd)
+      ix <- dgTi[ii]
+      pf$coe[ix] <- coe[ix] - dgTx[ii]
+      pf$yR[ik] <- pf$yR[ik] + 1L
+      pf$nBase <- nBase + 1L
+      TRUE
+    }
+    
+    DownBase <- function(returnIf1 = FALSE) {
+      pf <- parent.frame()
+      k <- which.min(coe[as.integer(indInv)])
+      ik <- indInv[k]
+      if (returnIf1) {
+        if (k == 1) {
+          return(FALSE)
+        }
+      }
+      pf$yR[ik] <- pf$yR[ik] - 1L
+      pf$nBase <- nBase - 1L
+      ### pf$ind <- c(indInv[k],ind)
+      if (pf$yR[ik] == 0L) {
+        pf$indInv <- indInv[-k]
+      }
+      ii <- GetInd(ik, wd)
+      ix <- dgTi[ii]
+      pf$coe[ix] <- coe[ix] + dgTx[ii]
+      TRUE
+    }
   }
   
-  DownBase = function(returnIf1 = FALSE){
-    pf = parent.frame()
-    k <- which.min(coe[as.integer(indInv)])
-    ik <- indInv[k]
-    if(returnIf1){ 
-      if(k==1){
-        return(FALSE)
-      }
-    }
-    pf$yR[ik] <- 0
-    pf$nBase <- nBase - 1L
-    pf$ind <- c(indInv[k],ind)
-    pf$indInv <- indInv[-k]
-    ii = GetInd(ik,wd)
-    ix = dgTi[ii]
-    pf$coe[ix] <- coe[ix] + dgTx[ii]
-    TRUE
-  }
   
   step = max(1L, as.integer(step))
   
@@ -571,11 +650,6 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   if(printInc) {cat("="); flush.console()}
   yR
 }
-
-
-
-
-
 
 
 
