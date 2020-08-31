@@ -4,8 +4,16 @@
 \alias{RoundViaDummy2}
 \title{RoundViaDummy2}
 \usage{
-RoundViaDummy2(data, b, d, nin, micro = FALSE, control = NULL,
-  allTerms = FALSE, singleRandom = FALSE)
+RoundViaDummy2(
+  data,
+  b,
+  d,
+  nin,
+  micro = FALSE,
+  control = NULL,
+  allTerms = FALSE,
+  singleRandom = FALSE
+)
 }
 \arguments{
 \item{data}{data}

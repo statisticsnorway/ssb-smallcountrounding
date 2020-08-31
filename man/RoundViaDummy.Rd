@@ -5,12 +5,27 @@
 \alias{RoundViaDummy}
 \title{Small Count Rounding of Tabular Data}
 \usage{
-RoundViaDummy(data, freqVar, formula = NULL, roundBase = 3,
-  singleRandom = FALSE, crossTable = TRUE, total = "Total",
-  maxIterRows = 1000, maxIter = 1e+07, x = NULL,
-  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase - 1,
-  zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE,
-  step = 0, ...)
+RoundViaDummy(
+  data,
+  freqVar,
+  formula = NULL,
+  roundBase = 3,
+  singleRandom = FALSE,
+  crossTable = TRUE,
+  total = "Total",
+  maxIterRows = 1000,
+  maxIter = 1e+07,
+  x = NULL,
+  hierarchies = NULL,
+  xReturn = FALSE,
+  maxRound = roundBase - 1,
+  zeroCandidates = FALSE,
+  forceInner = FALSE,
+  identifyNew = TRUE,
+  step = 0,
+  leverageCheck = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{Input data as a data frame (inner cells)}
@@ -56,6 +71,11 @@ publishable cells are less than roundBase.}
 After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
 for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.}
 
+\item{leverageCheck}{When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
+(\code{<=maxRound}) will be rounded. 
+The leverages are computed by \code{hat(model.matrix(~as.matrix(x)-1)}, which can be very time and memory consuming. 
+The default leverage limit is 0.999999. Another limit can be sent as input instead of TRUE.}
+
 \item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}}}
 }
 \value{
@@ -93,6 +113,11 @@ a <- RoundViaDummy(SmallCountData('z3'), 'ant', mf, 5)
 b <- RoundViaDummy(SmallCountData('sosialFiktiv'), 'ant', mf, 4)
 print(cor(b[[2]]),digits=12) # Correlation between original and rounded
 
+# Demonstrate parameter leverageCheck 
+# The 42nd inner cell must be rounded since it can be revealed from the published cells.
+mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint
+RoundViaDummy(SmallCountData("z2"), "ant", mf2, leverageCheck = FALSE)$yInner[42, ]
+RoundViaDummy(SmallCountData("z2"), "ant", mf2, leverageCheck = TRUE)$yInner[42, ]
 
 \dontrun{
 # Demonstrate parameters maxRound, zeroCandidates and forceInner 
@@ -106,12 +131,12 @@ for (forceInner in c("FALSE", "z4$ant < 10"))
                          zeroCandidates = zeroCandidates, 
                          forceInner = eval(parse(text = forceInner)))
       change <- a$yInner[, "original"] != a$yInner[, "rounded"]
-      cat("\\n\\n---------------------------------------------------\\n")
-      cat("      maxRound:", maxRound, "\\n")
-      cat("zeroCandidates:", zeroCandidates, "\\n")
-      cat("    forceInner:", forceInner, "\\n\\n")
+      cat("\n\n---------------------------------------------------\n")
+      cat("      maxRound:", maxRound, "\n")
+      cat("zeroCandidates:", zeroCandidates, "\n")
+      cat("    forceInner:", forceInner, "\n\n")
       print(table(original = a$yInner[change, "original"], rounded = a$yInner[change, "rounded"]))
-      cat("---------------------------------------------------\\n")
+      cat("---------------------------------------------------\n")
     }
 }
 }

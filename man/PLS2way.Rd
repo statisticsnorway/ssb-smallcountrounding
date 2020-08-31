@@ -15,7 +15,8 @@ PLS2way(obj, variable = c("rounded", "original", "difference", "code"))
 A data frame
 }
 \description{
-Two-way table from PLSrounding output
+Output from \code{\link{PLSrounding}} is presented as two-way table(s) in cases where this is possible.
+A requirement is that the number of main dimensional variables is two.
 }
 \details{
 When parameter \code{"variable"} is \code{"code"}, output is coded as  \code{"#"} (publish), \code{"."} (inner) and \code{"&"} (both).

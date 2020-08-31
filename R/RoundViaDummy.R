@@ -35,6 +35,10 @@
 #' @param step When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
 #'       After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
 #'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
+#' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
+#'        (\code{<=maxRound}) will be rounded. 
+#'        The leverages are computed by \code{hat(model.matrix(~as.matrix(x)-1)}, which can be very time and memory consuming. 
+#'        The default leverage limit is 0.999999. Another limit can be sent as input instead of TRUE.    
 #' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}}        
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
@@ -48,7 +52,7 @@
 #' 
 #' @seealso  See the  user-friendly wrapper \code{\link{PLSrounding}}
 #'   and see \code{Round2} for rounding by other algorithm
-#' @importFrom stats as.formula
+#' @importFrom stats as.formula hat
 #' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies
 #' @importFrom utils flush.console
 #' @importFrom  Matrix Matrix
@@ -69,6 +73,11 @@
 #' b <- RoundViaDummy(SmallCountData('sosialFiktiv'), 'ant', mf, 4)
 #' print(cor(b[[2]]),digits=12) # Correlation between original and rounded
 #' 
+#' # Demonstrate parameter leverageCheck 
+#' # The 42nd inner cell must be rounded since it can be revealed from the published cells.
+#' mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint
+#' RoundViaDummy(SmallCountData("z2"), "ant", mf2, leverageCheck = FALSE)$yInner[42, ]
+#' RoundViaDummy(SmallCountData("z2"), "ant", mf2, leverageCheck = TRUE)$yInner[42, ]
 #' 
 #' \dontrun{
 #' # Demonstrate parameters maxRound, zeroCandidates and forceInner 
@@ -93,7 +102,8 @@
 RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRandom = FALSE,
                           crossTable=TRUE, total = "Total",  maxIterRows = 1000, maxIter = 1E7,
                           x = NULL,  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase-1,
-                          zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE, step = 0,...) {
+                          zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE, step = 0,
+                          leverageCheck = FALSE, ...) {
   
   
   if(roundBase<1){
@@ -113,13 +123,23 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     if(maxBase<roundBase)
       stop("maxRound cannot be smaller than roundBase-1 when identifyNew is TRUE")
 
+  if (is.logical(leverageCheck)) {
+    leverageCheck <- 0.999999 * as.numeric(leverageCheck)
+  }
+  
   cat("[")
   flush.console()
   
+  if (!is.null(x) & is.logical(crossTable)) {
+    if(crossTable)
+      warning('"crossTable=TRUE" ignored when x is supplied. crossTable as data.frame input is possible.')
+    crossTable <- FALSE
+    crossTab <- NULL
+  }
   
   if (is.null(x) & is.null(formula) & is.null(hierarchies)) {
     freqVarName <- names(data[1, freqVar, drop = FALSE])
-    hierarchies <- FindHierarchies(data[, !(names(data) %in% freqVarName)])
+    hierarchies <- FindHierarchies(data[, !(names(data) %in% freqVarName), drop = FALSE])
     # stop('formula, hierarchies or x needed')
   }
   
@@ -184,12 +204,13 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     return(x)
   }
   
-  yInner <- data[, freqVar]
+  yInner <- data[, freqVar, drop = TRUE]
   
   
   yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
   a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
-                      maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step)
+                      maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step, 
+                      leverageCheck = leverageCheck)
   cat("]\n")
   flush.console()
   
@@ -268,7 +289,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                            singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000, 
                            maxBase = roundBase, zeroCandidates = FALSE, forceInner = FALSE,
                            identifyNew = TRUE, step = 0,
-                           forceFromFirstIter = TRUE) { # maxIter henger sammen med maxIterRows
+                           forceFromFirstIter = TRUE, leverageCheck = 0) { # maxIter henger sammen med maxIterRows
 
   yInnerExact <- yInner
   yPublishExact <- yPublish
@@ -284,6 +305,24 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
     zeroCandidates <- rep(FALSE, length(yInner))
   }  
   
+  if (leverageCheck) {
+    if (any(!forceInner) & any(yInner < maxBase)) {
+      cat("{Lever")
+      leverage <- hat(model.matrix(~as.matrix(x) - 1))
+      leverage <- (leverage > leverageCheck)
+      if (any(leverage)) 
+        cat("Ag") else cat("ag")
+      leverage <- leverage & (yInner < maxBase)
+      if (any(leverage)) 
+        cat("E") else cat("e")
+      if (length(forceInner) == 1) {
+        forceInner <- leverage
+      } else {
+        forceInner[leverage] <- TRUE
+      }
+      cat("}")
+    }
+  }
   
   if(any(forceInner)){
     if(length(forceInner)==1){

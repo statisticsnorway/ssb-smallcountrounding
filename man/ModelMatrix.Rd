@@ -4,8 +4,14 @@
 \alias{ModelMatrix}
 \title{Overparameterized model matrix}
 \usage{
-ModelMatrix(formula, data = NULL, mf = model.frame(formula, data =
-  data), allFactor = TRUE, sparse = FALSE, formulaSums = FALSE)
+ModelMatrix(
+  formula,
+  data = NULL,
+  mf = model.frame(formula, data = data),
+  allFactor = TRUE,
+  sparse = FALSE,
+  formulaSums = FALSE
+)
 }
 \arguments{
 \item{formula}{formula}

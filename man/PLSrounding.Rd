@@ -5,8 +5,15 @@
 \alias{PLSrounding}
 \title{PLS inspired rounding}
 \usage{
-PLSrounding(data, freqVar, roundBase = 3, hierarchies = NULL,
-  formula = NULL, maxRound = roundBase - 1, ...)
+PLSrounding(
+  data,
+  freqVar,
+  roundBase = 3,
+  hierarchies = NULL,
+  formula = NULL,
+  maxRound = roundBase - 1,
+  ...
+)
 }
 \arguments{
 \item{data}{Input data as a data frame (inner cells)}

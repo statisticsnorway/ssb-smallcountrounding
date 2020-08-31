@@ -4,8 +4,7 @@
 \alias{print.PLSrounded}
 \title{Print method for PLSrounded}
 \usage{
-\method{print}{PLSrounded}(x, digits = max(getOption("digits") - 3, 3),
-  ...)
+\method{print}{PLSrounded}(x, digits = max(getOption("digits") - 3, 3), ...)
 }
 \arguments{
 \item{x}{PLSrounded object}

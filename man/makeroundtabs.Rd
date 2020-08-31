@@ -5,8 +5,20 @@
 \alias{makeroundtabs}
 \title{function makeroundtabs}
 \usage{
-makeroundtabs(A, b = 3, d, micro = "TRUE", sort, control, nin = "n",
-  nout = "n", minit = 3, maxit = 3, maxdiff = 5, seed)
+makeroundtabs(
+  A,
+  b = 3,
+  d,
+  micro = "TRUE",
+  sort,
+  control,
+  nin = "n",
+  nout = "n",
+  minit = 3,
+  maxit = 3,
+  maxdiff = 5,
+  seed
+)
 }
 \arguments{
 \item{A}{A data frame representing a micro dataset or a frequency count hypercube. The (first) columns
