@@ -76,7 +76,7 @@ for backward-forward iteration at the end of the algorithm; \code{step} backward
 The leverages are computed by \code{hat(model.matrix(~as.matrix(x)-1)}, which can be very time and memory consuming. 
 The default leverage limit is 0.999999. Another limit can be sent as input instead of TRUE.}
 
-\item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}}}
+\item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}}
 }
 \value{
 A list where the two first elements are two column matrices.

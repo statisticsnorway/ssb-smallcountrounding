@@ -1,60 +1,6 @@
 # OldVersions 
 
 
-if(FALSE){
-  
-  PLStest = function(..., seed, Version){
-    set.seed(seed)
-    a = PLSrounding(..., Version = Version)
-    set.seed(seed)
-    b = PLSrounding(...)
-    if(!identical(a,b)){
-      warning("Not identical")
-      return(list(a=a,b=b))
-    }
-    return(a)
-  }
-  
-  seed = 123
-  mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 3, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 4, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 7, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, formula = mf, seed= seed, Version = "0.3.0",  maxIterRows = 10000)
-  
-  mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, formula = mf, seed= seed, Version = "0.3.0",  maxIterRows = 10000)
-  
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, seed= seed, Version = "0.3.0")
-  
-  
-  
-  mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 3, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 4, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 7, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  
-  mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  
-  
-
-}
-
-
 RoundViaDummy_Version_0.3.0 <- function(data, freqVar, formula = NULL, roundBase = 3, singleRandom = FALSE,
                           crossTable=TRUE, total = "Total",  maxIterRows = 1000, maxIter = 1E7,
                           x = NULL,  hierarchies = NULL, Version = "tull", ...) {

@@ -39,7 +39,7 @@
 #'        (\code{<=maxRound}) will be rounded. 
 #'        The leverages are computed by \code{hat(model.matrix(~as.matrix(x)-1)}, which can be very time and memory consuming. 
 #'        The default leverage limit is 0.999999. Another limit can be sent as input instead of TRUE.    
-#' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}}        
+#' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}      
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
 #' To avoid problems, not more than maxIterRows cells are rounded in each iteration.
@@ -53,7 +53,7 @@
 #' @seealso  See the  user-friendly wrapper \code{\link{PLSrounding}}
 #'   and see \code{Round2} for rounding by other algorithm
 #' @importFrom stats as.formula hat
-#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies
+#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies HierarchiesAndFormula2ModelMatrix
 #' @importFrom utils flush.console
 #' @importFrom  Matrix Matrix
 #' @importFrom  methods as
@@ -144,15 +144,24 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   }
   
   
-  if (!is.null(hierarchies) & !is.null(formula)) 
-    stop("formula combined with hierarchies is not implemented")
+  #if (!is.null(hierarchies) & !is.null(formula)) 
+  #  stop("formula combined with hierarchies is not implemented")
   
   
   if (!is.null(hierarchies) & !is.null(x)) 
     warning("hierarchies ignored when x is supplied")
   
+  
+  if(!is.null(x) & !is.null(formula))
+    warning("formula ignored when x is supplied")
+  
+  
   if (!is.null(hierarchies) & is.null(x)) {
-    x <- Hierarchies2ModelMatrix(data = data, hierarchies = hierarchies, crossTable = crossTable, total = total, ...)
+    if(is.null(formula)){
+      x <- Hierarchies2ModelMatrix(data = data, hierarchies = hierarchies, crossTable = crossTable, total = total, ...)
+    } else {
+      x <- HierarchiesAndFormula2ModelMatrix(data = data, hierarchies = hierarchies, formula = formula, crossTable = crossTable, total = total, ...)
+    }
     if(crossTable){ 
       crossTable <- x$crossTable
       x <- x$modelMatrix
@@ -162,9 +171,6 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   }
   
   ## code below is as before hierarchies introduced 
-  
-  if(!is.null(x) & !is.null(formula))
-    warning("formula ignored when x is supplied")
   
   if(is.null(x)){
     if(length(total)>1){

@@ -69,12 +69,13 @@ HDutility(a$publish[, "original"], a$publish[, "rounded"])
 mean(abs(a$publish[, "difference"]))
 sqrt(mean((a$publish[, "difference"])^2))
 
-# Four lines below produce equivalent results 
+# Five lines below produce equivalent results 
 # Ordering of rows can be different
 PLSrounding(z, "freq")
 PLSrounding(z, "freq", formula = ~eu * year + geo * year)
 PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"))
 PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"))
+PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo * year)
 
 # Define publishable cells differently by making use of formula interface
 PLSrounding(z, "freq", formula = ~eu * year + geo)
@@ -82,6 +83,9 @@ PLSrounding(z, "freq", formula = ~eu * year + geo)
 # Define publishable cells differently by making use of hierarchy interface
 eHrc2 <- list(geo = c("EU", "@Portugal", "@Spain", "Iceland"), year = c("2018", "2019"))
 PLSrounding(z, "freq", hierarchies = eHrc2)
+
+# Also possible to combine hierarchies and formula
+PLSrounding(z, "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)
 
 # Package sdcHierarchies can be used to create hierarchies. 
 # The small example code below works if this package is available. 
