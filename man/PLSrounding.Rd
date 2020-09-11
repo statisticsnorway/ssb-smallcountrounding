@@ -12,6 +12,7 @@ PLSrounding(
   hierarchies = NULL,
   formula = NULL,
   maxRound = roundBase - 1,
+  printInc = nrow(data) > 1000,
   ...
 )
 }
@@ -27,6 +28,8 @@ PLSrounding(
 \item{formula}{Model formula defining publishable cells}
 
 \item{maxRound}{Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded}
+
+\item{printInc}{Printing iteration information to console when TRUE}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
 }

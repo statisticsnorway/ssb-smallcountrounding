@@ -1,14 +1,3 @@
-# Motsatt av easySdcTable:::MakeMicro
-MakeFreq <- function(x,freqName="freq"){
-  z = SSBtools::SortRows(x)
-  uz = !duplicated(z)
-  fr = matrix(-diff(c((NROW(x):1)[uz],0)),ncol=1,dimnames=list(NULL,freqName))
-  b <- cbind(z[uz, ,drop=FALSE],fr)
-  row.names(b) <- NULL
-  b
-}
-
-
 
 
 ### Fra Diversefunkjoner. Disse funksjonene legges også inn i SSBtools. Fjerner rd her

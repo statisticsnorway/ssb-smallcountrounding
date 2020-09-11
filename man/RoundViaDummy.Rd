@@ -24,6 +24,8 @@ RoundViaDummy(
   identifyNew = TRUE,
   step = 0,
   leverageCheck = FALSE,
+  easyCheck = TRUE,
+  printInc = TRUE,
   ...
 )
 }
@@ -32,7 +34,7 @@ RoundViaDummy(
 
 \item{freqVar}{Variable holding counts (name or number)}
 
-\item{formula}{Model formula defining publishable cells. Will be used to calculate \code{x} (via \code{\link{ModelMatrix}}). 
+\item{formula}{Model formula defining publishable cells. Will be used to calculate \code{x} (via \code{\link{ModelMatrix}}).
 When NULL, x must be supplied.}
 
 \item{roundBase}{Rounding base}
@@ -49,8 +51,8 @@ When NULL, x must be supplied.}
 
 \item{x}{Dummy matrix defining publishable cells}
 
-\item{hierarchies}{List of hierarchies, which can be converted by \code{\link{AutoHierarchies}}. 
-Thus, a single string as hierarchy input is assumed to be a total code. 
+\item{hierarchies}{List of hierarchies, which can be converted by \code{\link{AutoHierarchies}}.
+Thus, a single string as hierarchy input is assumed to be a total code.
 Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using the categories in the data.}
 
 \item{xReturn}{Dummy matrix in output when TRUE (as input parameter \code{x})}
@@ -58,23 +60,31 @@ Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using t
 \item{maxRound}{Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded.}
 
 \item{zeroCandidates}{When TRUE, inner cells in input with zero count (and multiple of roundBase when maxRound is in use)
-contributing to publishable cells will be included as candidates to obtain roundBase value. 
+contributing to publishable cells will be included as candidates to obtain roundBase value.
 With vector input, the rule is specified individually for each cell.}
 
-\item{forceInner}{When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded. 
+\item{forceInner}{When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded.
 Can be combined with parameter zeroCandidates to allow zeros and roundBase multiples to be rounded up.}
 
-\item{identifyNew}{When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded 
+\item{identifyNew}{When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded
 publishable cells are less than roundBase.}
 
-\item{step}{When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
-After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
+\item{step}{When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise.
+After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used
 for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.}
 
 \item{leverageCheck}{When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
-(\code{<=maxRound}) will be rounded. 
-The leverages are computed by \code{hat(model.matrix(~as.matrix(x)-1)}, which can be very time and memory consuming. 
-The default leverage limit is 0.999999. Another limit can be sent as input instead of TRUE.}
+(\code{<=maxRound}) will be rounded.
+The computation of leverages can be very time and memory consuming.
+The function \code{\link{Reduce0exact}} is called.
+The default leverage limit is \code{0.999999}. Another limit can be sent as input instead of \code{TRUE}.
+Checking is performed before and after (since new zeros) rounding. Extra iterations are performed when needed.}
+
+\item{easyCheck}{A light version of the above leverage checking.
+Checking is performed after rounding. Extra iterations are performed when needed.
+\code{Reduce0exact} is called with \code{reduceByLeverage=FALSE} and \code{reduceByColSums=TRUE}.}
+
+\item{printInc}{Printing iteration information to console when TRUE}
 
 \item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}}
 }
@@ -88,9 +98,9 @@ By default the cross table is the third element of the output list.
 Small count rounding via a dummy matrix and by an algorithm inspired by PLS
 }
 \details{
-Small count rounding of necessary inner cells are performed so that all small frequencies of cross-classifications to be published 
-(publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. 
-Thus, additivity and consistency are guaranteed. The matrix multiplication formula is: 
+Small count rounding of necessary inner cells are performed so that all small frequencies of cross-classifications to be published
+(publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed.
+Thus, additivity and consistency are guaranteed. The matrix multiplication formula is:
 \code{yPublish} \code{=} \code{t(x)} \code{\%*\%}  \code{yInner}, where \code{x} is the dummy matrix.
 }
 \note{
@@ -142,5 +152,5 @@ for (forceInner in c("FALSE", "z4$ant < 10"))
 }
 \seealso{
 See the  user-friendly wrapper \code{\link{PLSrounding}}
-  and see \code{Round2} for rounding by other algorithm
+and see \code{Round2} for rounding by other algorithm
 }

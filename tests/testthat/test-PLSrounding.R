@@ -1,54 +1,74 @@
+
+printInc = FALSE
+
 test_that("PLSrounding works", {
   # Small example data set
   z <- SmallCountData("e6")
+
+  set.seed(12345)
   
-  a <- PLSrounding(z, "freq")
-  expect_equivalent(a$metrics, PLSrounding(z, "freq", formula = ~eu * year + geo * year)$metrics)
-  expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"))$metrics)
-  expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"))$metrics)
-  expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo * year)$metrics)
+  printInc = FALSE
+    
+  a <- PLSrounding(z, "freq", printInc = printInc)
+  expect_equivalent(a$metrics, PLSrounding(z, "freq", formula = ~eu * year + geo * year, printInc = printInc)$metrics)
+  expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"), printInc = printInc)$metrics)
+  expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), printInc = printInc)$metrics)
+  expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo * year, printInc = printInc)$metrics)
   
-  expect_equivalent(PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)$metrics["maxdiff"], 0)
+  expect_equivalent(PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year, printInc = printInc)$metrics["maxdiff"], 0)
 
   mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, xReturn = TRUE)
+  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, xReturn = TRUE, printInc = printInc)
   expect_equivalent(t(as.matrix(a$x)) %*% as.matrix(a$inner[, c("original", "rounded")]), as.matrix(a$publish[, c("original", "rounded")]))
   expect_equivalent(sum(a$publish[, "rounded"] == 2), 0)
   expect_true(a$inner[42, "rounded"] == 2)
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = TRUE)
+  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = TRUE, printInc = printInc)
   expect_false(a$inner[42, "rounded"] == 2)
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = 0.9999999)
+  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = 0.9999999, printInc = printInc)
   expect_false(a$inner[42, "rounded"] == 2)
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = 1.1)
+  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = 1.1, printInc = printInc)
   expect_true(a$inner[42, "rounded"] == 2)
+  
+  
+  mf3 <- ~region*mnd + region*hovedint + fylke*hovedint*mnd + kostragr*hovedint*mnd
+  z = SmallCountData("z3")
+  a <- PLSrounding(z, "ant", 50, formula = mf3, easyCheck = FALSE, printInc = printInc)
+  z$ant2 <- a$inner$rounded
+  b0 <- PLSrounding(z, "ant2", 50, formula = mf3, easyCheck = FALSE, printInc = printInc)
+  b1 <- PLSrounding(z, "ant2", 50, formula = mf3, printInc = printInc)
+  expect_true(b0$metrics["maxdiff"]==0)
+  expect_false(b1$metrics["maxdiff"]==0)
+  b2 <- PLSrounding(z, "ant2", 50, formula = mf3, leverageCheck = TRUE, printInc = printInc)
+  expect_identical(b1,b2)
   
   
   exPSD <- SmallCountData("exPSD")
   set.seed(12345)
-  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols)
+  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, printInc = printInc)
   expect_equivalent(a$publish$rounded, c(28, 15, 8, 5, 7, 5, 5, 5, 6))
   
   set.seed(12345)
-  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE)
+  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE, printInc = printInc)
   expect_equivalent(a$publish$rounded, c(27, 16, 6, 5, 7, 5, 4, 5, 6))
   
   set.seed(12345)
-  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7)
+  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7, printInc = printInc)
   expect_equivalent(a$inner$rounded, c(5, 0, 0, 0, 0, 5, 0, 5, 0, 5, 0, 0, 4, 2, 0))
   
   set.seed(12345)
-  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
+  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE, printInc = printInc)
   expect_equivalent(a$inner$rounded, c(6, 1, 0, 0, 5, 0, 5, 0, 0, 0, 0, 5, 4, 2, 0))
   
 })
 
 
 
+
 PLStest = function(..., seed, Version){
   set.seed(seed)
-  a = PLSrounding(..., Version = Version)
+  capture.output({ a <- PLSrounding(..., Version = Version)})
   set.seed(seed)
-  b = PLSrounding(...)
+  b <-PLSrounding(..., printInc = printInc)
   expect_identical(a,b)
 }
 
@@ -57,7 +77,7 @@ test_that("Same as Version_0.3.0", {
   seed = 123
   mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
   PLStest(SmallCountData('z3'), 'ant', 3, formula = mf, seed= seed, Version = "0.3.0")
-  PLSrounding(SmallCountData('z3'), 'ant', 5, formula = mf, seed= seed, Version = "0.3.0", maxIterRows = 30)
+  # PLSrounding(SmallCountData('z3'), 'ant', 5, formula = mf, seed= seed, Version = "0.3.0", maxIterRows = 30)
   PLStest(SmallCountData('z3'), 'ant', 7, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
   mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd
   PLStest(SmallCountData('z3'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0")

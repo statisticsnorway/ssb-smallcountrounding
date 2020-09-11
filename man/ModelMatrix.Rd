@@ -10,7 +10,8 @@ ModelMatrix(
   mf = model.frame(formula, data = data),
   allFactor = TRUE,
   sparse = FALSE,
-  formulaSums = FALSE
+  formulaSums = FALSE,
+  printInc = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ ModelMatrix(
 \item{sparse}{When TRUE sparse matrix created by sparse.model.matrix()}
 
 \item{formulaSums}{When TRUE, sparse matrix via FormulaSums()}
+
+\item{printInc}{Printing \code{...} to console when TRUE}
 }
 \value{
 model matrix created via model.matrix(), sparse.model.matrix() or FormulaSums()

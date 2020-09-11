@@ -12,6 +12,7 @@
 #' @param hierarchies List of hierarchies
 #' @param formula Model formula defining publishable cells
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
+#' @param printInc Printing iteration information to console when TRUE  
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
@@ -101,14 +102,15 @@
 #' set.seed(12345)
 #' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
 #' PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
-PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formula = NULL, maxRound = roundBase-1, ...) {
+PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formula = NULL, 
+                        maxRound = roundBase-1, printInc = nrow(data)>1000, ...) {
   
   
   if(!is.null(list(...)$Version)){   # For testing
     z <- RoundViaDummy_Version_0.3.0(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, ...) 
   } else {
     z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, 
-                     maxRound = maxRound, ...)
+                     maxRound = maxRound, printInc = printInc, ...)
   }
   
   

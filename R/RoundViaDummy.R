@@ -8,6 +8,7 @@
 #' \code{yPublish} \code{=} \code{t(x)} \code{\%*\%}  \code{yInner}, where \code{x} is the dummy matrix. 
 #'
 #' @encoding UTF8
+#' @md
 #'
 #' @param data Input data as a data frame (inner cells)
 #' @param freqVar Variable holding counts (name or number)
@@ -37,8 +38,14 @@
 #'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
 #' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 #'        (\code{<=maxRound}) will be rounded. 
-#'        The leverages are computed by \code{hat(model.matrix(~as.matrix(x)-1)}, which can be very time and memory consuming. 
-#'        The default leverage limit is 0.999999. Another limit can be sent as input instead of TRUE.    
+#'        The computation of leverages can be very time and memory consuming. 
+#'        The function \code{\link{Reduce0exact}} is called. 
+#'        The default leverage limit is `0.999999`. Another limit can be sent as input instead of `TRUE`.  
+#'        Checking is performed before and after (since new zeros) rounding. Extra iterations are performed when needed.  
+#' @param easyCheck A light version of the above leverage checking. 
+#'                  Checking is performed after rounding. Extra iterations are performed when needed.
+#'                  `Reduce0exact` is called with `reduceByLeverage=FALSE` and `reduceByColSums=TRUE`.
+#' @param printInc Printing iteration information to console when TRUE        
 #' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}      
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
@@ -53,7 +60,7 @@
 #' @seealso  See the  user-friendly wrapper \code{\link{PLSrounding}}
 #'   and see \code{Round2} for rounding by other algorithm
 #' @importFrom stats as.formula hat
-#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies HierarchiesAndFormula2ModelMatrix
+#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies HierarchiesAndFormula2ModelMatrix Reduce0exact MakeFreq
 #' @importFrom utils flush.console
 #' @importFrom  Matrix Matrix
 #' @importFrom  methods as
@@ -103,7 +110,9 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           crossTable=TRUE, total = "Total",  maxIterRows = 1000, maxIter = 1E7,
                           x = NULL,  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase-1,
                           zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE, step = 0,
-                          leverageCheck = FALSE, ...) {
+                          leverageCheck = FALSE, 
+                          easyCheck = TRUE,
+                          printInc = TRUE, ...) {
   
   
   if(roundBase<1){
@@ -127,8 +136,10 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     leverageCheck <- 0.999999 * as.numeric(leverageCheck)
   }
   
-  cat("[")
-  flush.console()
+  if(printInc){
+    cat("[")
+    flush.console()
+  }
   
   if (!is.null(x) & is.logical(crossTable)) {
     if(crossTable)
@@ -179,8 +190,10 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     }
     previous_na_action <- options('na.action')
     options(na.action='na.pass')
-    cat("{O")
-    flush.console()
+    if(printInc){
+      cat("{O")
+      flush.console()
+    }
     if(crossTable){
       formulaSums <- FormulaSums(formula = as.formula(formula), data = data, crossTable=TRUE,total=total,dropResponse=TRUE)
       x <- formulaSums$modelMatrix
@@ -189,8 +202,10 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     }
     else
       x <- ModelMatrix(as.formula(formula), data = data, sparse = TRUE)
-    cat("}")
-    flush.console()
+    if(printInc){
+      cat("}")
+      flush.console()
+    }
     options(na.action=previous_na_action$na.action)
   } else {
     if(!is.logical(crossTable))
@@ -216,9 +231,12 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
   a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
                       maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step, 
-                      leverageCheck = leverageCheck)
-  cat("]\n")
-  flush.console()
+                      easyCheck = easyCheck,
+                      leverageCheck = leverageCheck,  printInc = printInc)
+  if(printInc){
+    cat("]\n")
+    flush.console()
+  }
   
   if (xReturn){ # copy of code below with x as extra
     if(crossTable){
@@ -260,6 +278,7 @@ IntegerCbind = function(original,rounded){ # To ensure integer when integer inpu
 #' @param allFactor When TRUE all variables are coerced to factor
 #' @param sparse When TRUE sparse matrix created by sparse.model.matrix()
 #' @param formulaSums When TRUE, sparse matrix via FormulaSums()
+#' @param printInc	Printing \code{...} to console when TRUE
 #'
 #' @return model matrix created via model.matrix(), sparse.model.matrix() or FormulaSums()
 #' @importFrom stats model.frame model.matrix
@@ -270,10 +289,11 @@ IntegerCbind = function(original,rounded){ # To ensure integer when integer inpu
 #' @examples
 #'   z1 <- SmallCountData("z1")
 #'   ModelMatrix(~region*hovedint,z1)
-ModelMatrix <- function(formula, data = NULL, mf = model.frame(formula, data = data), allFactor = TRUE, sparse = FALSE, formulaSums=FALSE) {
+ModelMatrix <- function(formula, data = NULL, mf = model.frame(formula, data = data), allFactor = TRUE, sparse = FALSE, 
+                        formulaSums=FALSE, printInc = FALSE) {
   if(formulaSums)
     return(formula = FormulaSums(formula, data = data,
-                                  makeNames=TRUE, crossTable=FALSE, total = "Total", printInc=TRUE,
+                                  makeNames=TRUE, crossTable=FALSE, total = "Total", printInc=printInc,
                                   dropResponse = TRUE))
   for (i in 1:length(mf)) {
     if (allFactor)
@@ -295,7 +315,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                            singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000, 
                            maxBase = roundBase, zeroCandidates = FALSE, forceInner = FALSE,
                            identifyNew = TRUE, step = 0,
-                           forceFromFirstIter = TRUE, leverageCheck = 0) { # maxIter henger sammen med maxIterRows
+                           forceFromFirstIter = TRUE, easyCheck = TRUE, leverageCheck = 0, printInc = TRUE) { # maxIter henger sammen med maxIterRows
 
   yInnerExact <- yInner
   yPublishExact <- yPublish
@@ -312,22 +332,25 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   }  
   
   if (leverageCheck) {
-    if (any(!forceInner) & any(yInner < maxBase)) {
-      cat("{Lever")
-      leverage <- hat(model.matrix(~as.matrix(x) - 1))
-      leverage <- (leverage > leverageCheck)
-      if (any(leverage)) 
-        cat("Ag") else cat("ag")
-      leverage <- leverage & (yInner < maxBase)
-      if (any(leverage)) 
-        cat("E") else cat("e")
-      if (length(forceInner) == 1) {
-        forceInner <- leverage
-      } else {
-        forceInner[leverage] <- TRUE
+    if (any(!forceInner) & any(yInner < maxBase) & leverageCheck!=0.99999901234) {
+      if(printInc){
+        cat("{")
+        flush.console()
       }
-      cat("}")
-    }
+      leverage <- Reduce0exact(x, z = Matrix(yPublish,ncol=1),y = Matrix(yInner,ncol=1), reduceByLeverage = TRUE, leverageLimit = leverageCheck, printInc = printInc)$yKnown
+      
+      leverage[!(yInner < maxBase & ( (yInner %% roundBase) > 0))] <- FALSE
+      
+      if(any(forceInner))
+        leverage[forceInner] <- FALSE
+      
+      if(printInc){
+        cat("}")
+        flush.console()
+      }
+    } 
+  } else {
+    leverage <- rep(FALSE, length(yInner))
   }
   
   if(any(forceInner)){
@@ -338,7 +361,6 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
         stop("Wrong length of forceInner")
     }
     forceInner[((yInner %% roundBase) == 0) & !zeroCandidates] <- FALSE
-    #forceInner <- forceInner | zeroCandidates  
   } else {
     forceInner <- rep(FALSE, length(yInner))
   }
@@ -347,7 +369,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   if(forceFromFirstIter){
     create_supRowsForce <- TRUE
   } else {
-    create_supRowsForce <- (maxBase != roundBase) |  !identifyNew  | any(zeroCandidates) | any(forceInner)
+    create_supRowsForce <- (maxBase != roundBase) |  !identifyNew  | any(zeroCandidates) | any(forceInner) | any(leverage)
   }
   
   
@@ -356,6 +378,14 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
     suppPublish = yPublish < maxBase & yPublish > 0
     suppInput <- yInner < maxBase & ( (yInner %% roundBase) > 0 | zeroCandidates )#  Indre celler med verdier som er 'undertrykkbare'
     supRowsForce <- (Matrix::rowSums(x[, suppPublish, drop = FALSE]) > 0 & suppInput) | forceInner
+    
+    if(any(!(supRowsForce[leverage]))){
+      if(printInc) {
+        cat(paste0("(check:",sum(!(supRowsForce[leverage])),")"))
+      }
+      supRowsForce[leverage] <- TRUE
+    }
+    
   } else {
     supRowsForce <- rep(FALSE, length(yInner))
   }
@@ -367,24 +397,57 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
     if (i == 1)
       a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish,
                                 singleRandom = singleRandom, yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
-                                supRowsForce = supRowsForce, identifyNew = !forceFromFirstIter, step = step)
+                                supRowsForce = supRowsForce, identifyNew = !forceFromFirstIter, step = step, printInc = printInc)
     else
       a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = a[[1]], yPublish = yPublish,
                                 singleRandom = singleRandom, 
                                 suppPublish = suppRoundPublish,
                                 yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
-                                supRowsForce = supRowsForce, identifyNew = identifyNew, step = step)
-      # suppRoundPublish = roundPublish<roundBase & roundPublish>0
+                                supRowsForce = supRowsForce, identifyNew = identifyNew, step = step, printInc = printInc)
     
       yPublish  <- a[[2]][, 1, drop = TRUE]
       suppRoundPublish <- yPublish < roundBase & yPublish > 0
       supRowsForce[a[[3]]] <- FALSE
+      
+      return_a <- FALSE
+      
       if(!identifyNew){
         if (!any(supRowsForce) )
-          return(a)
+          return_a <- TRUE
+      } else {
+        if (!any(suppRoundPublish) & !any(supRowsForce) )
+          return_a <- TRUE
       }
-      if (!any(suppRoundPublish) & !any(supRowsForce) )
+      
+      if (return_a) {
+        if ( easyCheck | leverageCheck) { 
+          if((printInc  & as.logical(leverageCheck))) cat("{")
+          leverage <- Reduce0exact(x, z = Matrix(yPublish,ncol=1),y = Matrix(a[[1]],ncol=1), reduceByLeverage = as.logical(leverageCheck), 
+                                   leverageLimit = leverageCheck, reduceByColSums=TRUE, 
+                                   printInc =  (printInc  & as.logical(leverageCheck)))$yKnown
+          if((printInc  & as.logical(leverageCheck))) {
+            cat("}")
+            flush.console()
+          }
+          if(any(leverage)){
+            # yInner <- a[[1]]
+            leverage[!(a[[1]] < maxBase & ( (a[[1]] %% roundBase) > 0))] <- FALSE
+            if(any(leverage)) {
+              if(printInc) {
+                cat(paste0("(Check:",sum(leverage),")")) 
+                flush.console()
+              }
+              supRowsForce[leverage] = TRUE
+              return_a <- FALSE
+            } 
+          }
+        } 
+      }
+      
+      if (return_a) {
         return(a)
+      }
+      
   }
   stop("Iteration limit exceeded")
 }
@@ -396,9 +459,11 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
                                      suppPublish = yPublish < roundBase & yPublish > 0, #  Publiserte celler som skal undertrykkes (men må bruke iterasjon)
                                      yInnerExact = yInner,
                                      yPublishExact = yPublish,
-                                  maxIterRows = 1000, supRowsForce = rep(FALSE, length(yInner)), identifyNew = TRUE, step = 0) {
+                                  maxIterRows = 1000, supRowsForce = rep(FALSE, length(yInner)), identifyNew = TRUE, step = 0, printInc = TRUE) {
   Pls1RoundHere <- get0("Pls1RoundFromUser", ifnotfound = Pls1Round) # Hack som gjør det mulig å bytte ut Pls1Round med annen algoritme
 
+  printIncInput <- printInc
+  
   roundBase <- as.integer(roundBase)
 
 
@@ -411,15 +476,14 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   
   
 
-  printInc <- TRUE
-
   if (!singleRandom) if (sum(supRows) > maxIterRows) {
     randInd <- sample.int(sum(supRows), maxIterRows)
     supInds <- which(supRows)
     supRows[supRows] <- FALSE
     supRows[supInds[randInd]] <- TRUE
     printInc <- FALSE
-    {
+    
+    if(printIncInput){
       cat("#")
       flush.console()
     }
