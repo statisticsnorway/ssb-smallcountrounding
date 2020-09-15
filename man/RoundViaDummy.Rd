@@ -86,7 +86,9 @@ Checking is performed after rounding. Extra iterations are performed when needed
 
 \item{printInc}{Printing iteration information to console when TRUE}
 
-\item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}}
+\item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}.
+In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
+The parameter \code{inputInOutput} can be used to specify whether to include codes from input.}
 }
 \value{
 A list where the two first elements are two column matrices.

@@ -46,7 +46,9 @@
 #'                  Checking is performed after rounding. Extra iterations are performed when needed.
 #'                  `Reduce0exact` is called with `reduceByLeverage=FALSE` and `reduceByColSums=TRUE`.
 #' @param printInc Printing iteration information to console when TRUE        
-#' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}      
+#' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}.
+#'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
+#'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
 #' To avoid problems, not more than maxIterRows cells are rounded in each iteration.
@@ -329,7 +331,9 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
     }
   } else {
     zeroCandidates <- rep(FALSE, length(yInner))
-  }  
+  }    
+  
+  leverage <- NULL
   
   if (leverageCheck) {
     if (any(!forceInner) & any(yInner < maxBase) & leverageCheck!=0.99999901234) {
@@ -349,9 +353,10 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
         flush.console()
       }
     } 
-  } else {
-    leverage <- rep(FALSE, length(yInner))
   }
+  
+  if (is.null(leverage))
+    leverage <- rep(FALSE, length(yInner))
   
   if(any(forceInner)){
     if(length(forceInner)==1){

@@ -18,16 +18,27 @@ test_that("PLSrounding works", {
   expect_equivalent(PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year, printInc = printInc)$metrics["maxdiff"], 0)
 
   mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, xReturn = TRUE, printInc = printInc)
+  z2 = SmallCountData("z2")
+  a <- PLSrounding( z2, "ant", formula = mf2, xReturn = TRUE, printInc = printInc)
   expect_equivalent(t(as.matrix(a$x)) %*% as.matrix(a$inner[, c("original", "rounded")]), as.matrix(a$publish[, c("original", "rounded")]))
   expect_equivalent(sum(a$publish[, "rounded"] == 2), 0)
   expect_true(a$inner[42, "rounded"] == 2)
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = TRUE, printInc = printInc)
+  a <- PLSrounding( z2, "ant", formula = mf2, leverageCheck = TRUE, printInc = printInc)
   expect_false(a$inner[42, "rounded"] == 2)
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = 0.9999999, printInc = printInc)
+  a <- PLSrounding( z2, "ant", formula = mf2, leverageCheck = 0.9999999, printInc = printInc)
   expect_false(a$inner[42, "rounded"] == 2)
-  a <- PLSrounding(SmallCountData("z2"), "ant", formula = mf2, leverageCheck = 1.1, printInc = printInc)
+  a <- PLSrounding( z2, "ant", formula = mf2, leverageCheck = 1.1, printInc = printInc)
   expect_true(a$inner[42, "rounded"] == 2)
+  
+  z <- z2[-c(1,3,7,11,13,17), ]
+  set.seed(12345)
+  a0 <- PLSrounding( z, "ant", printInc = printInc, removeEmpty=FALSE)
+  set.seed(12345)
+  a1 <- PLSrounding( z, "ant", printInc = printInc, removeEmpty=TRUE)
+  set.seed(12345)
+  a2 <- PLSrounding( z, "ant", printInc = printInc, formula = ~region * hovedint + fylke * hovedint + kostragr * hovedint)
+  expect_equivalent(a1$freqTable,a2$freqTable)
+  expect_false(a0$freqTable[3,10]==a1$freqTable[3,10])
   
   
   mf3 <- ~region*mnd + region*hovedint + fylke*hovedint*mnd + kostragr*hovedint*mnd
@@ -41,6 +52,12 @@ test_that("PLSrounding works", {
   b2 <- PLSrounding(z, "ant2", 50, formula = mf3, leverageCheck = TRUE, printInc = printInc)
   expect_identical(b1,b2)
   
+  z <- z[z$ant>0, ]
+  dL <- FindDimLists(z[,-c(3,6,7)])
+  a0 <- PLSrounding( z, "ant", hierarchies= dL, formula = ~region*hovedint*mnd-region:hovedint:mnd, printInc = printInc, removeEmpty=FALSE)
+  a1 <- PLSrounding( z, "ant", hierarchies= dL, formula = ~region*hovedint*mnd-region:hovedint:mnd, printInc = printInc, removeEmpty=TRUE)
+  expect_false(a0$freqTable[1,6]==0)
+  expect_true(a1$freqTable[1,6]==0)
   
   exPSD <- SmallCountData("exPSD")
   set.seed(12345)

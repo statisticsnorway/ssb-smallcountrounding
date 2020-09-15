@@ -1,0 +1,309 @@
+
+---
+title: "Introduction to 'SmallCountRounding'"
+author: "Øyvind Langsrud"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to SmallCountRounding}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<br><br>
+
+```{r comment=NA, tidy = TRUE, include =FALSE}
+library(knitr) 
+library(kableExtra)
+library(SmallCountRounding)
+
+cell_background = function(x,row,col,background){
+  backGround = rep("white", 100)
+  backGround[row] = background
+  suppressWarnings(column_spec(x,col, background = backGround))
+}
+yellow = "#FFFF88"
+green = "#F0FFE9"
+green2 = "#88FF88"
+z <- SmallCountData("exPSD")
+set.seed(12345) 
+a <- PLSrounding(z, "freq", 5)
+k <- PLS2way(a, "original") 
+ka <- PLS2way(a)
+set.seed(12345) 
+b <- PLSrounding(z, "freq", 5, formula = ~rows + cols)
+kb <- PLS2way(b)
+
+
+e6  <-  SmallCountData("e6")
+
+eDimList <- SmallCountData("eDimList")
+
+set.seed(12345)
+e6a <-  PLSrounding(e6, "freq", 5)
+set.seed(12345)
+e6b <-  PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)
+set.seed(12345)
+e6c <-  PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)
+set.seed(12345)
+e6d <-  PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year)
+
+
+
+
+options(knitr.kable.NA = '')
+
+```
+
+# Introductory example
+
+
+## Example without code 
+
+First some data to be rounded.
+<br>
+
+```{r comment=NA, tidy = TRUE, echo=FALSE}
+
+kable(k, "html", caption = "**Table 1**: Original data in tabular form with row and column totals") %>%
+  kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 16,  position = "left")  %>%
+  add_indent(1:4,1.6,all_cols =TRUE) %>%
+  column_spec(1, bold = T,background = green)  %>%
+  #cell_background(2,2,"#FFFF33") %>%
+  #cell_background(2,5,"orange") %>%
+  #column_spec(3, background = c("#FFFFFF","#FFFFFF","#FF1111","white"))  %>%
+  column_spec(7, bold = T)  %>%
+  row_spec(0, bold = T,background = green)  %>%
+  row_spec(4, bold = T) 
+```
+
+<br>
+Some of the inner cells are rounded. Thereafter new totals are computed. The underlying algorithm tries to keep the values of these totals close to the original ones. <br>    
+
+```{r comment=NA, tidy = TRUE, echo=FALSE}
+
+kable(ka, "html", caption = '**Table 2**: All small inner cell values (1-4) are rounded using 5 as rounding base.') %>%
+  kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 16,  position = "left")  %>%
+  add_indent(1:4,1.5,all_cols =TRUE) %>%
+  column_spec(1, bold = T,background = green)  %>%
+  cell_background(2,2,yellow) %>%
+  cell_background(2:3,3,yellow) %>%
+  cell_background(1:3,4,yellow) %>%
+  cell_background(1:2,5,yellow) %>%
+  cell_background(1:3,6,yellow) %>%
+  #cell_background(2,5,"orange") %>%
+  #column_spec(3, background = c("#FFFFFF","#FFFFFF","#FF1111","white"))  %>%
+  column_spec(7, bold = T)  %>%
+  row_spec(0, bold = T,background = green)  %>%
+  row_spec(4, bold = T) 
+```
+
+<br>
+When the inner cells are not going to be published, the number of cells to be rounded can be limited. 
+<br>
+
+```{r comment=NA, tidy = TRUE, echo=FALSE}
+
+kable(kb, "html", caption = '**Table 3**: Assuming only row and column totals to be published, necessary small inner cell values (1-4) are rounded using 5 as rounding base.') %>%
+  kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 16,  position = "left")  %>%
+  add_indent(1:4,1.5,all_cols =TRUE) %>%
+  column_spec(1, bold = T,background = green)  %>%
+  cell_background(2:3,3,yellow) %>%
+  cell_background(1:3,4,yellow) %>%
+  cell_background(1:2,5,yellow) %>%
+  cell_background(3,6,yellow) %>%
+  #cell_background(2,5,"orange") %>%
+  #column_spec(3, background = c("#FFFFFF","#FFFFFF","#FF1111","white"))  %>%
+  column_spec(7, bold = T)  %>%
+  row_spec(0, bold = T,background = green)  %>%
+  row_spec(4, bold = T) 
+```
+
+---
+## The example dataset in Table 1
+
+```{r comment=NA, tidy = TRUE}
+library(SmallCountRounding)
+z <- SmallCountData("exPSD")
+z
+```
+
+## Rounding all small cells (Table 2)
+
+
+To avoid any small values in the range 1-4 we can use 5 as rounding base. 
+
+```{r eval=FALSE, tidy = TRUE}
+a <- PLSrounding(z, freqVar = "freq", roundBase = 5)
+```
+
+The result is given in Table 2 and can bee seen in the output elements below.
+
+```{r comment=NA, tidy = TRUE}
+a$inner
+```
+
+```{r comment=NA, tidy = TRUE}
+a$publish
+```
+
+
+The output element `publish` contains the original and rounded versions of the all the 24 values in Table 2. The corresponding element `inner` contains only the 15 inner cells and is similar to the input data. The values in publish are `additive`. That is, they can be computed straightforwardly from `inner`.   
+
+
+## Rounding necessary small inner cell (Table 3)
+
+
+Assuming only row and column totals to be published, the publishable cells can be defined by the formula `~rows+cols`.
+Rounding can now be performed by:
+
+
+```{r eval=FALSE, tidy = TRUE}
+b <- PLSrounding(z, "freq", 5, formula = ~rows + cols)
+```
+
+The result is given in Table 3 and can bee seen in the output elements below.
+
+```{r comment=NA, tidy = TRUE}
+b$inner
+```
+
+```{r comment=NA, tidy = TRUE}
+b$publish
+```
+
+
+## Set seed for unique output 
+
+
+The underlying algorithm is sequential. Within a loop, the next cell to be given the rounding base value is selected according to a criterion. Random draw is used when draw criterion. Therefore, the result may vary. Use `set.seed` to ensure unique output. In the examples above `set.seed(12345)` was called before calling `PLSrounding`.
+
+
+## The output object 
+
+The result of printing the output from `PLSrounding` is (`a` and `b` as above):
+
+```{r comment=NA, tidy = TRUE}
+a
+b
+```
+
+First some utility measures are printet. For example `maxdiff` is the maximum difference between an original and rounded cells within `publish`. Thereafter a table of frequencies of cell frequencies and absolute differences are printed.  For example, row `rounded` and column `pub.6+` is the number of rounded inner cell frequencies greater than or equal to 6.
+
+It is possible to compute manually the printed utility measures by: 
+
+
+```{r comment=NA, tidy = FALSE}
+f <- b$publish$original
+g <- b$publish$rounded
+print(c(
+  maxdiff        =  max(abs(g - f)), 
+  HDutility      =  HDutility(f, g), 
+  meanAbsDiff    =  mean(abs(g - f)), 
+  rootMeanSquare =  sqrt(mean((g - f)^2))
+))
+```
+
+See `?HDutility` for more information about the utility measure based on the Hellinger distance. 
+
+Apart from printing, output is a usual list. 
+The printed information is contained in output elements `metrics` and `freqTable`.
+Summary works as usual:
+
+
+```{r comment=NA, tidy = FALSE}
+summary(b)
+```
+
+
+<br><br>
+
+# Hierarchical data
+
+## Example without code 
+
+Below is a small data set to be used as input. 
+
+
+```{r comment=NA, tidy = TRUE, echo=FALSE}
+kable(e6, "html", caption = "**Table 4**: Input data") %>%
+  kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 14,  position = "left") %>%
+  add_indent(1:6,0.4,all_cols =TRUE)
+```
+
+<br>
+
+The variables `geo` and `eu` is hierarchical related. This data set can be processed in several ways. In some cases, the entire table will be input and in other cases the `eu` column can be omitted. Then, the hierarchical information is sent as input in another way. 
+One possibility is the table below, where the hierarchy is coded as in the  r package sdcTable. 
+
+
+```{r comment=NA, tidy = TRUE, echo=FALSE}
+kable(SmallCountData("eDimList")$geo, "html", caption = "**Table 5**:  Hierarchy, `geo`") %>%
+  kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 14,  position = "left")  %>%
+  add_indent(1:6,1.2,all_cols =TRUE)
+```
+
+
+<br>
+
+Another possibility is TauArgus coding. More general coding is also possible. See `?AutoHierarchies` for more information. 
+
+Below is output in the case were all possible combinations (including the inner cells) are to be published. 
+Also in this example we use 5 as a rounding base.
+As can be seen below, this output can be generated in several ways. The inner cells are colored according to the rounding. 
+
+```{r comment=NA, tidy = TRUE, echo=FALSE}
+kable(e6a$publish, "html", caption = "**Table 6**: Ouput data (publish)") %>%
+  kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 14,  position = "left") %>%
+  column_spec(1:2, background = green) %>%
+  cell_background( Match(e6a$inner,e6a$publish),4,c(yellow,green2)[1+(e6a$inner$difference==0)]) 
+#cell_background( Match(e6a$inner[e6a$inner$difference!=0 , ],e6a$publish),4,yellow) %>%
+#cell_background( Match(e6a$inner[e6a$inner$difference==0 , ],e6a$publish),4,green2) 
+```
+
+
+
+## Data (Table 4) and hierarchies (Table 5)
+
+```{r comment=NA, tidy = TRUE, eval = TRUE}
+e6  <-  SmallCountData("e6")             # As Table 4 
+eDimList <- SmallCountData("eDimList")
+eDimList
+```
+
+
+As seen above, a hierarchy is specified for both variables. `eDimList$geo` is given in Table 5 and `eDimList$year` is a plain hierarchy with total code. 
+
+
+## Four ways to produce Table 6
+
+The four lines below produce the same results with element `publish` as in Table 6.  Ordering of rows can be different.   
+
+```{r comment=NA, tidy = FALSE, eval = FALSE}
+PLSrounding(e6, "freq", 5)                                                      # a) 
+PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)                   # b)
+PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)                        # c)
+PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year) # d)
+```
+
+
+* In a) and c) the function uses hierarchy input. In a) the hierarchies are found automatically from the input data. 
+* In b) the cross-classifications are found from the formula. In addition, hierarchical relations in the input data are analysed so that `geo`	and `eu` are combined into the same output column.   
+* In d), how to cross the hierarchies are defined by a formula.
+
+## Remarks and other parameters
+
+A difference occur when all combinations are not contained in input data. Then c) above will limit output to combinations available in input. In the other cases zeroes will be added. The extra zeroes can be avoided by using `removeEmpty=TRUE`. 
+Note also the parameter `inputInOutput` which can be used to specify whether to include codes from input.
+Below is an example with incomplete input data using both these parameters. 
+
+
+```{r comment=NA, tidy = FALSE, eval = TRUE}
+out <- PLSrounding(e6[-1, ], "freq", 5, removeEmpty = TRUE, inputInOutput = c(FALSE,TRUE))
+out
+out$inner
+out$publish
+```
+
+In this case only a single inner cell needed to be rounded (Iceland, 2019).
+The original small value of (Portugal, 2018) could be retained.
+
