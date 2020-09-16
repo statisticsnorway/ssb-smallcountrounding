@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Øyvind Langsrud" />
+
+
+<title>Introduction to ‘SmallCountRounding’</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+<script>$(document).ready(function(){
+    if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    if ($('[data-toggle="popover"]').popover === 'function') {
+        $('[data-toggle="popover"]').popover();
+    }
+});
+</script>
+<style type="text/css">
+.lightable-minimal {
+border-collapse: separate;
+border-spacing: 16px 1px;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-minimal td {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal th {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal thead tr:last-child th {
+border-bottom: 2px solid #00000050;
+empty-cells: hide;
+}
+.lightable-minimal tbody tr:first-child td {
+padding-top: 0.5em;
+}
+.lightable-minimal.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-minimal.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic {
+border-top: 0.16em solid #111111;
+width: 100%;
+margin-bottom: 10px;
+margin: 10px 5px;
+}
+.lightable-classic caption {
+color: #222222;
+}
+.lightable-classic td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic thead tr:last-child th {
+border-bottom: 0.10em solid #111111;
+}
+.lightable-classic tbody tr:last-child td {
+border-bottom: 0.14em solid #111111;
+}
+.lightable-classic.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic-2 {
+border-top: 3px double #111111;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-classic-2 caption {
+color: #222222;
+}
+.lightable-classic-2 td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic-2 th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic-2 tbody tr:last-child td {
+border-bottom: 3px double #111111;
+}
+.lightable-classic-2 thead tr:last-child th {
+border-bottom: 1px solid #111111;
+}
+.lightable-classic-2.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic-2.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #EEE;
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+.lightable-material th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+}
+.lightable-material td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+border-top: 1px solid #eeeeee;
+}
+.lightable-material.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #ddd;
+}
+.lightable-material-dark {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #FFFFFF12;
+border-collapse: collapse;
+margin-bottom: 10px;
+background-color: #363640;
+}
+.lightable-material-dark th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF60;
+}
+.lightable-material-dark td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF;
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark.lightable-hover tbody tr:hover {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody tr:nth-child(even) {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material-dark.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #FFFFFF12;
+}
+.lightable-paper {
+width: 100%;
+margin-bottom: 10px;
+color: #444;
+}
+.lightable-paper thead tr:last-child th {
+color: #666;
+vertical-align: bottom;
+border-bottom: 1px solid #00000020;
+line-height: 1.15em;
+padding: 10px 5px;
+}
+.lightable-paper td {
+vertical-align: middle;
+border-bottom: 1px solid #00000010;
+line-height: 1.15em;
+padding: 7px 5px;
+}
+.lightable-paper.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-paper.lightable-striped tbody tr:nth-child(even) {
+background-color: #00000008;
+}
+.lightable-paper.lightable-striped tbody td {
+border: 0;
+}
+</style>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to ‘SmallCountRounding’</h1>
+<h4 class="author">Øyvind Langsrud</h4>
+
+
+
+<p><br><br></p>
+<div id="introductory-example" class="section level1">
+<h1>Introductory example</h1>
+<div id="example-without-code" class="section level2">
+<h2>Example without code</h2>
+<p>First some data to be rounded. <br></p>
+<table class="table table-bordered" style="font-size: 16px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+<strong>Table 1</strong>: Original data in tabular form with row and column totals
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;background-color: #F0FFE9 !important;">
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col1
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col2
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col3
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col4
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col5
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+Total
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left; padding-left:  3.2em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row1
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+6
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+1
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+3
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+4
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3.2em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row2
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+1
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+2
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+3
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+1
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+2
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3.2em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row3
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+1
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+1
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3.2em;" indentlevel="1">
+2
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3.2em;font-weight: bold;background-color: #F0FFE9 !important;font-weight: bold;" indentlevel="1">
+Total
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+7
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+3
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+4
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;" indentlevel="1">
+8
+</td>
+<td style="text-align:right; padding-left:  3.2em;font-weight: bold;font-weight: bold;" indentlevel="1">
+27
+</td>
+</tr>
+</tbody>
+</table>
+<p><br> Some of the inner cells are rounded. Thereafter new totals are computed. The underlying algorithm tries to keep the values of these totals close to the original ones. <br></p>
+<table class="table table-bordered" style="font-size: 16px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+<strong>Table 2</strong>: All small inner cell values (1-4) are rounded using 5 as rounding base.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;background-color: #F0FFE9 !important;">
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col1
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col2
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col3
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col4
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col5
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+Total
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row1
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+6
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row2
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row3
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;font-weight: bold;" indentlevel="1">
+Total
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+6
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+10
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;font-weight: bold;" indentlevel="1">
+26
+</td>
+</tr>
+</tbody>
+</table>
+<p><br> When the inner cells are not going to be published, the number of cells to be rounded can be limited. <br></p>
+<table class="table table-bordered" style="font-size: 16px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+<strong>Table 3</strong>: Assuming only row and column totals to be published, necessary small inner cell values (1-4) are rounded using 5 as rounding base.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;background-color: #F0FFE9 !important;">
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col1
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col2
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col3
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col4
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+col5
+</th>
+<th style="text-align:right;font-weight: bold;background-color: #F0FFE9 !important;">
+Total
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row1
+</td>
+<td style="text-align:right; padding-left:  3em;" indentlevel="1">
+6
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+4
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+15
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row2
+</td>
+<td style="text-align:right; padding-left:  3em;" indentlevel="1">
+1
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+2
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;" indentlevel="1">
+row3
+</td>
+<td style="text-align:right; padding-left:  3em;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: #FFFF88 !important;" indentlevel="1">
+0
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  3em;font-weight: bold;background-color: #F0FFE9 !important;font-weight: bold;" indentlevel="1">
+Total
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;" indentlevel="1">
+7
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+5
+</td>
+<td style="text-align:right; padding-left:  3em;background-color: white !important;font-weight: bold;" indentlevel="1">
+6
+</td>
+<td style="text-align:right; padding-left:  3em;font-weight: bold;font-weight: bold;" indentlevel="1">
+28
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="the-example-dataset-in-table-1" class="section level2">
+<h2>The example dataset in Table 1</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(SmallCountRounding)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>z &lt;-<span class="st"> </span><span class="kw">SmallCountData</span>(<span class="st">&quot;exPSD&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>z</span></code></pre></div>
+<pre><code>   rows cols freq
+1  row1 col1    6
+2  row2 col1    1
+3  row3 col1    0
+4  row1 col2    0
+5  row2 col2    2
+6  row3 col2    1
+7  row1 col3    1
+8  row2 col3    3
+9  row3 col3    1
+10 row1 col4    3
+11 row2 col4    1
+12 row3 col4    0
+13 row1 col5    4
+14 row2 col5    2
+15 row3 col5    2</code></pre>
+</div>
+<div id="rounding-all-small-cells-table-2" class="section level2">
+<h2>Rounding all small cells (Table 2)</h2>
+<p>To avoid any small values in the range 1-4 we can use 5 as rounding base.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>a &lt;-<span class="st"> </span><span class="kw">PLSrounding</span>(z, <span class="dt">freqVar =</span> <span class="st">&quot;freq&quot;</span>, <span class="dt">roundBase =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p>The result is given in Table 2 and can bee seen in the output elements below.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>a<span class="op">$</span>inner</span></code></pre></div>
+<pre><code>   rows cols original rounded difference
+1  row1 col1        6       6          0
+2  row2 col1        1       0         -1
+3  row3 col1        0       0          0
+4  row1 col2        0       0          0
+5  row2 col2        2       0         -2
+6  row3 col2        1       0         -1
+7  row1 col3        1       0         -1
+8  row2 col3        3       5          2
+9  row3 col3        1       0         -1
+10 row1 col4        3       5          2
+11 row2 col4        1       0         -1
+12 row3 col4        0       0          0
+13 row1 col5        4       5          1
+14 row2 col5        2       5          3
+15 row3 col5        2       0         -2</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>a<span class="op">$</span>publish</span></code></pre></div>
+<pre><code>    rows  cols original rounded difference
+1  Total Total       27      26         -1
+2  Total  col1        7       6         -1
+3  Total  col2        3       0         -3
+4  Total  col3        5       5          0
+5  Total  col4        4       5          1
+6  Total  col5        8      10          2
+7   row1 Total       14      16          2
+8   row1  col1        6       6          0
+9   row1  col2        0       0          0
+10  row1  col3        1       0         -1
+11  row1  col4        3       5          2
+12  row1  col5        4       5          1
+13  row2 Total        9      10          1
+14  row2  col1        1       0         -1
+15  row2  col2        2       0         -2
+16  row2  col3        3       5          2
+17  row2  col4        1       0         -1
+18  row2  col5        2       5          3
+19  row3 Total        4       0         -4
+20  row3  col1        0       0          0
+21  row3  col2        1       0         -1
+22  row3  col3        1       0         -1
+23  row3  col4        0       0          0
+24  row3  col5        2       0         -2</code></pre>
+<p>The output element <code>publish</code> contains the original and rounded versions of the all the 24 values in Table 2. The corresponding element <code>inner</code> contains only the 15 inner cells and is similar to the input data. The values in publish are <code>additive</code>. That is, they can be computed straightforwardly from <code>inner</code>.</p>
+</div>
+<div id="rounding-necessary-small-inner-cell-table-3" class="section level2">
+<h2>Rounding necessary small inner cell (Table 3)</h2>
+<p>Assuming only row and column totals to be published, the publishable cells can be defined by the formula <code>~rows+cols</code>. Rounding can now be performed by:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>b &lt;-<span class="st"> </span><span class="kw">PLSrounding</span>(z, <span class="st">&quot;freq&quot;</span>, <span class="dv">5</span>, <span class="dt">formula =</span> <span class="op">~</span>rows <span class="op">+</span><span class="st"> </span>cols)</span></code></pre></div>
+<p>The result is given in Table 3 and can bee seen in the output elements below.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>b<span class="op">$</span>inner</span></code></pre></div>
+<pre><code>   rows cols original rounded difference
+1  row1 col1        6       6          0
+2  row2 col1        1       1          0
+3  row3 col1        0       0          0
+4  row1 col2        0       0          0
+5  row2 col2        2       0         -2
+6  row3 col2        1       5          4
+7  row1 col3        1       0         -1
+8  row2 col3        3       5          2
+9  row3 col3        1       0         -1
+10 row1 col4        3       5          2
+11 row2 col4        1       0         -1
+12 row3 col4        0       0          0
+13 row1 col5        4       4          0
+14 row2 col5        2       2          0
+15 row3 col5        2       0         -2</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>b<span class="op">$</span>publish</span></code></pre></div>
+<pre><code>   rows  cols original rounded difference
+1 Total Total       27      28          1
+2  row1 Total       14      15          1
+3  row2 Total        9       8         -1
+4  row3 Total        4       5          1
+5 Total  col1        7       7          0
+6 Total  col2        3       5          2
+7 Total  col3        5       5          0
+8 Total  col4        4       5          1
+9 Total  col5        8       6         -2</code></pre>
+</div>
+<div id="set-seed-for-unique-output" class="section level2">
+<h2>Set seed for unique output</h2>
+<p>The underlying algorithm is sequential. Within a loop, the next cell to be given the rounding base value is selected according to a criterion. Random draw is used when draw criterion. Therefore, the result may vary. Use <code>set.seed</code> to ensure unique output. In the examples above <code>set.seed(12345)</code> was called before calling <code>PLSrounding</code>.</p>
+</div>
+<div id="the-output-object" class="section level2">
+<h2>The output object</h2>
+<p>The result of printing the output from <code>PLSrounding</code> is (<code>a</code> and <code>b</code> as above):</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>a</span></code></pre></div>
+<pre><code>
+PLSrounding summary:  
+
+       maxdiff      HDutility    meanAbsDiff rootMeanSquare 
+             4          0.715         1.3333         1.6833 
+
+Frequencies of cell frequencies and absolute differences:  
+
+         inn.0 inn.1-4 inn.5 inn.6+ inn.all pub.0 pub.1-4 pub.5 pub.6+ pub.all
+original     3      11     .      1      15     3      14     1      6      24
+rounded     10       .     4      1      15    12       .     6      6      24
+absDiff      4      11     .      .      15     5      19     .      .      24</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>b</span></code></pre></div>
+<pre><code>
+PLSrounding summary:  
+
+       maxdiff      HDutility    meanAbsDiff rootMeanSquare 
+             2          0.941              1         1.2019 
+
+Frequencies of cell frequencies and absolute differences:  
+
+         inn.0 inn.1-4 inn.5 inn.6+ inn.all pub.0 pub.1-4 pub.5 pub.6+ pub.all
+original     3      11     .      1      15     .       3     1      5       9
+rounded      8       3     3      1      15     .       .     4      5       9
+absDiff      7       8     .      .      15     2       7     .      .       9</code></pre>
+<p>First some utility measures are printet. For example <code>maxdiff</code> is the maximum difference between an original and rounded cells within <code>publish</code>. Thereafter a table of frequencies of cell frequencies and absolute differences are printed. For example, row <code>rounded</code> and column <code>pub.6+</code> is the number of rounded inner cell frequencies greater than or equal to 6.</p>
+<p>It is possible to compute manually the printed utility measures by:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>f &lt;-<span class="st"> </span>b<span class="op">$</span>publish<span class="op">$</span>original</span>
+<span id="cb17-2"><a href="#cb17-2"></a>g &lt;-<span class="st"> </span>b<span class="op">$</span>publish<span class="op">$</span>rounded</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="kw">print</span>(<span class="kw">c</span>(</span>
+<span id="cb17-4"><a href="#cb17-4"></a>  <span class="dt">maxdiff        =</span>  <span class="kw">max</span>(<span class="kw">abs</span>(g <span class="op">-</span><span class="st"> </span>f)), </span>
+<span id="cb17-5"><a href="#cb17-5"></a>  <span class="dt">HDutility      =</span>  <span class="kw">HDutility</span>(f, g), </span>
+<span id="cb17-6"><a href="#cb17-6"></a>  <span class="dt">meanAbsDiff    =</span>  <span class="kw">mean</span>(<span class="kw">abs</span>(g <span class="op">-</span><span class="st"> </span>f)), </span>
+<span id="cb17-7"><a href="#cb17-7"></a>  <span class="dt">rootMeanSquare =</span>  <span class="kw">sqrt</span>(<span class="kw">mean</span>((g <span class="op">-</span><span class="st"> </span>f)<span class="op">^</span><span class="dv">2</span>))</span>
+<span id="cb17-8"><a href="#cb17-8"></a>))</span></code></pre></div>
+<pre><code>       maxdiff      HDutility    meanAbsDiff rootMeanSquare 
+      2.000000       0.940951       1.000000       1.201850 </code></pre>
+<p>See <code>?HDutility</code> for more information about the utility measure based on the Hellinger distance.</p>
+<p>Apart from printing, output is a usual list. The printed information is contained in output elements <code>metrics</code> and <code>freqTable</code>. Summary works as usual:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">summary</span>(b)</span></code></pre></div>
+<pre><code>          Length Class      Mode   
+inner      5     data.frame list   
+publish    5     data.frame list   
+metrics    9     -none-     numeric
+freqTable 30     -none-     numeric</code></pre>
+<p><br><br></p>
+</div>
+</div>
+<div id="hierarchical-data" class="section level1">
+<h1>Hierarchical data</h1>
+<div id="example-without-code-1" class="section level2">
+<h2>Example without code</h2>
+<p>Below is a small data set to be used as input.</p>
+<table class="table table-bordered" style="font-size: 14px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+<strong>Table 4</strong>: Input data
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+geo
+</th>
+<th style="text-align:left;">
+eu
+</th>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:right;">
+freq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+Iceland
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+nonEU
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+2018
+</td>
+<td style="text-align:right; padding-left:  0.8em;" indentlevel="1">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+Portugal
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+EU
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+2018
+</td>
+<td style="text-align:right; padding-left:  0.8em;" indentlevel="1">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+Spain
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+EU
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+2018
+</td>
+<td style="text-align:right; padding-left:  0.8em;" indentlevel="1">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+Iceland
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+nonEU
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+2019
+</td>
+<td style="text-align:right; padding-left:  0.8em;" indentlevel="1">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+Portugal
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+EU
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+2019
+</td>
+<td style="text-align:right; padding-left:  0.8em;" indentlevel="1">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+Spain
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+EU
+</td>
+<td style="text-align:left; padding-left:  0.8em;" indentlevel="1">
+2019
+</td>
+<td style="text-align:right; padding-left:  0.8em;" indentlevel="1">
+6
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>The variables <code>geo</code> and <code>eu</code> is hierarchical related. This data set can be processed in several ways. In some cases, the entire table will be input and in other cases the <code>eu</code> column can be omitted. Then, the hierarchical information is sent as input in another way. One possibility is the table below, where the hierarchy is coded as in the r package sdcTable.</p>
+<table class="table table-bordered" style="font-size: 14px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+<strong>Table 5</strong>: Hierarchy, <code>geo</code>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+levels
+</th>
+<th style="text-align:left;">
+codes
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+@
+</td>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+Total
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+@@
+</td>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+EU
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+@@@
+</td>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+Portugal
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+@@@
+</td>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+Spain
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+@@
+</td>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+nonEU
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+@@@
+</td>
+<td style="text-align:left; padding-left:  2.4em;" indentlevel="1">
+Iceland
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Another possibility is TauArgus coding. More general coding is also possible. See <code>?AutoHierarchies</code> for more information.</p>
+<p>Below is output in the case were all possible combinations (including the inner cells) are to be published. Also in this example we use 5 as a rounding base. As can be seen below, this output can be generated in several ways. The inner cells are colored according to the rounding.</p>
+<table class="table table-bordered" style="font-size: 14px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+<strong>Table 6</strong>: Ouput data (publish)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+geo
+</th>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:right;">
+original
+</th>
+<th style="text-align:right;">
+rounded
+</th>
+<th style="text-align:right;">
+difference
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;background-color: white !important;">
+23
+</td>
+<td style="text-align:right;">
+-1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2018
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;background-color: white !important;">
+12
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2019
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;background-color: white !important;">
+11
+</td>
+<td style="text-align:right;">
+-1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+EU
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;background-color: white !important;">
+23
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+EU
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2018
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;background-color: white !important;">
+12
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+EU
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2019
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;background-color: white !important;">
+11
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+nonEU
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;background-color: white !important;">
+0
+</td>
+<td style="text-align:right;">
+-3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+nonEU
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2018
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;background-color: white !important;">
+0
+</td>
+<td style="text-align:right;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+nonEU
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2019
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;background-color: white !important;">
+0
+</td>
+<td style="text-align:right;">
+-1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Iceland
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;background-color: white !important;">
+0
+</td>
+<td style="text-align:right;">
+-3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Iceland
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2018
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;background-color: #FFFF88 !important;">
+0
+</td>
+<td style="text-align:right;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Iceland
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2019
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;background-color: #FFFF88 !important;">
+0
+</td>
+<td style="text-align:right;">
+-1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Portugal
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;background-color: white !important;">
+10
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Portugal
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2018
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;background-color: #FFFF88 !important;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Portugal
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2019
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;background-color: #88FF88 !important;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Spain
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Total
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;background-color: white !important;">
+13
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Spain
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2018
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;background-color: #88FF88 !important;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+Spain
+</td>
+<td style="text-align:left;background-color: #F0FFE9 !important;">
+2019
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;background-color: #88FF88 !important;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="data-table-4-and-hierarchies-table-5" class="section level2">
+<h2>Data (Table 4) and hierarchies (Table 5)</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>e6 &lt;-<span class="st"> </span><span class="kw">SmallCountData</span>(<span class="st">&quot;e6&quot;</span>)  <span class="co"># As Table 4 </span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>eDimList &lt;-<span class="st"> </span><span class="kw">SmallCountData</span>(<span class="st">&quot;eDimList&quot;</span>)</span>
+<span id="cb21-3"><a href="#cb21-3"></a>eDimList</span></code></pre></div>
+<pre><code>$geo
+  levels    codes
+1      @    Total
+2     @@       EU
+3    @@@ Portugal
+4    @@@    Spain
+5     @@    nonEU
+6    @@@  Iceland
+
+$year
+  levels codes
+1      @ Total
+2     @@  2018
+3     @@  2019</code></pre>
+<p>As seen above, a hierarchy is specified for both variables. <code>eDimList$geo</code> is given in Table 5 and <code>eDimList$year</code> is a plain hierarchy with total code.</p>
+</div>
+<div id="four-ways-to-produce-table-6" class="section level2">
+<h2>Four ways to produce Table 6</h2>
+<p>The four lines below produce the same results with element <code>publish</code> as in Table 6. Ordering of rows can be different.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">PLSrounding</span>(e6, <span class="st">&quot;freq&quot;</span>, <span class="dv">5</span>)                                                      <span class="co"># a) </span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="kw">PLSrounding</span>(e6, <span class="st">&quot;freq&quot;</span>, <span class="dv">5</span>, <span class="dt">formula =</span> <span class="op">~</span>eu <span class="op">*</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>geo <span class="op">*</span><span class="st"> </span>year)                   <span class="co"># b)</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="kw">PLSrounding</span>(e6[, <span class="dv">-2</span>], <span class="st">&quot;freq&quot;</span>, <span class="dv">5</span>, <span class="dt">hierarchies =</span> eDimList)                        <span class="co"># c)</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="kw">PLSrounding</span>(e6[, <span class="dv">-2</span>], <span class="st">&quot;freq&quot;</span>, <span class="dv">5</span>, <span class="dt">hierarchies =</span> eDimList, <span class="dt">formula =</span> <span class="op">~</span>geo <span class="op">*</span><span class="st"> </span>year) <span class="co"># d)</span></span></code></pre></div>
+<ul>
+<li>In a) and c) the function uses hierarchies for the calculations. In a) the hierarchies are found automatically from the input data.</li>
+<li>In b) the cross-classifications are found from the formula. In addition, hierarchical relations in the input data are analysed so that <code>geo</code> and <code>eu</code> are combined into the same output column.<br />
+</li>
+<li>In d), how to cross the hierarchies are defined by a formula.</li>
+</ul>
+</div>
+<div id="remarks-and-other-parameters" class="section level2">
+<h2>Remarks and other parameters</h2>
+<p>A difference occur when all combinations are not contained in input data. Then c) above will limit output to combinations available in input. In the other cases zeroes will be added. The extra zeroes can be avoided by using <code>removeEmpty=TRUE</code>. Note also the parameter <code>inputInOutput</code> which can be used to specify whether to include codes from input. Below is an example with incomplete input data using both these parameters.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>out &lt;-<span class="st"> </span><span class="kw">PLSrounding</span>(e6[<span class="op">-</span><span class="dv">1</span>, ], <span class="st">&quot;freq&quot;</span>, <span class="dv">5</span>, <span class="dt">removeEmpty =</span> <span class="ot">TRUE</span>, <span class="dt">inputInOutput =</span> <span class="kw">c</span>(<span class="ot">FALSE</span>,<span class="ot">TRUE</span>))</span>
+<span id="cb24-2"><a href="#cb24-2"></a>out</span></code></pre></div>
+<pre><code>
+PLSrounding summary:  
+
+       maxdiff      HDutility    meanAbsDiff rootMeanSquare 
+             1         0.8925            0.5         0.7071 
+
+Frequencies of cell frequencies and absolute differences:  
+
+         inn.0 inn.1-4 inn.5 inn.6+ inn.all pub.0 pub.1-4 pub.5 pub.6+ pub.all
+original     .       2     1      2       5     .       2     .      6       8
+rounded      1       1     1      2       5     2       .     .      6       8
+absDiff      4       1     .      .       5     4       4     .      .       8</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>out<span class="op">$</span>inner</span></code></pre></div>
+<pre><code>       geo year original rounded difference
+2 Portugal 2018        3       3          0
+3    Spain 2018        7       7          0
+4  Iceland 2019        1       0         -1
+5 Portugal 2019        5       5          0
+6    Spain 2019        6       6          0</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>out<span class="op">$</span>publish</span></code></pre></div>
+<pre><code>    geo  year original rounded difference
+1 Total Total       22      21         -1
+2 Total  2018       10      10          0
+3 Total  2019       12      11         -1
+4    EU Total       21      21          0
+5    EU  2018       10      10          0
+6    EU  2019       11      11          0
+7 nonEU Total        1       0         -1
+8 nonEU  2019        1       0         -1</code></pre>
+<p>In this case only a single inner cell needed to be rounded (Iceland, 2019). The original small value of (Portugal, 2018) could be retained.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

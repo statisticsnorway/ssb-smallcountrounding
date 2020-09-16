@@ -286,7 +286,7 @@ PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year) 
 ```
 
 
-* In a) and c) the function uses hierarchy input. In a) the hierarchies are found automatically from the input data. 
+* In a) and c) the function uses hierarchies for the calculations. In a) the hierarchies are found automatically from the input data. 
 * In b) the cross-classifications are found from the formula. In addition, hierarchical relations in the input data are analysed so that `geo`	and `eu` are combined into the same output column.   
 * In d), how to cross the hierarchies are defined by a formula.
 
