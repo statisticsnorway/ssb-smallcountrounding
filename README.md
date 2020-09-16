@@ -4,6 +4,10 @@
 
 ## Small Count Rounding of Tabular Data 
 
+
+See the package vignette (not yet on CRAN): 
+[Introduction to ‘SmallCountRounding’](https://htmlpreview.github.io/?https://github.com/statisticsnorway/SmallCountRounding/blob/master/vignettes/Introduction_to_SmallCountRounding.html)
+
 -----------
 
 #### Installation from CRAN 
