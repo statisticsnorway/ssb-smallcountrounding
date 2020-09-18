@@ -10,7 +10,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="Øyvind Langsrud" />
+<meta name="author" content="Øyvind Langsrud and Johan Heldal" />
 
 
 <title>Introduction to ‘SmallCountRounding’</title>
@@ -512,7 +512,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Introduction to ‘SmallCountRounding’</h1>
-<h4 class="author">Øyvind Langsrud</h4>
+<h4 class="author">Øyvind Langsrud and Johan Heldal</h4>
 
 
 
@@ -965,7 +965,7 @@ Total
 22  row3  col3        1       0         -1
 23  row3  col4        0       0          0
 24  row3  col5        2       0         -2</code></pre>
-<p>The output element <code>publish</code> contains the original and rounded versions of the all the 24 values in Table 2. The corresponding element <code>inner</code> contains only the 15 inner cells and is similar to the input data. The values in publish are <code>additive</code>. That is, they can be computed straightforwardly from <code>inner</code>.</p>
+<p>The output element <code>publish</code> contains the original and rounded versions of the all the 24 values in Table 2. The corresponding element <code>inner</code> contains only the 15 inner cells and is similar to the input data. The values in publish are <code>additive</code>. That is, marginal cells (Totals) can be computed straightforwardly from <code>inner</code> for both original and rounded counts.</p>
 </div>
 <div id="rounding-necessary-small-inner-cell-table-3" class="section level2">
 <h2>Rounding necessary small inner cell (Table 3)</h2>
@@ -1034,7 +1034,7 @@ Frequencies of cell frequencies and absolute differences:
 original     3      11     .      1      15     .       3     1      5       9
 rounded      8       3     3      1      15     .       .     4      5       9
 absDiff      7       8     .      .      15     2       7     .      .       9</code></pre>
-<p>First some utility measures are printet. For example <code>maxdiff</code> is the maximum difference between an original and rounded cells within <code>publish</code>. Thereafter a table of frequencies of cell frequencies and absolute differences are printed. For example, row <code>rounded</code> and column <code>pub.6+</code> is the number of rounded inner cell frequencies greater than or equal to 6.</p>
+<p>First some utility measures are printet. For example <code>maxdiff</code> is the maximum difference between an original and rounded cells within <code>publish</code>. Thereafter a table of frequencies of cell frequencies and absolute differences are printed. Summary of <code>inner</code> and <code>publish</code> are shown in the left and right parts of the table, respectively. For example, row <code>rounded</code> and column <code>inn.6+</code> is the number of rounded inner cell frequencies greater than or equal to 6. The last row (<code>absDiff</code>) is based on the differences without signs.</p>
 <p>It is possible to compute manually the printed utility measures by:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>f &lt;-<span class="st"> </span>b<span class="op">$</span>publish<span class="op">$</span>original</span>
 <span id="cb17-2"><a href="#cb17-2"></a>g &lt;-<span class="st"> </span>b<span class="op">$</span>publish<span class="op">$</span>rounded</span>
@@ -1046,14 +1046,15 @@ absDiff      7       8     .      .      15     2       7     .      .       9</
 <span id="cb17-8"><a href="#cb17-8"></a>))</span></code></pre></div>
 <pre><code>       maxdiff      HDutility    meanAbsDiff rootMeanSquare 
       2.000000       0.940951       1.000000       1.201850 </code></pre>
-<p>See <code>?HDutility</code> for more information about the utility measure based on the Hellinger distance.</p>
-<p>Apart from printing, output is a usual list. The printed information is contained in output elements <code>metrics</code> and <code>freqTable</code>. Summary works as usual:</p>
+<p>These measures are also found in the output element <code>metrics</code> together with the same measures based on <code>inner</code>. See <code>?HDutility</code> for more information about the utility measure based on the Hellinger distance.</p>
+<p>Apart from printing, output is a usual list and <code>summary</code> works as usual.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">summary</span>(b)</span></code></pre></div>
 <pre><code>          Length Class      Mode   
 inner      5     data.frame list   
 publish    5     data.frame list   
 metrics    9     -none-     numeric
 freqTable 30     -none-     numeric</code></pre>
+<p>The output element <code>freqTable</code> is the table seen when the output object is printed (frequencies of cell frequencies and absolute differences).</p>
 <p><br><br></p>
 </div>
 </div>

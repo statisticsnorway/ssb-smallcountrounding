@@ -1,7 +1,7 @@
 
 ---
 title: "Introduction to 'SmallCountRounding'"
-author: "Øyvind Langsrud"
+author: "Øyvind Langsrud and Johan Heldal"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to SmallCountRounding}
@@ -147,7 +147,8 @@ a$publish
 ```
 
 
-The output element `publish` contains the original and rounded versions of the all the 24 values in Table 2. The corresponding element `inner` contains only the 15 inner cells and is similar to the input data. The values in publish are `additive`. That is, they can be computed straightforwardly from `inner`.   
+The output element `publish` contains the original and rounded versions of the all the 24 values in Table 2. The corresponding element `inner` contains only the 15 inner cells and is similar to the input data. The values in publish are `additive`. 
+That is, marginal cells (Totals) can be computed straightforwardly from `inner` for both original and rounded counts.   
 
 
 ## Rounding necessary small inner cell (Table 3)
@@ -187,7 +188,11 @@ a
 b
 ```
 
-First some utility measures are printet. For example `maxdiff` is the maximum difference between an original and rounded cells within `publish`. Thereafter a table of frequencies of cell frequencies and absolute differences are printed.  For example, row `rounded` and column `pub.6+` is the number of rounded inner cell frequencies greater than or equal to 6.
+First some utility measures are printet. For example `maxdiff` is the maximum difference between an original and rounded cells within `publish`. 
+Thereafter a table of frequencies of cell frequencies and absolute differences are printed. 
+Summary of `inner` and `publish` are shown in the left and right parts of the table, respectively.
+For example, row `rounded` and column `inn.6+` is the number of rounded inner cell frequencies greater than or equal to 6.
+The last row (`absDiff`) is based on the differences without signs.
 
 It is possible to compute manually the printed utility measures by: 
 
@@ -203,16 +208,21 @@ print(c(
 ))
 ```
 
+These  measures are also found in the output element `metrics` together with the same measures based on `inner`.
 See `?HDutility` for more information about the utility measure based on the Hellinger distance. 
 
-Apart from printing, output is a usual list. 
-The printed information is contained in output elements `metrics` and `freqTable`.
-Summary works as usual:
+
+
+Apart from printing, output is a usual list and `summary` works as usual.
 
 
 ```{r comment=NA, tidy = FALSE}
 summary(b)
 ```
+
+The output element `freqTable` is
+the table seen when the output object is printed
+(frequencies of cell frequencies and absolute differences). 
 
 
 <br><br>
