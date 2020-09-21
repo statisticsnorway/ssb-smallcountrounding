@@ -1,5 +1,5 @@
 
-## SmallCountRounding	X.X.X
+## SmallCountRounding	0.5.0
 
 * Formula combined with hierarchies is now possible
   - This is a consequence of the function `HierarchiesAndFormula2ModelMatrix` in the SSBtools package

@@ -42,7 +42,7 @@ Output is a four-element list with class attribute "PLSrounded" (to ensure infor
    \item{metrics}{A named character vector of various statistics calculated from the two output data frames 
    ("\code{inner_}" used to distinguish). See examples below and the function \code{\link{HDutility}}.}
    \item{freqTable}{Matrix of frequencies of cell frequencies and absolute differences.
-   For example, row "\code{rounded}" and column "\code{pub.4+}" is the number of rounded 
+   For example, row "\code{rounded}" and column "\code{inn.4+}" is the number of rounded 
    inner cell frequencies greater than or equal to \code{4}.}
 }
 \description{
@@ -121,7 +121,7 @@ PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
 \references{
 Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}. 
 Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. September 26-28, 2018.
-\url{https://www.researchgate.net/publication/327768398}
+\url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 }
 \seealso{
 \code{\link{RoundViaDummy}}, \code{\link{PLS2way}}

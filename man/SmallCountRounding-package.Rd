@@ -21,5 +21,5 @@ Skopje, The former Yugoslav Republic of Macedonia, September 20-22 , 2017.
 
 Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}. 
 Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. September 26-28, 2018.
-\url{https://www.researchgate.net/publication/327768398}
+\url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 }
