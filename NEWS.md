@@ -1,3 +1,7 @@
+## SmallCountRounding	X.X.X
+* `preRounded`	is new parameter to `RoundViaDummy` (and `PLSrounding`)
+  - A mixture of missing values and predetermined values of rounded inner cells
+
 
 ## SmallCountRounding	0.5.0
 

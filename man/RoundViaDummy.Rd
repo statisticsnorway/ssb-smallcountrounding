@@ -23,6 +23,7 @@ RoundViaDummy(
   forceInner = FALSE,
   identifyNew = TRUE,
   step = 0,
+  preRounded = NULL,
   leverageCheck = FALSE,
   easyCheck = TRUE,
   printInc = TRUE,
@@ -72,6 +73,8 @@ publishable cells are less than roundBase.}
 \item{step}{When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise.
 After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used
 for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.}
+
+\item{preRounded}{A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells.}
 
 \item{leverageCheck}{When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 (\code{<=maxRound}) will be rounded.

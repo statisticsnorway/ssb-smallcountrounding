@@ -36,6 +36,7 @@
 #' @param step When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
 #'       After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
 #'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
+#' @param preRounded A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells. 
 #' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 #'        (\code{<=maxRound}) will be rounded. 
 #'        The computation of leverages can be very time and memory consuming. 
@@ -65,7 +66,7 @@
 #' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies HierarchiesAndFormula2ModelMatrix Reduce0exact MakeFreq
 #' @importFrom utils flush.console
 #' @importFrom  Matrix Matrix
-#' @importFrom  methods as
+#' @importFrom  methods as hasArg
 #' @export
 #'
 #' @examples
@@ -112,10 +113,13 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           crossTable=TRUE, total = "Total",  maxIterRows = 1000, maxIter = 1E7,
                           x = NULL,  hierarchies = NULL, xReturn = FALSE, maxRound = roundBase-1,
                           zeroCandidates = FALSE, forceInner = FALSE, identifyNew = TRUE, step = 0,
+                          preRounded = NULL,
                           leverageCheck = FALSE, 
                           easyCheck = TRUE,
                           printInc = TRUE, ...) {
   
+  if (hasArg("roundbase"))
+    stop('Misspelled parameter "roundbase" found. Use "roundBase".')
   
   if(roundBase<1){
     stop(paste("roundBase =", roundBase,"is not allowed"))
@@ -229,10 +233,16 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
   yInner <- data[, freqVar, drop = TRUE]
   
+  if (!is.null(preRounded)) {
+    if (length(preRounded) == 1) {
+      preRounded <- data[, preRounded, drop = TRUE]
+    }
+  } 
   
   yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
   a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
                       maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step, 
+                      preRounded = preRounded,
                       easyCheck = easyCheck,
                       leverageCheck = leverageCheck,  printInc = printInc)
   if(printInc){
@@ -317,7 +327,9 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                            singleRandom = FALSE, maxIter = 1E6, maxIterRows = 1000, 
                            maxBase = roundBase, zeroCandidates = FALSE, forceInner = FALSE,
                            identifyNew = TRUE, step = 0,
-                           forceFromFirstIter = TRUE, easyCheck = TRUE, leverageCheck = 0, printInc = TRUE) { # maxIter henger sammen med maxIterRows
+                           forceFromFirstIter = TRUE, 
+                           preRounded = NULL,
+                           easyCheck = TRUE, leverageCheck = 0, printInc = TRUE) { # maxIter henger sammen med maxIterRows
 
   yInnerExact <- yInner
   yPublishExact <- yPublish
@@ -394,7 +406,19 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   } else {
     supRowsForce <- rep(FALSE, length(yInner))
   }
+  
+  
+  if (!is.null(preRounded)) {
+    yInner[!is.na(preRounded)] <- preRounded[!is.na(preRounded)]
+    yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
+    preRounded <- !is.na(preRounded)
+  } else {
+    preRounded <- FALSE
+  }
 
+  if(any(preRounded))
+    supRowsForce[preRounded] = FALSE
+  
 
   i = 0
   while (i<maxIter) {
@@ -402,13 +426,17 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
     if (i == 1)
       a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish,
                                 singleRandom = singleRandom, yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
-                                supRowsForce = supRowsForce, identifyNew = !forceFromFirstIter, step = step, printInc = printInc)
+                                supRowsForce = supRowsForce, identifyNew = !forceFromFirstIter, 
+                                preRounded = preRounded,
+                                step = step, printInc = printInc)
     else
       a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = a[[1]], yPublish = yPublish,
                                 singleRandom = singleRandom, 
                                 suppPublish = suppRoundPublish,
                                 yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
-                                supRowsForce = supRowsForce, identifyNew = identifyNew, step = step, printInc = printInc)
+                                supRowsForce = supRowsForce, identifyNew = identifyNew,
+                                preRounded = preRounded,
+                                step = step, printInc = printInc)
     
       yPublish  <- a[[2]][, 1, drop = TRUE]
       suppRoundPublish <- yPublish < roundBase & yPublish > 0
@@ -420,8 +448,17 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
         if (!any(supRowsForce) )
           return_a <- TRUE
       } else {
-        if (!any(suppRoundPublish) & !any(supRowsForce) )
+        if (!any(suppRoundPublish) & !any(supRowsForce) ){
           return_a <- TRUE
+        } else {
+          if (sum(a[[3]])==0 & !any(supRowsForce) ){
+            return_a <- TRUE
+            if(any(preRounded))
+              warning("Due to preRounded, not all published cells may be sufficiently rounded")
+            else
+              warning("Something wrong, ... not all published cells may be sufficiently rounded")
+          }
+        }
       }
       
       if (return_a) {
@@ -437,6 +474,14 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
           if(any(leverage)){
             # yInner <- a[[1]]
             leverage[!(a[[1]] < maxBase & ( (a[[1]] %% roundBase) > 0))] <- FALSE
+            if(any(preRounded)){
+              if(any( preRounded & leverage)){
+                leverage[preRounded] <- FALSE
+                if(!any(leverage)){
+                  warning("Due to preRounded, small inner cells may be revealed (easyCheck/leverageCheck)")
+                }
+              }
+            }
             if(any(leverage)) {
               if(printInc) {
                 cat(paste0("(Check:",sum(leverage),")")) 
@@ -464,7 +509,9 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
                                      suppPublish = yPublish < roundBase & yPublish > 0, #  Publiserte celler som skal undertrykkes (men må bruke iterasjon)
                                      yInnerExact = yInner,
                                      yPublishExact = yPublish,
-                                  maxIterRows = 1000, supRowsForce = rep(FALSE, length(yInner)), identifyNew = TRUE, step = 0, printInc = TRUE) {
+                                  maxIterRows = 1000, supRowsForce = rep(FALSE, length(yInner)), identifyNew = TRUE, 
+                                  preRounded = FALSE,
+                                  step = 0, printInc = TRUE) {
   Pls1RoundHere <- get0("Pls1RoundFromUser", ifnotfound = Pls1Round) # Hack som gjør det mulig å bytte ut Pls1Round med annen algoritme
 
   printIncInput <- printInc
@@ -475,12 +522,24 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   if(identifyNew){
     suppInput <- yInner < roundBase & yInner > 0  #  Indre celler med verdier som er 'undertrykkbare'
     supRows <- (Matrix::rowSums(x[, suppPublish, drop = FALSE]) > 0 & suppInput) | supRowsForce 
+    if(any(preRounded)){
+      supRows[preRounded] <- FALSE
+    }
   } else {
     supRows <- supRowsForce 
   }
   
   
-
+  # To distribute correction when extreme correction caused by special input (preRounded)
+  if (any(preRounded) &  any(supRows)) { #if (any(supRows)) {
+    nRallOrdinary <- sum(yInner[supRows]%%roundBase)/roundBase
+    nRallOrdinaryNot <- sum(supRows) - nRallOrdinary
+    nRallOrdinaryCorrection <- (sum(yInnerExact) - sum(yInner))/roundBase
+    correctionNotPart <- nRallOrdinaryCorrection/nRallOrdinaryNot
+  } else {
+    correctionNotPart <- 0
+  }
+  
   if (!singleRandom) if (sum(supRows) > maxIterRows) {
     randInd <- sample.int(sum(supRows), maxIterRows)
     supInds <- which(supRows)
@@ -493,6 +552,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
       flush.console()
     }
   }
+  
 
 
   # Reduserer til antall rader som trengs
@@ -536,11 +596,28 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   
   
   correction <- TRUE  # -- For testing
+  
+  nR <- sum(ySupp)/roundBase
+  
   if (correction) {
     yPls <- yPls + yPublishCorrection
-    nR <- round((sum(ySupp) + sum(yInnerExact) - sum(yInner))/roundBase)
+    
+    # Use old method when small difference
+    if(correctionNotPart != 0)
+      if(abs( (sum(yInnerExact) - sum(yInner))/roundBase) < 0.5001)
+        correctionNotPart <- 0
+      
+    if(correctionNotPart == 0){   # Cannot be removed. correctionNotPart  set 0 also several lines above.
+      nR <- round((sum(ySupp) + sum(yInnerExact) - sum(yInner))/roundBase) # old
+    } else {
+      nR <- round(nR + correctionNotPart*(length(ySupp)-nR))  # new  
+    }
+    
+    nR <- min(nR, length(ySupp))
+    nR <- max(nR, 0)
+    
   } else {
-    nR <- round(sum(ySupp)/roundBase)
+    nR <- round(nR)
   }
   
   

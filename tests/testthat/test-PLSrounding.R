@@ -79,6 +79,57 @@ test_that("PLSrounding works", {
 })
 
 
+test_that("Parameter preRounded", {
+  seed <- 123
+  mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint
+  z2 <- SmallCountData("z2")
+  z2$freq <- c(2, 2, 0, 2, 0, 1, 2, 2, 2, 0, 2, 0, 0, 0, 2, 0, 0, 1, 0, 2, 0, 0, 2, 0, 0, 0, 1, 0, 2, 1, 2, 1, 2, 0, 0, 1, 1, 2, 0, 1, 2, 1, 0, 0)
+  
+  a <- PLSrounding(z2, "ant", formula = mf2, easyCheck = TRUE, leverageCheck = FALSE)
+  z2$antR <- a$inner$rounded
+  expect_warning(b <- PLSrounding(z2, "ant", formula = mf2, easyCheck = TRUE, leverageCheck = TRUE, preRounded = "antR"))
+  expect_identical(a, b)
+  
+  a <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE)
+  z2$freqR <- a$inner$rounded
+  expect_warning(b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = TRUE, leverageCheck = FALSE, preRounded = "freqR"))
+  expect_identical(a, b)
+  z2$freqR[a$inner$difference < 0] <- NA
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR")
+  expect_identical(a, b)
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded =  z2$freqR, maxIterRows = 3)
+  expect_identical(a, b)
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR", maxIterRows = 1)
+  expect_identical(a, b)
+  
+  z2$freqR <- NA
+  z2$freqR[1] <- 18
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR")
+  expect_true(sum(b$inner$difference) < 2)
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR", maxIterRows = 2)
+  expect_true(sum(b$inner$difference) < 2)
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded =  z2$freqR, maxIterRows = 1)
+  expect_true(sum(b$inner$difference) < 2)
+  
+  z2$freqR[1] <- 1000
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR")
+  expect_true(sum(b$inner$difference > 0) == 1)
+  
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR", forceInner = TRUE)
+  expect_true(sum(b$inner$rounded) == 1000)
+  
+  z2$freq[1] <- 1000
+  z2$freqR[1] <- 100
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR")
+  expect_true(sum(b$inner$difference < 0) == 1)
+  
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR", forceInner = TRUE)
+  expect_equivalent(unique(b$inner$rounded), c(100, 3, 0))
+  
+  b <- PLSrounding(z2, "freq", formula = mf2, easyCheck = FALSE, leverageCheck = FALSE, preRounded = "freqR", forceInner = TRUE, zeroCandidates = TRUE)
+  expect_equivalent(unique(b$inner$rounded), c(100, 3))
+})
+
 
 
 PLStest = function(..., seed, Version){
