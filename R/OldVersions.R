@@ -50,7 +50,7 @@ RoundViaDummy_Version_0.3.0 <- function(data, freqVar, formula = NULL, roundBase
       formulaSums <- NULL
     }
     else
-      x <- ModelMatrix(as.formula(formula), data = data, sparse = TRUE)
+      x <- ModelMatrix_Old_Version(as.formula(formula), data = data, sparse = TRUE)
     cat("}")
     flush.console()
     options(na.action=previous_na_action$na.action)
@@ -299,6 +299,27 @@ Pls1Round_Version_0.3.0 <- function(x, y, roundBase = 3L, removeOneCols = FALSE,
 }
 
 
+
+
+ModelMatrix_Old_Version <- function(formula, data = NULL, mf = model.frame(formula, data = data), allFactor = TRUE, sparse = FALSE, 
+                        formulaSums=FALSE, printInc = FALSE) {
+  if(formulaSums)
+    return(formula = FormulaSums(formula, data = data,
+                                 makeNames=TRUE, crossTable=FALSE, total = "Total", printInc=printInc,
+                                 dropResponse = TRUE))
+  for (i in 1:length(mf)) {
+    if (allFactor)
+      mf[[i]] <- as.factor(mf[[i]])
+    if (is.factor(mf[[i]]))
+      mf[[i]] <- AddEmptyLevel(mf[[i]])
+  }
+  if (sparse)
+    return(sparse.model.matrix(formula, data = mf))
+  model.matrix(formula, data = mf)
+}
+
+
+AddEmptyLevel <- function(x) factor(x, levels = c("tullnull", levels(x)))
 
 
 

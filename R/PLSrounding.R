@@ -11,8 +11,10 @@
 #' @param roundBase Rounding base
 #' @param hierarchies List of hierarchies
 #' @param formula Model formula defining publishable cells
+#' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified. 
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
 #' @param printInc Printing iteration information to console when TRUE  
+#' @param output Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
@@ -57,9 +59,10 @@
 #' mean(abs(a$publish[, "difference"]))
 #' sqrt(mean((a$publish[, "difference"])^2))
 #' 
-#' # Five lines below produce equivalent results 
+#' # Six lines below produce equivalent results 
 #' # Ordering of rows can be different
-#' PLSrounding(z, "freq")
+#' PLSrounding(z, "freq") # All variables except "freq" as dimVar  
+#' PLSrounding(z, "freq", dimVar = c("geo", "eu", "year"))
 #' PLSrounding(z, "freq", formula = ~eu * year + geo * year)
 #' PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"))
 #' PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"))
@@ -85,31 +88,37 @@
 #'   PLSrounding(z2, "freq", hierarchies = h2)
 #' }
 #' 
-#' # Use PLS2way to produce tables as in Langsrud and Heldal (2018) 
-#' # and to demonstrate parameters maxRound, 
-#' # zeroCandidates and identifyNew (see RoundViaDummy)
+#' # Use PLS2way to produce tables as in Langsrud and Heldal (2018) and to demonstrate 
+#' # parameters maxRound, zeroCandidates and identifyNew (see RoundViaDummy).   
+#' # Parameter rndSeed used to ensure same output as in reference.
 #' exPSD <- SmallCountData("exPSD")
-#' set.seed(12345)  # To guarantee same output as in reference/comments
-#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols)
+#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, rndSeed=124)
 #' PLS2way(a, "original")  # Table 1
 #' PLS2way(a)  # Table 2
-#' set.seed(12345)
-#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE)
+#' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE, rndSeed=124)
 #' PLS2way(a)  # Table 3
-#' set.seed(12345)
 #' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7)
 #' PLS2way(a)  # Values in col1 rounded
-#' set.seed(12345)
 #' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
 #' PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
 PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formula = NULL, 
-                        maxRound = roundBase-1, printInc = nrow(data)>1000, ...) {
+                        dimVar = NULL,
+                        maxRound = roundBase-1, printInc = nrow(data)>1000, 
+                        output = NULL, ...) {
   
+  if(!is.null(output)){
+    if(!(output %in% c("inner", "publish")))
+      stop('Allowed non-NULL values of parameter output are "inner" and "publish".')
+    
+  } else {
+    output <- ""
+  }
   
   if(!is.null(list(...)$Version)){   # For testing
     z <- RoundViaDummy_Version_0.3.0(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, ...) 
   } else {
-    z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, 
+    z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies,
+                       dimVar = dimVar,
                      maxRound = maxRound, printInc = printInc, ...)
   }
   
@@ -138,13 +147,30 @@ PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formul
   
   if (!is.null(z$crossTable)) {
     cNames <- colnames(data)[colnames(data) %in% colnames(z$crossTable)]
-    out$inner <- cbind( CharacterDataFrame(data[, cNames, drop = FALSE]), z$yInner)
-    out$publish <- cbind(as.data.frame(z$crossTable[, cNames, drop = FALSE], stringsAsFactors = FALSE), z$yPublish)
-    rownames(out$publish) <- NULL
+    if (output != "publish"){
+      out$inner <- cbind( CharacterDataFrame(data[, cNames, drop = FALSE]), z$yInner)
+    }
+    if (output != "inner"){
+      out$publish <- cbind(as.data.frame(z$crossTable[, cNames, drop = FALSE], stringsAsFactors = FALSE), z$yPublish)
+      rownames(out$publish) <- NULL
+    }
   } else {
-    out$inner <- as.data.frame(z$yInner)
-    out$publish <- as.data.frame(z$yPublish)
+    if (output != "publish"){
+      out$inner <- as.data.frame(z$yInner)
+    }
+    if (output != "inner"){
+      out$publish <- as.data.frame(z$yPublish)
+    }
   }
+  
+  if (output == "inner"){
+    return(out$inner)
+  }
+  
+  if (output == "publish"){
+    return(out$publish)
+  }
+  
   
   if (any(duplicated(colnames(out$inner)))) {
     warning(paste("Duplicated colnames in output:", paste(colnames(out$inner)[duplicated(colnames(out$inner))], collapse = ", ")))
@@ -164,6 +190,20 @@ PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formul
   return(structure(out, class = "PLSrounded"))
 }
 
+
+
+#' @rdname PLSrounding
+#' @export
+PLSroundingInner  <- function(..., output = "inner") {
+  PLSrounding(..., output = output)
+}
+
+
+#' @rdname PLSrounding
+#' @export
+PLSroundingPublish  <- function(..., output = "publish") {
+  PLSrounding(..., output = output)
+}
 
 
 #' Print method for PLSrounded
@@ -243,7 +283,7 @@ HD <- function(f, g){
 #' @references
 #' Shlomo, N., Antal, L., & Elliot, M. (2015). 
 #' Measuring Disclosure Risk and Data Utility for Flexible Table Generators, 
-#' Journal of Official Statistics, 31(2), 305-324. doi: \url{https://doi.org/10.1515/jos-2015-0019}
+#' Journal of Official Statistics, 31(2), 305-324. \doi{10.1515/jos-2015-0019}
 #'
 #' @param f Vector of original counts
 #' @param g Vector of perturbed counts

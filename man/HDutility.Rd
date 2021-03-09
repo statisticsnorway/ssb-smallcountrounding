@@ -40,5 +40,5 @@ print(c(
 \references{
 Shlomo, N., Antal, L., & Elliot, M. (2015). 
 Measuring Disclosure Risk and Data Utility for Flexible Table Generators, 
-Journal of Official Statistics, 31(2), 305-324. doi: \url{https://doi.org/10.1515/jos-2015-0019}
+Journal of Official Statistics, 31(2), 305-324. \doi{10.1515/jos-2015-0019}
 }

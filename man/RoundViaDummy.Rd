@@ -27,6 +27,8 @@ RoundViaDummy(
   leverageCheck = FALSE,
   easyCheck = TRUE,
   printInc = TRUE,
+  rndSeed = 123,
+  dimVar = NULL,
   ...
 )
 }
@@ -88,6 +90,10 @@ Checking is performed after rounding. Extra iterations are performed when needed
 \code{Reduce0exact} is called with \code{reduceByLeverage=FALSE} and \code{reduceByColSums=TRUE}.}
 
 \item{printInc}{Printing iteration information to console when TRUE}
+
+\item{rndSeed}{If non-NULL, a random generator seed to be used locally within the function without affecting the random value stream in R.}
+
+\item{dimVar}{The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.}
 
 \item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.

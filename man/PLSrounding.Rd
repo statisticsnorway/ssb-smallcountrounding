@@ -3,6 +3,8 @@
 \encoding{UTF8}
 \name{PLSrounding}
 \alias{PLSrounding}
+\alias{PLSroundingInner}
+\alias{PLSroundingPublish}
 \title{PLS inspired rounding}
 \usage{
 PLSrounding(
@@ -11,10 +13,16 @@ PLSrounding(
   roundBase = 3,
   hierarchies = NULL,
   formula = NULL,
+  dimVar = NULL,
   maxRound = roundBase - 1,
   printInc = nrow(data) > 1000,
+  output = NULL,
   ...
 )
+
+PLSroundingInner(..., output = "inner")
+
+PLSroundingPublish(..., output = "publish")
 }
 \arguments{
 \item{data}{Input data as a data frame (inner cells)}
@@ -27,9 +35,13 @@ PLSrounding(
 
 \item{formula}{Model formula defining publishable cells}
 
+\item{dimVar}{The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.}
+
 \item{maxRound}{Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded}
 
 \item{printInc}{Printing iteration information to console when TRUE}
+
+\item{output}{Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
 }
@@ -72,9 +84,10 @@ HDutility(a$publish[, "original"], a$publish[, "rounded"])
 mean(abs(a$publish[, "difference"]))
 sqrt(mean((a$publish[, "difference"])^2))
 
-# Five lines below produce equivalent results 
+# Six lines below produce equivalent results 
 # Ordering of rows can be different
-PLSrounding(z, "freq")
+PLSrounding(z, "freq") # All variables except "freq" as dimVar  
+PLSrounding(z, "freq", dimVar = c("geo", "eu", "year"))
 PLSrounding(z, "freq", formula = ~eu * year + geo * year)
 PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"))
 PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"))
@@ -100,21 +113,17 @@ if (require(sdcHierarchies)) {
   PLSrounding(z2, "freq", hierarchies = h2)
 }
 
-# Use PLS2way to produce tables as in Langsrud and Heldal (2018) 
-# and to demonstrate parameters maxRound, 
-# zeroCandidates and identifyNew (see RoundViaDummy)
+# Use PLS2way to produce tables as in Langsrud and Heldal (2018) and to demonstrate 
+# parameters maxRound, zeroCandidates and identifyNew (see RoundViaDummy).   
+# Parameter rndSeed used to ensure same output as in reference.
 exPSD <- SmallCountData("exPSD")
-set.seed(12345)  # To guarantee same output as in reference/comments
-a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols)
+a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, rndSeed=124)
 PLS2way(a, "original")  # Table 1
 PLS2way(a)  # Table 2
-set.seed(12345)
-a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE)
+a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE, rndSeed=124)
 PLS2way(a)  # Table 3
-set.seed(12345)
 a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7)
 PLS2way(a)  # Values in col1 rounded
-set.seed(12345)
 a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
 PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
 }

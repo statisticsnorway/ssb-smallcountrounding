@@ -46,7 +46,9 @@
 #' @param easyCheck A light version of the above leverage checking. 
 #'                  Checking is performed after rounding. Extra iterations are performed when needed.
 #'                  `Reduce0exact` is called with `reduceByLeverage=FALSE` and `reduceByColSums=TRUE`.
-#' @param printInc Printing iteration information to console when TRUE        
+#' @param printInc Printing iteration information to console when TRUE
+#' @param rndSeed If non-NULL, a random generator seed to be used locally within the function without affecting the random value stream in R.      
+#' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.    
 #' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
@@ -62,10 +64,10 @@
 #' 
 #' @seealso  See the  user-friendly wrapper \code{\link{PLSrounding}}
 #'   and see \code{Round2} for rounding by other algorithm
-#' @importFrom stats as.formula hat
-#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies HierarchiesAndFormula2ModelMatrix Reduce0exact MakeFreq
+#' @importFrom stats as.formula hat model.frame model.matrix
+#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies Reduce0exact MakeFreq  ModelMatrix
 #' @importFrom utils flush.console
-#' @importFrom  Matrix Matrix
+#' @importFrom  Matrix Matrix sparse.model.matrix
 #' @importFrom  methods as hasArg
 #' @export
 #'
@@ -116,7 +118,16 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           preRounded = NULL,
                           leverageCheck = FALSE, 
                           easyCheck = TRUE,
-                          printInc = TRUE, ...) {
+                          printInc = TRUE,  rndSeed = 123, dimVar = NULL, ...) {
+  
+  if (!is.null(rndSeed)) {
+    if (!exists(".Random.seed")) 
+      if (runif(1) < 0) 
+        stop("Now seed exists")
+    exitSeed <- .Random.seed
+    on.exit(.Random.seed <<- exitSeed)
+    set.seed(rndSeed)
+  }
   
   if (hasArg("roundbase"))
     stop('Misspelled parameter "roundbase" found. Use "roundBase".')
@@ -147,89 +158,37 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     flush.console()
   }
   
-  if (!is.null(x) & is.logical(crossTable)) {
-    if(crossTable)
-      warning('"crossTable=TRUE" ignored when x is supplied. crossTable as data.frame input is possible.')
-    crossTable <- FALSE
-    crossTab <- NULL
-  }
   
-  if (is.null(x) & is.null(formula) & is.null(hierarchies)) {
-    freqVarName <- names(data[1, freqVar, drop = FALSE])
-    hierarchies <- FindHierarchies(data[, !(names(data) %in% freqVarName), drop = FALSE])
-    # stop('formula, hierarchies or x needed')
-  }
-  
-  
-  #if (!is.null(hierarchies) & !is.null(formula)) 
-  #  stop("formula combined with hierarchies is not implemented")
-  
-  
-  if (!is.null(hierarchies) & !is.null(x)) 
-    warning("hierarchies ignored when x is supplied")
-  
-  
-  if(!is.null(x) & !is.null(formula))
-    warning("formula ignored when x is supplied")
-  
-  
-  if (!is.null(hierarchies) & is.null(x)) {
-    if(is.null(formula)){
-      x <- Hierarchies2ModelMatrix(data = data, hierarchies = hierarchies, crossTable = crossTable, total = total, ...)
-    } else {
-      x <- HierarchiesAndFormula2ModelMatrix(data = data, hierarchies = hierarchies, formula = formula, crossTable = crossTable, total = total, ...)
-    }
-    if(crossTable){ 
-      crossTable <- x$crossTable
-      x <- x$modelMatrix
-    } else {
-      crossTab <- NULL
-    }
-  }
-  
-  ## code below is as before hierarchies introduced 
-  
-  if(is.null(x)){
+  if (!is.null(formula) & is.null(hierarchies) & is.null(x)){
+    
     if(length(total)>1){
       total <- total[1]
       warning("Only first element of total is used when formula input.")
     }
-    previous_na_action <- options('na.action')
-    options(na.action='na.pass')
-    if(printInc){
-      cat("{O")
-      flush.console()
-    }
-    if(crossTable){
-      formulaSums <- FormulaSums(formula = as.formula(formula), data = data, crossTable=TRUE,total=total,dropResponse=TRUE)
-      x <- formulaSums$modelMatrix
-      crossTab <- formulaSums$crossTable
-      formulaSums <- NULL
-    }
-    else
-      x <- ModelMatrix(as.formula(formula), data = data, sparse = TRUE)
-    if(printInc){
-      cat("}")
-      flush.console()
-    }
-    options(na.action=previous_na_action$na.action)
-  } else {
-    if(!is.logical(crossTable))
-      crossTab <- crossTable
-    crossTable <- !is.null(crossTab)
+  }
+  
+  if (is.null(formula) & is.null(hierarchies) & is.null(x) & is.null(dimVar)){
+    freqVarName <- names(data[1, freqVar, drop = FALSE])
+    dimVar <- names(data[1, !(names(data) %in% freqVarName), drop = FALSE])
   }
   
   
-  #startTime <- Sys.time()
-  if(anyNA(x))      # With na.action='na.pass' and sparse = TRUE no NA's will be produced now (zeros instead) - package ‘Matrix’ version 1.2-11
-    x[is.na(x)] =0  # The code here is made for possible change in later versions
-  #print(difftime(Sys.time(),startTime))
+  
+  x = ModelMatrixExtra(data = data, hierarchies=hierarchies, formula =formula, crossTable=crossTable, modelMatrix = x, total=total, dimVar=dimVar, ...)
   
   if(is.null(freqVar) & xReturn){
-    if(crossTable)
-      return(list(x = x, crossTable = crossTab))
     return(x)
   }
+  
+  if(is.list(x)){
+    crossTable = TRUE
+    crossTab <- x$crossTable
+    x <- x$modelMatrix
+  } else {
+    crossTable = FALSE
+    crossTab <- NULL
+  }
+  
   
   yInner <- data[, freqVar, drop = TRUE]
   
@@ -279,47 +238,6 @@ IntegerCbind = function(original,rounded){ # To ensure integer when integer inpu
   cbind(original=original,rounded=rounded)
 }
 
-
-#' Overparameterized model matrix
-#'
-#' All factor levels included
-#'
-#' @param formula formula
-#' @param data data frame
-#' @param mf model frame (alternative input instead of data)
-#' @param allFactor When TRUE all variables are coerced to factor
-#' @param sparse When TRUE sparse matrix created by sparse.model.matrix()
-#' @param formulaSums When TRUE, sparse matrix via FormulaSums()
-#' @param printInc	Printing \code{...} to console when TRUE
-#'
-#' @return model matrix created via model.matrix(), sparse.model.matrix() or FormulaSums()
-#' @importFrom stats model.frame model.matrix
-#' @importFrom Matrix sparse.model.matrix
-#' @export
-#' @keywords internal
-#'
-#' @examples
-#'   z1 <- SmallCountData("z1")
-#'   ModelMatrix(~region*hovedint,z1)
-ModelMatrix <- function(formula, data = NULL, mf = model.frame(formula, data = data), allFactor = TRUE, sparse = FALSE, 
-                        formulaSums=FALSE, printInc = FALSE) {
-  if(formulaSums)
-    return(formula = FormulaSums(formula, data = data,
-                                  makeNames=TRUE, crossTable=FALSE, total = "Total", printInc=printInc,
-                                  dropResponse = TRUE))
-  for (i in 1:length(mf)) {
-    if (allFactor)
-      mf[[i]] <- as.factor(mf[[i]])
-    if (is.factor(mf[[i]]))
-      mf[[i]] <- AddEmptyLevel(mf[[i]])
-  }
-  if (sparse)
-    return(sparse.model.matrix(formula, data = mf))
-  model.matrix(formula, data = mf)
-}
-
-
-AddEmptyLevel <- function(x) factor(x, levels = c("tullnull", levels(x)))
 
 
 

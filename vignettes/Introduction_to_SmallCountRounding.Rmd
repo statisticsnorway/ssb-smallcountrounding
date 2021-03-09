@@ -2,12 +2,15 @@
 ---
 title: "Introduction to 'SmallCountRounding'"
 author: "Øyvind Langsrud and Johan Heldal"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to SmallCountRounding}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+keywords: statistical disclosure control, statistical confidentiality, rounding, official statistics
 ---
+
 
 <br><br>
 
@@ -25,11 +28,9 @@ yellow = "#FFFF88"
 green = "#F0FFE9"
 green2 = "#88FF88"
 z <- SmallCountData("exPSD")
-set.seed(12345) 
 a <- PLSrounding(z, "freq", 5)
 k <- PLS2way(a, "original") 
 ka <- PLS2way(a)
-set.seed(12345) 
 b <- PLSrounding(z, "freq", 5, formula = ~rows + cols)
 kb <- PLS2way(b)
 
@@ -38,13 +39,9 @@ e6  <-  SmallCountData("e6")
 
 eDimList <- SmallCountData("eDimList")
 
-set.seed(12345)
 e6a <-  PLSrounding(e6, "freq", 5)
-set.seed(12345)
 e6b <-  PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)
-set.seed(12345)
 e6c <-  PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)
-set.seed(12345)
 e6d <-  PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year)
 
 
@@ -173,10 +170,10 @@ b$publish
 ```
 
 
-## Set seed for unique output 
+## Unique output obtained by local random generator seed 
 
+The underlying algorithm is sequential. Within a loop, the next cell to be given the rounding base value is selected according to a criterion. Random draw is used when draw criterion. To ensure unique output, a fixed random generator seed is used locally within the function without affecting the random value stream in R.  See the documentation of `rndSeed`, a parameter to `RoundViaDummy`.
 
-The underlying algorithm is sequential. Within a loop, the next cell to be given the rounding base value is selected according to a criterion. Random draw is used when draw criterion. Therefore, the result may vary. Use `set.seed` to ensure unique output. In the examples above `set.seed(12345)` was called before calling `PLSrounding`.
 
 
 ## The output object 
@@ -284,21 +281,23 @@ eDimList
 As seen above, a hierarchy is specified for both variables. `eDimList$geo` is given in Table 5 and `eDimList$year` is a plain hierarchy with total code. 
 
 
-## Four ways to produce Table 6
+## Five ways to produce Table 6
 
-The four lines below produce the same results with element `publish` as in Table 6.  Ordering of rows can be different.   
+The five lines below produce the same results with element `publish` as in Table 6.  Ordering of rows can be different.   
 
 ```{r comment=NA, tidy = FALSE, eval = FALSE}
 PLSrounding(e6, "freq", 5)                                                      # a) 
-PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)                   # b)
-PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)                        # c)
-PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year) # d)
+PLSrounding(e6, "freq", 5, dimVar = c("geo", "eu", "year"))                     # b) 
+PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)                   # c)
+PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)                        # d)
+PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year) # e)
 ```
 
 
-* In a) and c) the function uses hierarchies for the calculations. In a) the hierarchies are found automatically from the input data. 
-* In b) the cross-classifications are found from the formula. In addition, hierarchical relations in the input data are analysed so that `geo`	and `eu` are combined into the same output column.   
-* In d), how to cross the hierarchies are defined by a formula.
+* In a), b) and d), the function uses hierarchies for the calculations. In a) and b) the hierarchies are found automatically from the input data. 
+  In a), `dimVar` is assumed to be all variables except `freq`.
+* In c) the cross-classifications are found from the formula. In addition, hierarchical relations in the input data are analysed so that `geo`	and `eu` are combined into the same output column.   
+* In e), how to cross the hierarchies are defined by a formula.
 
 ## Remarks and other parameters
 
