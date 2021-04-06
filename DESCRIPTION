@@ -1,8 +1,8 @@
 Package: SmallCountRounding
 Type: Package
 Title: Small Count Rounding of Tabular Data
-Version: 0.7.0
-Date: 2021-03-09
+Version: 0.7.2
+Date: 2021-04-06
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Johan", "Heldal", role = c("aut")))
 Author: Øyvind Langsrud [aut, cre], Johan Heldal [aut]

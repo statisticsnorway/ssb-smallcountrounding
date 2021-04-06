@@ -1,7 +1,5 @@
 
 
-# stackoverflow questions 30357330
-pkgEnvSmallCountData <- new.env(parent=emptyenv())
 #' Function that returns a dataset 
 #'
 #' @encoding UTF8
@@ -12,9 +10,9 @@ pkgEnvSmallCountData <- new.env(parent=emptyenv())
 #' @return The dataset
 #' @export
 #' @importFrom utils data
-#' @importFrom SSBtools Hrc2DimList
+#' @importFrom SSBtools Hrc2DimList SSBtoolsData
 #' 
-#' @note Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as is included in the package easySdcTable.
+#' @note Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as \code{\link{SSBtoolsData}}.
 #' 
 #' @seealso \code{\link{SSBtoolsData}}, \code{\link{Hrc2DimList}}
 #'
@@ -52,51 +50,6 @@ SmallCountData <- function(dataset, path = NULL) {
                       freq = c(6, 1, 0, 0, 2, 1, 1, 3, 1, 3, 1, 0, 4, 2, 2), 
                       stringsAsFactors = FALSE))
   }
-  if (!exists(dataset, pkgEnvSmallCountData))
-    data(list = dataset, package = "SmallCountRounding", envir = pkgEnvSmallCountData)
-  return(pkgEnvSmallCountData[[dataset]])
-  return(NULL)
+  
+  SSBtoolsData(dataset)
 }
-
-#' Fictitious datasets used in the examples.
-#' 
-#' The most comprehensive dataset, \code{sosialFiktiv}, contains three dimensions. The first dimension is 'region' which is grouped in two ways, 'fylke' and  'kostragr'. The other two are 'hovedint' and 'mnd'. In 'mnd2' two of the three categories in 'mnd' are merged.
-#' The other datasets (\code{z1}, \code{z1w}, \code{z2}, \code{z2w}, \code{z3}, \code{z3w}, \code{z3wb}) are smaller subdatasets.
-#' Datasets marked with '\code{w}' are unstacked and several variables are holding counts.
-#'
-#' @docType data
-#' @keywords datasets internal
-#' @name sosialFiktiv
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z1
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z1micro
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z1w
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z2
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z2w
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z3
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z3w
-NULL
-
-#' @rdname sosialFiktiv
-#' @name z3wb
-NULL

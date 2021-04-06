@@ -19,7 +19,7 @@ The dataset
 Function that returns a dataset
 }
 \note{
-Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as is included in the package easySdcTable.
+Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as \code{\link{SSBtoolsData}}.
 }
 \examples{
  SmallCountData("z1")

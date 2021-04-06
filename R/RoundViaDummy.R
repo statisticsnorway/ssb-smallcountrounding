@@ -174,7 +174,7 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
   
   
-  x = ModelMatrixExtra(data = data, hierarchies=hierarchies, formula =formula, crossTable=crossTable, modelMatrix = x, total=total, dimVar=dimVar, ...)
+  x = ModelMatrix(data = data, hierarchies=hierarchies, formula =formula, crossTable=crossTable, modelMatrix = x, total=total, dimVar=dimVar, ...)
   
   if(is.null(freqVar) & xReturn){
     return(x)
