@@ -141,7 +141,7 @@ PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formul
   
   freqTable <- cbind(TabCat(z$yInner, roundBase, "inn.", maxRound), TabCat(z$yPublish, roundBase, "pub.", maxRound))
   
-  freqVarName <- names(data[1, freqVar, drop = FALSE])
+  # freqVarName <- names(data[1, freqVar, drop = FALSE])
   
   out <- NULL
   

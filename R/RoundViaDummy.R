@@ -167,18 +167,24 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     }
   }
   
+  
+  if(is.null(freqVar)){       # microdata (freq=1) when empty freqVar 
+    freqVar <- "f_Re_qVa_r"
+    data[[freqVar]] <- 1L
+  }
+  
+  
   if (is.null(formula) & is.null(hierarchies) & is.null(x) & is.null(dimVar)){
     freqVarName <- names(data[1, freqVar, drop = FALSE])
     dimVar <- names(data[1, !(names(data) %in% freqVarName), drop = FALSE])
   }
   
   
-  
   x = ModelMatrix(data = data, hierarchies=hierarchies, formula =formula, crossTable=crossTable, modelMatrix = x, total=total, dimVar=dimVar, ...)
   
-  if(is.null(freqVar) & xReturn){
-    return(x)
-  }
+  #if(is.null(freqVar) & xReturn){
+  #  return(x)
+  #}
   
   if(is.list(x)){
     crossTable = TRUE
