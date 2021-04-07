@@ -77,6 +77,32 @@ test_that("PLSrounding works", {
 })
 
 
+
+test_that("preAggregate works", {
+  printInc <- FALSE
+  
+  formula <- ~eu * year + geo * year
+  zM <- SSBtools::MakeMicro(SmallCountData("e6"), "freq")[, -4]
+  zF <- aggregate(list(freq = zM[[1]]), zM, length)
+  
+  aM <- PLSrounding(zM, formula = formula, printInc = printInc)
+  aF <- PLSrounding(zF, "freq", formula = formula, printInc = printInc)
+  
+  expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
+  expect_identical(aM[[2]], aF[[2]][names(aM[[2]])])
+  expect_identical(aM[3:4], aF[3:4])
+  
+  aM <- PLSrounding(zM, printInc = printInc)
+  expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
+  expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[2]], aF[[2]]))))), 0)
+  expect_identical(aM[3:4], aF[3:4])
+  
+  aM <- PLSrounding(zM, hierarchies = SmallCountData("eDimList"), printInc = printInc)
+  expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
+  expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[2]], aF[[2]]))))), 0)
+  expect_identical(aM[3:4], aF[3:4])
+})
+
 test_that("Parameter preRounded", {
   mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint
   z2 <- SmallCountData("z2")
