@@ -88,6 +88,7 @@ test_that("preAggregate works", {
   aM <- PLSrounding(zM, formula = formula, printInc = printInc)
   aF <- PLSrounding(zF, "freq", formula = formula, printInc = printInc)
   
+  expect_equal(nrow(aM[[1]]), nrow(zF))
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
   expect_identical(aM[[2]], aF[[2]][names(aM[[2]])])
   expect_identical(aM[3:4], aF[3:4])
@@ -101,6 +102,11 @@ test_that("preAggregate works", {
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[2]], aF[[2]]))))), 0)
   expect_identical(aM[3:4], aF[3:4])
+  
+  aM <- PLSrounding(zM, formula = formula, printInc = printInc,  preAggregate = FALSE)
+  expect_equal(nrow(aM[[1]]), nrow(zM))
+  expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[2]], aF[[2]]))))), 0)
+
 })
 
 test_that("Parameter preRounded", {
