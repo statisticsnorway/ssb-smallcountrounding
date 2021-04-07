@@ -7,7 +7,7 @@
 #' See \code{\link{RoundViaDummy}} for more details.
 #'
 #' @param data Input data as a data frame (inner cells)
-#' @param freqVar Variable holding counts (inner cells frequencies)
+#' @param freqVar Variable holding counts (inner cells frequencies).  When \code{NULL} (default), microdata is assumed.
 #' @param roundBase Rounding base
 #' @param hierarchies List of hierarchies
 #' @param formula Model formula defining publishable cells
@@ -15,6 +15,7 @@
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
 #' @param printInc Printing iteration information to console when TRUE  
 #' @param output Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
+#' @param preAggregate When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables. 
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
@@ -101,10 +102,51 @@
 #' PLS2way(a)  # Values in col1 rounded
 #' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
 #' PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
-PLSrounding <- function(data, freqVar, roundBase = 3, hierarchies = NULL, formula = NULL, 
+PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL, formula = NULL, 
                         dimVar = NULL,
                         maxRound = roundBase-1, printInc = nrow(data)>1000, 
-                        output = NULL, ...) {
+                        output = NULL, 
+                        preAggregate = is.null(freqVar), ...) {
+  
+  
+  force(preAggregate)
+  
+  if (preAggregate) {
+    if (printInc) {
+      cat("[preAggregate ", dim(data)[1], "*", dim(data)[2], "->", sep = "")
+      flush.console()
+    }
+    if (!is.null(hierarchies)) {
+      dVar <- names(hierarchies)
+    } else {
+      if (!is.null(formula)) {
+        dVar <- row.names(attr(delete.response(terms(as.formula(formula))), "factors"))
+      } else {
+        if (!is.null(dimVar)){
+          dVar <- dimVar
+        } else {
+          if (is.null(freqVar)){
+            dVar <- names(data)
+          } else {
+            freqVarName <- names(data[1, freqVar, drop = FALSE])
+            dVar <- names(data[1, !(names(data) %in% freqVarName), drop = FALSE])
+          }
+        }
+      }
+    }
+    dVar <- unique(dVar)
+    if (is.null(freqVar)) {
+      data <- aggregate(list(f_Re_qVa_r = data[[dVar[1]]]), data[dVar], length)
+      freqVar <- "f_Re_qVa_r"
+    } else {
+      data <- aggregate(data[freqVar], data[dVar], sum)
+    }
+    if (printInc) {
+      cat(dim(data)[1], "*", dim(data)[2], "]\n", sep = "")
+      flush.console()
+    }
+  }
+  
   
   if(!is.null(output)){
     if(!(output %in% c("inner", "publish")))
