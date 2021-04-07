@@ -39,6 +39,7 @@
 #' @encoding UTF8
 #' 
 #' @importFrom SSBtools CharacterDataFrame
+#' @importFrom stats aggregate as.formula delete.response terms
 #' @export
 #'
 #' @examples

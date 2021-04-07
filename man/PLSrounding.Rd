@@ -9,7 +9,7 @@
 \usage{
 PLSrounding(
   data,
-  freqVar,
+  freqVar = NULL,
   roundBase = 3,
   hierarchies = NULL,
   formula = NULL,
@@ -17,6 +17,7 @@ PLSrounding(
   maxRound = roundBase - 1,
   printInc = nrow(data) > 1000,
   output = NULL,
+  preAggregate = is.null(freqVar),
   ...
 )
 
@@ -27,7 +28,7 @@ PLSroundingPublish(..., output = "publish")
 \arguments{
 \item{data}{Input data as a data frame (inner cells)}
 
-\item{freqVar}{Variable holding counts (inner cells frequencies)}
+\item{freqVar}{Variable holding counts (inner cells frequencies).  When \code{NULL} (default), microdata is assumed.}
 
 \item{roundBase}{Rounding base}
 
@@ -42,6 +43,8 @@ PLSroundingPublish(..., output = "publish")
 \item{printInc}{Printing iteration information to console when TRUE}
 
 \item{output}{Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
+
+\item{preAggregate}{When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables.}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
 }
