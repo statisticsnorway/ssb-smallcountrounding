@@ -95,9 +95,10 @@ Checking is performed after rounding. Extra iterations are performed when needed
 
 \item{dimVar}{The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.}
 
-\item{...}{Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}.
+\item{...}{Further parameters sent to \code{\link{ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
-The parameter \code{inputInOutput} can be used to specify whether to include codes from input.}
+The parameter \code{inputInOutput} can be used to specify whether to include codes from input.
+The parameter \code{avoidHierarchical} (\code{\link{Formula2ModelMatrix}}) can be combined with formula input.}
 }
 \value{
 A list where the two first elements are two column matrices.

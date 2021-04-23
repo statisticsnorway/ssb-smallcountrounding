@@ -49,9 +49,10 @@
 #' @param printInc Printing iteration information to console when TRUE
 #' @param rndSeed If non-NULL, a random generator seed to be used locally within the function without affecting the random value stream in R.      
 #' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.    
-#' @param ... Further parameters sent to \code{\link{Hierarchies2ModelMatrix}} or \code{\link{HierarchiesAndFormula2ModelMatrix}}.
+#' @param ... Further parameters sent to \code{\link{ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
+#'            The parameter `avoidHierarchical` (\code{\link{Formula2ModelMatrix}}) can be combined with formula input.
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
 #' To avoid problems, not more than maxIterRows cells are rounded in each iteration.

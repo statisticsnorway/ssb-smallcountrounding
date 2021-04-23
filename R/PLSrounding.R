@@ -29,7 +29,7 @@
 #'    For example, row "\code{rounded}" and column "\code{inn.4+}" is the number of rounded 
 #'    inner cell frequencies greater than or equal to \code{4}.}
 #'    
-#' @seealso   \code{\link{RoundViaDummy}}, \code{\link{PLS2way}} 
+#' @seealso   \code{\link{RoundViaDummy}}, \code{\link{PLS2way}}, \code{\link{ModelMatrix}} 
 #' 
 #' @references 
 #' Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}. 
@@ -79,6 +79,16 @@
 #' 
 #' # Also possible to combine hierarchies and formula
 #' PLSrounding(z, "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)
+#' 
+#' # Single data frame output
+#' PLSroundingInner(z, "freq", roundBase = 5, formula = ~geo + eu + year)
+#' PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year)
+#' 
+#' # Microdata input
+#' PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)
+#' 
+#' # Parameter avoidHierarchical (see RoundViaDummy and ModelMatrix) 
+#' PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year, avoidHierarchical = TRUE)
 #' 
 #' # Package sdcHierarchies can be used to create hierarchies. 
 #' # The small example code below works if this package is available. 

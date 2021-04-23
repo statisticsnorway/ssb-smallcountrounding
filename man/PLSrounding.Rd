@@ -106,6 +106,16 @@ PLSrounding(z, "freq", hierarchies = eHrc2)
 # Also possible to combine hierarchies and formula
 PLSrounding(z, "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)
 
+# Single data frame output
+PLSroundingInner(z, "freq", roundBase = 5, formula = ~geo + eu + year)
+PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year)
+
+# Microdata input
+PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)
+
+# Parameter avoidHierarchical (see RoundViaDummy and ModelMatrix) 
+PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year, avoidHierarchical = TRUE)
+
 # Package sdcHierarchies can be used to create hierarchies. 
 # The small example code below works if this package is available. 
 if (require(sdcHierarchies)) {
@@ -136,5 +146,5 @@ Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. Septembe
 \url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 }
 \seealso{
-\code{\link{RoundViaDummy}}, \code{\link{PLS2way}}
+\code{\link{RoundViaDummy}}, \code{\link{PLS2way}}, \code{\link{ModelMatrix}}
 }
