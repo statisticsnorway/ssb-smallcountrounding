@@ -171,6 +171,7 @@ PLStest = function(..., seed, Version){
 
 
 test_that("Same as Version_0.3.0", {
+  skip_on_cran()
   seed = 123
   mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
   PLStest(SmallCountData('z3'), 'ant', 3, formula = mf, seed= seed, Version = "0.3.0")

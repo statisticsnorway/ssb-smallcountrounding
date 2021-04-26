@@ -1,5 +1,13 @@
 
 
+## SmallCountRounding	0.8.0
+* Now, microdata input is allowed. This is due to
+  - Allowing empty `freqVar` in input.
+  - The new parameter `preAggregate`: When `TRUE`, the data will be aggregated beforehand within the function by the dimensional variables.
+* It is possible to avoid handling hierarchical variables when using the formula interface.
+  - This is a consequence of parameter `avoidHierarchical` to `Formula2ModelMatrix` in the SSBtools package.
+
+
 ## SmallCountRounding	0.7.0
 * Now, a random generator seed is used locally within the function without affecting the random value stream in R.
   - Handled by `rndSeed`, a new parameter to `RoundViaDummy` (and `PLSrounding`). 
