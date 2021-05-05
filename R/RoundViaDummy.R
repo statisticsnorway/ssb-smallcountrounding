@@ -48,7 +48,10 @@
 #'                  `Reduce0exact` is called with `reduceByLeverage=FALSE` and `reduceByColSums=TRUE`.
 #' @param printInc Printing iteration information to console when TRUE
 #' @param rndSeed If non-NULL, a random generator seed to be used locally within the function without affecting the random value stream in R.      
-#' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.    
+#' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.   
+#' @param plsWeights A vector of weights for each cell to be published or a function generating it. For use in the algorithm criterion.
+#'                   The supplied function takes the following arguments: `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxBase`, and `...`, 
+#'                   where the first two are numeric vectors of original counts. 
 #' @param ... Further parameters sent to \code{\link{ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
@@ -68,7 +71,7 @@
 #' @importFrom stats as.formula hat model.frame model.matrix
 #' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies Reduce0exact MakeFreq  ModelMatrix
 #' @importFrom utils flush.console
-#' @importFrom  Matrix Matrix sparse.model.matrix
+#' @importFrom  Matrix Matrix sparse.model.matrix Diagonal
 #' @importFrom  methods as hasArg
 #' @export
 #'
@@ -119,7 +122,8 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           preRounded = NULL,
                           leverageCheck = FALSE, 
                           easyCheck = TRUE,
-                          printInc = TRUE,  rndSeed = 123, dimVar = NULL, ...) {
+                          printInc = TRUE,  rndSeed = 123, dimVar = NULL, 
+                          plsWeights = NULL, ...) {
   
   if (!is.null(rndSeed)) {
     if (!exists(".Random.seed")) 
@@ -206,11 +210,21 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   } 
   
   yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
+  
+  if(!is.null(plsWeights)){
+    if (is.function(plsWeights)){
+      plsWeights <- plsWeights(yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxBase = maxBase, ...)
+    }
+    if(length(plsWeights)!= length(yPublish)){
+      stop("Wrong length of plsWeights")
+    }
+  }
+  
   a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
                       maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step, 
                       preRounded = preRounded,
                       easyCheck = easyCheck,
-                      leverageCheck = leverageCheck,  printInc = printInc)
+                      leverageCheck = leverageCheck,  printInc = printInc, plsWeights = plsWeights)
   if(printInc){
     cat("]\n")
     flush.console()
@@ -254,6 +268,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                            identifyNew = TRUE, step = 0,
                            forceFromFirstIter = TRUE, 
                            preRounded = NULL,
+                           plsWeights = NULL,
                            easyCheck = TRUE, leverageCheck = 0, printInc = TRUE) { # maxIter henger sammen med maxIterRows
 
   yInnerExact <- yInner
@@ -353,7 +368,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                                 singleRandom = singleRandom, yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
                                 supRowsForce = supRowsForce, identifyNew = !forceFromFirstIter, 
                                 preRounded = preRounded,
-                                step = step, printInc = printInc)
+                                step = step, printInc = printInc, plsWeights = plsWeights)
     else
       a <- PlsRoundSparseSingle(x = x, roundBase = roundBase, yInner = a[[1]], yPublish = yPublish,
                                 singleRandom = singleRandom, 
@@ -361,7 +376,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                                 yInnerExact = yInnerExact, yPublishExact = yPublishExact, maxIterRows=maxIterRows, 
                                 supRowsForce = supRowsForce, identifyNew = identifyNew,
                                 preRounded = preRounded,
-                                step = step, printInc = printInc)
+                                step = step, printInc = printInc, plsWeights = plsWeights)
     
       yPublish  <- a[[2]][, 1, drop = TRUE]
       suppRoundPublish <- yPublish < roundBase & yPublish > 0
@@ -436,7 +451,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
                                      yPublishExact = yPublish,
                                   maxIterRows = 1000, supRowsForce = rep(FALSE, length(yInner)), identifyNew = TRUE, 
                                   preRounded = FALSE,
-                                  step = 0, printInc = TRUE) {
+                                  step = 0, printInc = TRUE, plsWeights = NULL) {
   Pls1RoundHere <- get0("Pls1RoundFromUser", ifnotfound = Pls1Round) # Hack som gjør det mulig å bytte ut Pls1Round med annen algoritme
 
   printIncInput <- printInc
@@ -499,7 +514,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   yPublishCorrection <- yPublishExact[cols2] - yPublish[cols2]
   yPls <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySupp, ncol = 1))))
   
-
+  plsWeightsHere <- plsWeights[cols2] 
   
   if (length(yPls) == 0 )   ## When 0 col in bSup
     singleRandom = TRUE
@@ -517,7 +532,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
   }
   
   
-  yPls2 <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySupp, ncol = 1))))
+  #  yPls2 <- t(as.matrix(Matrix::crossprod(bSup, Matrix(ySupp, ncol = 1))))   # Not used
   
   
   correction <- TRUE  # -- For testing
@@ -558,7 +573,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
       }
     }
   } else {
-    yR <- Pls1RoundHere(bSup, ySupp, roundBase = roundBase, yPls = yPls, nR = nR, printInc=printInc, step = step)
+    yR <- Pls1RoundHere(bSup, ySupp, roundBase = roundBase, yPls = yPls, nR = nR, printInc=printInc, step = step, plsWeights=plsWeightsHere)
   }
 
   # Legger inn i ikke-reduserte data
@@ -571,7 +586,7 @@ PlsRoundSparseSingle  <- function(x,roundBase=3, yInner, yPublish = Matrix::cros
 
 
 
-Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TRUE, yPls = NULL, nR = NULL, random = TRUE,dgT=TRUE, wD=TRUE, step = 0) {
+Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TRUE, yPls = NULL, nR = NULL, random = TRUE, wD=TRUE, step = 0, plsWeights) {
   # dgT med eller uten tApp/wD er muligheter ved for lite minne til roundBasecrossprod
   # wD fungerer raskt!!
   # cat("Pls1RoundFromUser")
@@ -597,9 +612,16 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   if(nR==length(y))
     return(rep(roundBase , length(y)))
   
+  if(!is.null(plsWeights)){
+    if(printInc) {cat("w"); flush.console()}
+    plsWeights <- Diagonal(x=plsWeights)
+    x <- x %*% plsWeights
+    yPls <- yPls %*% plsWeights 
+  }
+  
   if(printInc) {cat("*"); flush.console()}
   #startTime <- Sys.time()
-  if(dgT){
+  #if(dgT){
     dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
     dgTi <- dgTBase@i +1L
     dgTj <- dgTBase@j +1L
@@ -621,9 +643,9 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
         wd <- c(1L,2L)
       GetInd <- function(i,x){matlabColon(x[i],x[i+1L]-1L)}
     }
-  }
-  else
-    roundBasecrossprod <- as.matrix(roundBase * Matrix::tcrossprod(x))  # Much faster with as.matrix here
+  #}
+  #else Not used
+  #  roundBasecrossprod <- as.matrix(roundBase * Matrix::tcrossprod(x))  # Much faster with as.matrix here
   #roundBasecrossprod <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix")  # Relativt treg
   if(printInc) {cat("*"); flush.console()}
   
@@ -631,6 +653,7 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   ind = as.integer(ind)
   indInv = integer(0)
   nBase = 0L
+  
   coe <- Matrix::tcrossprod(x, yPls)
   
   if (roundBase != 1L) {
