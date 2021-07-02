@@ -29,6 +29,7 @@ RoundViaDummy(
   printInc = TRUE,
   rndSeed = 123,
   dimVar = NULL,
+  plsWeights = NULL,
   ...
 )
 }
@@ -94,6 +95,10 @@ Checking is performed after rounding. Extra iterations are performed when needed
 \item{rndSeed}{If non-NULL, a random generator seed to be used locally within the function without affecting the random value stream in R.}
 
 \item{dimVar}{The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.}
+
+\item{plsWeights}{A vector of weights for each cell to be published or a function generating it. For use in the algorithm criterion.
+The supplied function takes the following arguments: \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxBase}, and \code{...},
+where the first two are numeric vectors of original counts.}
 
 \item{...}{Further parameters sent to \code{\link{ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
