@@ -1,8 +1,8 @@
 Package: SmallCountRounding
 Type: Package
 Title: Small Count Rounding of Tabular Data
-Version: 0.8.1
-Date: 2021-05-05
+Version: 0.8.2
+Date: 2021-08-23
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Johan", "Heldal", role = c("aut")))
 Author: Øyvind Langsrud [aut, cre], Johan Heldal [aut]
@@ -12,6 +12,7 @@ Imports: methods
 VignetteBuilder: knitr
 Suggests: 
     knitr,
+    rmarkdown,
     kableExtra,
     sdcHierarchies,
     testthat
