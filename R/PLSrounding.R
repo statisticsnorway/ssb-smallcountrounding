@@ -14,7 +14,7 @@
 #' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified. 
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
 #' @param printInc Printing iteration information to console when TRUE  
-#' @param output Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
+#' @param output Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
 #' @param preAggregate When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables. 
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
@@ -122,8 +122,18 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   
   force(preAggregate)
   
-  if (preAggregate) {
-    if (printInc) {
+  names_data <- names(data)
+  
+  if(!is.null(output)){
+    if(!(output %in% c("input", "inner", "publish")))
+      stop('Allowed non-NULL values of parameter output are "input", "inner" and "publish".')
+    
+  } else {
+    output <- ""
+  }
+  
+  if (preAggregate | output == "input") {
+    if (printInc & preAggregate) {
       cat("[preAggregate ", dim(data)[1], "*", dim(data)[2], "->", sep = "")
       flush.console()
     }
@@ -146,26 +156,35 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
       }
     }
     dVar <- unique(dVar)
-    if (is.null(freqVar)) {
-      data <- aggregate(list(f_Re_qVa_r = data[[dVar[1]]]), data[dVar], length)
-      freqVar <- "f_Re_qVa_r"
-    } else {
-      data <- aggregate(data[freqVar], data[dVar], sum)
-    }
-    if (printInc) {
-      cat(dim(data)[1], "*", dim(data)[2], "]\n", sep = "")
-      flush.console()
-    }
-  }
-  
-  
-  if(!is.null(output)){
-    if(!(output %in% c("inner", "publish")))
-      stop('Allowed non-NULL values of parameter output are "inner" and "publish".')
     
-  } else {
-    output <- ""
+    if (preAggregate) {
+      if (is.null(freqVar)) {
+        data <- aggregate(list(f_Re_qVa_r = data[[dVar[1]]]), data[dVar], length)
+        freqVar <- "f_Re_qVa_r"
+      } else {
+        data <- aggregate(data[freqVar], data[dVar], sum)
+      }
+      if (printInc) {
+        cat(dim(data)[1], "*", dim(data)[2], "]\n", sep = "")
+        flush.console()
+      }
+    }
   }
+  
+  
+  if (output == "input"){
+    if (!is.null(freqVar)) {
+      if (freqVar == "f_Re_qVa_r") {
+        if (!("freq" %in% names_data)) {
+          names(data)[names(data) == freqVar] <- "freq"
+          freqVar <- "freq"
+        }
+      }
+    }
+    inner <- list(inner = data)
+    return(data[, c(dVar, freqVar), drop = FALSE])
+  }
+  
   
   if(!is.null(list(...)$Version)){   # For testing
     z <- RoundViaDummy_Version_0.3.0(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, ...) 

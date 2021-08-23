@@ -42,7 +42,7 @@ PLSroundingPublish(..., output = "publish")
 
 \item{printInc}{Printing iteration information to console when TRUE}
 
-\item{output}{Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
+\item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
 
 \item{preAggregate}{When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables.}
 
