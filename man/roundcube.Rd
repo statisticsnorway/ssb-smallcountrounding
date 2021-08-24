@@ -10,7 +10,7 @@ roundcube(rc, sort, control, minit, maxit, maxdiff, seed)
 \arguments{
 \item{rc}{The list of outpts from redcube}
 
-\item{sort}{An ordered list of variables in hypercubes in D meant for priority sorting of the reduced 
+\item{sort}{An ordered list of variables in hypercubes in D meant for priority sorting of the reduced
 hypercube B before rounding. Not all variables in D should be included.}
 
 \item{control}{A list of marginals of the hypercubes in D where deviations of aggregated rounded counts
@@ -26,14 +26,14 @@ are checked against original counts.}
 }
 \value{
 Ar: The rounded version of A
-   Br: The rounded version of B
-   D: The original hypercube of interest.
-   Dr: The rounded version of D. The final table of interest.
-   maxdiff: The largest absolute difference between cells D and Dr among cells in the control list.
-   nmaxdiff: The number of occurences if Maxdiff
+Br: The rounded version of B
+D: The original hypercube of interest.
+Dr: The rounded version of D. The final table of interest.
+maxdiff: The largest absolute difference between cells D and Dr among cells in the control list.
+nmaxdiff: The number of occurences if Maxdiff
 }
 \description{
-This function rounds small counts in a set of hypercubes D produced by the function redcube 
+This function rounds small counts in a set of hypercubes D produced by the function redcube
 and searches for a solution with smallest possible deviations from the original hypercube at
 some aggregated levels.
 }
