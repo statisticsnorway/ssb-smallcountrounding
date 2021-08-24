@@ -63,9 +63,9 @@ PLSroundingFits(
 \item{...}{Further parameters to \code{\link{PLSrounding}}.}
 }
 \value{
-A two-element list: 
-   \item{inner}{Data frame corresponding to input data with expected frequencies (`ipFit`).}
-   \item{publish}{Data frame with output from \code{\link{PLSrounding}} extended with aggregated expected frequencies (`ipFit`).}
+Output from \code{\link{PLSrounding}} (class attribute "PLSrounded") with modified versions of `inner` and `publish`: 
+   \item{inner}{Extended with more input data variables and with expected frequencies (`ipFit`).}
+   \item{publish}{Extended with aggregated expected frequencies (`ipFit`).}
 }
 \description{
 The counts rounded by \code{\link{PLSrounding}}  
@@ -73,7 +73,7 @@ Thereafter, based on the publishable rounded data, expected inner cell frequenci
 To ensure that empty cells missing in input data are included in the fitting process, the data is first extended using \code{\link{Extend0}}.
 }
 \details{
-The six first parameters is documented in more detail in \code{\link{PLSrounding}}. 
+The seven first parameters is documented in more detail in \code{\link{PLSrounding}}. 
 If iterative proportional fitting succeeds, the maximum difference between rounded counts and `ipFit` is less than input parameter `eps`.
 }
 \examples{
@@ -83,15 +83,17 @@ z <- data.frame(geo  = c("Iceland", "Portugal", "Spain"),
                 freq = c(2,3,7,1,5,6), stringsAsFactors = FALSE)
 z4 <- z[-c(1:2), ]
 
-PLSroundingFits(z4, "freq", formula = ~eu * year + geo, extend0 = FALSE)
-PLSroundingFits(z4, "freq", formula = ~eu * year + geo)
+PLSroundingFits(z4, "freq", formula = ~eu * year + geo, extend0 = FALSE)[c("inner", "publish")]
+PLSroundingFits(z4, "freq", formula = ~eu * year + geo)[c("inner", "publish")]
 
 my_km2 <- SSBtools::SSBtoolsData("my_km2")
 
 # Default automatic extension (extend0 = TRUE)
-PLSroundingFits(my_km2, "freq", formula = ~(Sex + Age) * Municipality * Square1000m + Square250m)
+PLSroundingFits(my_km2, "freq", 
+       formula = ~(Sex + Age) * Municipality * Square1000m + Square250m)[c("inner", "publish")]
 
 # Manual specification to avoid Nittedal combined with another_km
 PLSroundingFits(my_km2, "freq", formula = ~(Sex + Age) * Municipality * Square1000m + Square250m, 
-            extend0 = list(c("Sex", "Age"), c("Municipality", "Square1000m", "Square250m")))
+       extend0 = list(c("Sex", "Age"), 
+       c("Municipality", "Square1000m", "Square250m")))[c("inner", "publish")]
 }
