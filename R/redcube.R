@@ -3,6 +3,7 @@
 #' This function produces a reduced small count frequency hypercube for rounding.
 #' 
 #' @encoding UTF8
+#' @noMd
 #' 
 #' @param A A data frame representing a micro dataset or a frequency count hypercube. The (first) columns
 #'          define the variables. If A is a hypercube the last column contains the number of units in each cell.

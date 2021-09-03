@@ -6,6 +6,7 @@
 #' some aggregated levels.
 #' 
 #' @encoding UTF8
+#' @noMd
 #'
 #' @param rc The list of outpts from redcube
 #' @param sort An ordered list of variables in hypercubes in D meant for priority sorting of the reduced 
