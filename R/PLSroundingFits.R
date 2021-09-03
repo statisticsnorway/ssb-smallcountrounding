@@ -138,7 +138,7 @@ PLSroundingFits <- function(data, freqVar = NULL, roundBase = 3, hierarchies = N
     ipFit <- r0e$y
   } else {
     ipFit <- Mipf(mm$modelMatrix, z = lsFit, iter = iter, eps = eps, tol = tol, reduceBy0 = reduceBy0, 
-                  reduceByColSums = reduceByColSums, reduceByLeverage = reduceByLeverage, altSplit = TRUE)
+                  reduceByColSums = reduceByColSums, reduceByLeverage = reduceByLeverage)
   }
   
   data$original <- data[[freqVar]]
