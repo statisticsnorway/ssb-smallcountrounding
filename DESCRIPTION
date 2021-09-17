@@ -19,5 +19,5 @@ Description: A statistical disclosure control tool to protect frequency tables i
 License: Apache License 2.0 | file LICENSE
 URL: https://github.com/statisticsnorway/SmallCountRounding
 BugReports: https://github.com/statisticsnorway/SmallCountRounding/issues 
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8
