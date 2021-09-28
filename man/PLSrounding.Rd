@@ -42,7 +42,7 @@ PLSroundingPublish(..., output = "publish")
 
 \item{printInc}{Printing iteration information to console when TRUE}
 
-\item{output}{Possible non-NULL values are \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
+\item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
 
 \item{preAggregate}{When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables.}
 
@@ -50,18 +50,18 @@ PLSroundingPublish(..., output = "publish")
 }
 \value{
 Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
-   \item{inner}{Data frame corresponding to input data with the main dimensional variables and with cell 
-               frequencies (original, rounded, difference).}
-   \item{publish}{Data frame of publishable data with the main dimensional variables and with cell frequencies 
-                  (original, rounded, difference).}
-   \item{metrics}{A named character vector of various statistics calculated from the two output data frames 
-   ("\code{inner_}" used to distinguish). See examples below and the function \code{\link{HDutility}}.}
-   \item{freqTable}{Matrix of frequencies of cell frequencies and absolute differences.
-   For example, row "\code{rounded}" and column "\code{inn.4+}" is the number of rounded 
-   inner cell frequencies greater than or equal to \code{4}.}
+\item{inner}{Data frame corresponding to input data with the main dimensional variables and with cell
+frequencies (original, rounded, difference).}
+\item{publish}{Data frame of publishable data with the main dimensional variables and with cell frequencies
+(original, rounded, difference).}
+\item{metrics}{A named character vector of various statistics calculated from the two output data frames
+("\code{inner_}" used to distinguish). See examples below and the function \code{\link{HDutility}}.}
+\item{freqTable}{Matrix of frequencies of cell frequencies and absolute differences.
+For example, row "\code{rounded}" and column "\code{inn.4+}" is the number of rounded
+inner cell frequencies greater than or equal to \code{4}.}
 }
 \description{
-Small count rounding of necessary inner cells are performed so that all small frequencies of cross-classifications to be published 
+Small count rounding of necessary inner cells are performed so that all small frequencies of cross-classifications to be published
 (publishable cells) are rounded. The publishable cells can be defined from a model formula, hierarchies or automatically from data.
 }
 \details{
@@ -141,7 +141,7 @@ a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE
 PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
 }
 \references{
-Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}. 
+Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}.
 Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. September 26-28, 2018.
 \url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 }

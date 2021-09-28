@@ -4,6 +4,7 @@
 #' hypercubes by means of a version of small count rounding.
 #' 
 #' @encoding UTF8
+#' @noMd
 #' 
 #' @seealso Dependencies:  \code{\link{aggrtab}}, \code{\link{redcube}}, \code{\link{roundcube}}
 #'

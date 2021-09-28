@@ -23,7 +23,7 @@ described in the reference below.
 The utility measure is made to be bounded between 0 and 1.
 }
 \details{
-HD is defined as "\code{sqrt(sum((sqrt(f) - sqrt(g))^2)/2)}" and 
+HD is defined as "\code{sqrt(sum((sqrt(f) - sqrt(g))^2)/2)}" and
 HDutility  is defined as "\code{1 - HD(f, g)/sqrt(sum(f))}".
 }
 \examples{
@@ -38,7 +38,7 @@ print(c(
 ))
 }
 \references{
-Shlomo, N., Antal, L., & Elliot, M. (2015). 
-Measuring Disclosure Risk and Data Utility for Flexible Table Generators, 
+Shlomo, N., Antal, L., & Elliot, M. (2015).
+Measuring Disclosure Risk and Data Utility for Flexible Table Generators,
 Journal of Official Statistics, 31(2), 305-324. \doi{10.1515/jos-2015-0019}
 }
