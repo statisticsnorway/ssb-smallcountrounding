@@ -52,6 +52,8 @@
 #' @param plsWeights A vector of weights for each cell to be published or a function generating it. For use in the algorithm criterion.
 #'                   The supplied function takes the following arguments: `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxBase`, and `...`, 
 #'                   where the first two are numeric vectors of original counts. 
+#' @param preDifference   A data.frame with differences already obtained from rounding another subset of data. 
+#'                        There must be columns that match `crossTable`. Differences must be in the last column.
 #' @param ... Further parameters sent to \code{\link{ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
@@ -123,7 +125,8 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           leverageCheck = FALSE, 
                           easyCheck = TRUE,
                           printInc = TRUE,  rndSeed = 123, dimVar = NULL, 
-                          plsWeights = NULL, ...) {
+                          plsWeights = NULL, 
+                          preDifference = NULL, ...) {
   
   if (!is.null(rndSeed)) {
     if (!exists(".Random.seed")) 
@@ -220,11 +223,32 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     }
   }
   
+  if (!is.null(preDifference)) {
+    preDifferences <- rep(0L, length(yPublish))
+    ma <- Match(crossTab, preDifference[names(crossTab)])
+    preDifferences[!is.na(ma)] <- preDifference[[ncol(preDifference)]][ma[!is.na(ma)]]
+    
+    maxCsum <- Matrix::colSums(x[, !is.na(ma), drop = FALSE])
+    maxCsumInd <- which.max(maxCsum)
+    maxCsum <- maxCsum[maxCsumInd]
+    if (maxCsum != nrow(x)) {
+      stop("Overall total needed in preDifference")
+    }
+    preDifferenceTot <- preDifferences[!is.na(ma)][maxCsumInd]
+    if (is.null(preRounded) & abs(preDifferenceTot) > roundBase) {
+      warning("Big overall total in preDifference. preRounded-input may trig a better algorithm")
+    }
+  } else {
+    preDifferences <- NULL
+    preDifferenceTot <- NULL
+  }
+  
   a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
                       maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step, 
                       preRounded = preRounded,
                       easyCheck = easyCheck,
-                      leverageCheck = leverageCheck,  printInc = printInc, plsWeights = plsWeights)
+                      leverageCheck = leverageCheck,  printInc = printInc, plsWeights = plsWeights,
+                      preDifferences = preDifferences, preDifferenceTot = preDifferenceTot)
   if(printInc){
     cat("]\n")
     flush.console()
@@ -269,11 +293,18 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                            forceFromFirstIter = TRUE, 
                            preRounded = NULL,
                            plsWeights = NULL,
-                           easyCheck = TRUE, leverageCheck = 0, printInc = TRUE) { # maxIter henger sammen med maxIterRows
+                           easyCheck = TRUE, leverageCheck = 0, printInc = TRUE,
+                           preDifferences = NULL, preDifferenceTot = NULL) { # maxIter henger sammen med maxIterRows
 
-  yInnerExact <- yInner
-  yPublishExact <- yPublish
   
+
+  if (!is.null(preDifferences)) {
+    yInnerExact <- sum(yInner) - preDifferenceTot  # Possible since sum is only usage of yInnerExact
+    yPublishExact <- yPublish - preDifferences
+  } else {
+    yInnerExact <- yInner
+    yPublishExact <- yPublish
+  }
 
   if(any(zeroCandidates)){
     if(length(zeroCandidates)==1){

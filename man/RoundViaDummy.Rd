@@ -30,6 +30,7 @@ RoundViaDummy(
   rndSeed = 123,
   dimVar = NULL,
   plsWeights = NULL,
+  preDifference = NULL,
   ...
 )
 }
@@ -99,6 +100,9 @@ Checking is performed after rounding. Extra iterations are performed when needed
 \item{plsWeights}{A vector of weights for each cell to be published or a function generating it. For use in the algorithm criterion.
 The supplied function takes the following arguments: \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxBase}, and \code{...},
 where the first two are numeric vectors of original counts.}
+
+\item{preDifference}{A data.frame with differences already obtained from rounding another subset of data.
+There must be columns that match \code{crossTable}. Differences must be in the last column.}
 
 \item{...}{Further parameters sent to \code{\link{ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
