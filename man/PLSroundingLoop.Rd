@@ -25,6 +25,8 @@ PLSroundingLoop(
 
 \item{zeroCandidates}{zeroCandidates}
 
+\item{forceInner}{forceInner}
+
 \item{preRounded}{preRounded}
 
 \item{plsWeights}{plsWeights}

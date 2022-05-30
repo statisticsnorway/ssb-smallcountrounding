@@ -4,6 +4,7 @@
 #' @param loopId loopId 
 #' @param ... dots
 #' @param zeroCandidates zeroCandidates 
+#' @param forceInner forceInner
 #' @param preRounded preRounded 
 #' @param plsWeights plsWeights 
 #' @param printInc printInc 
