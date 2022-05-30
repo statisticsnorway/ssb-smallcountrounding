@@ -11,6 +11,7 @@
 #' Parameters `zeroCandidates`, `forceInner`,  `preRounded` and `plsWeights` can be specified as functions.
 #' The supplied functions take the following arguments: `data`, `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxRound`, and `...`, 
 #'                   where the first two are numeric vectors of original counts. 
+#' When `allSmall` is `TRUE`,  `forceInner` is set to  `function(yInner, maxRound, ...)` `yInner <= maxRound`.                   
 #'
 #' @encoding UTF8
 #' @md
@@ -60,6 +61,7 @@
 #' @param plsWeights A vector of weights for each cell to be published or a function generating it (see details). For use in the algorithm criterion.
 #' @param preDifference   A data.frame with differences already obtained from rounding another subset of data. 
 #'                        There must be columns that match `crossTable`. Differences must be in the last column.
+#' @param allSmall When TRUE, all small inner cells (`<= maxRound`) are rounded. This parameter is a simplified alternative to specifying `forceInner`  (see details).                            
 #' @param ... Further parameters sent to \code{\link{ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
@@ -132,7 +134,9 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           easyCheck = TRUE,
                           printInc = TRUE,  rndSeed = 123, dimVar = NULL, 
                           plsWeights = NULL, 
-                          preDifference = NULL, ...) {
+                          preDifference = NULL, 
+                          allSmall = FALSE, 
+                          ...) {
   
   if (!is.null(rndSeed)) {
     if (!exists(".Random.seed")) 
@@ -231,6 +235,12 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
 
   ########### forceInner ###########
+  if (allSmall) {
+    if (!identical(forceInner, FALSE)) {
+      warning("forceInner ignored since allSmall is TRUE")
+    }
+    forceInner <- function(yInner, maxRound, ...) yInner <= maxRound
+  }
   
   if (is.function(forceInner)) {
     forceInner <- forceInner(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)

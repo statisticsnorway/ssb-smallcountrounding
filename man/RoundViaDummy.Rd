@@ -31,6 +31,7 @@ RoundViaDummy(
   dimVar = NULL,
   plsWeights = NULL,
   preDifference = NULL,
+  allSmall = FALSE,
   ...
 )
 }
@@ -105,6 +106,8 @@ Checking is performed after rounding. Extra iterations are performed when needed
 \item{preDifference}{A data.frame with differences already obtained from rounding another subset of data.
 There must be columns that match \code{crossTable}. Differences must be in the last column.}
 
+\item{allSmall}{When TRUE, all small inner cells (\verb{<= maxRound}) are rounded. This parameter is a simplified alternative to specifying \code{forceInner}  (see details).}
+
 \item{...}{Further parameters sent to \code{\link{ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
 The parameter \code{inputInOutput} can be used to specify whether to include codes from input.
@@ -128,6 +131,7 @@ Thus, additivity and consistency are guaranteed. The matrix multiplication formu
 Parameters \code{zeroCandidates}, \code{forceInner},  \code{preRounded} and \code{plsWeights} can be specified as functions.
 The supplied functions take the following arguments: \code{data}, \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxRound}, and \code{...},
 where the first two are numeric vectors of original counts.
+When \code{allSmall} is \code{TRUE},  \code{forceInner} is set to  \verb{function(yInner, maxRound, ...)} \code{yInner <= maxRound}.
 }
 \note{
 Iterations are needed since after initial rounding of identified cells, new cells are identified.
