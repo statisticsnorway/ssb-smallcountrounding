@@ -9,6 +9,7 @@ PLSroundingLoop(
   loopId,
   ...,
   zeroCandidates = FALSE,
+  forceInner = FALSE,
   preRounded = NULL,
   plsWeights = NULL,
   printInc = TRUE,
