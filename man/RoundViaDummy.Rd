@@ -126,7 +126,7 @@ Thus, additivity and consistency are guaranteed. The matrix multiplication formu
 \code{yPublish} \code{=} \code{t(x)} \code{\%*\%}  \code{yInner}, where \code{x} is the dummy matrix.
 
 Parameters \code{zeroCandidates}, \code{forceInner},  \code{preRounded} and \code{plsWeights} can be specified as functions.
-The supplied functions take the following arguments: \code{data}, \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxBase}, and \code{...},
+The supplied functions take the following arguments: \code{data}, \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxRound}, and \code{...},
 where the first two are numeric vectors of original counts.
 }
 \note{

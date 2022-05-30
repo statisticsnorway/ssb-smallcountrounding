@@ -9,7 +9,7 @@
 #' 
 #' 
 #' Parameters `zeroCandidates`, `forceInner`,  `preRounded` and `plsWeights` can be specified as functions.
-#' The supplied functions take the following arguments: `data`, `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxBase`, and `...`, 
+#' The supplied functions take the following arguments: `data`, `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxRound`, and `...`, 
 #'                   where the first two are numeric vectors of original counts. 
 #'
 #' @encoding UTF8
@@ -219,7 +219,7 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
 
   ########### zeroCandidates ###########
   if (is.function(zeroCandidates)) {
-    zeroCandidates <- zeroCandidates(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxBase = maxBase, ...)
+    zeroCandidates <- zeroCandidates(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
   }
   if (length(zeroCandidates) == 1 & !is.logical(zeroCandidates[1])) {
     zeroCandidates <- data[[zeroCandidates]]
@@ -231,8 +231,9 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
 
   ########### forceInner ###########
+  
   if (is.function(forceInner)) {
-    forceInner <- forceInner(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxBase = maxBase, ...)
+    forceInner <- forceInner(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
   }
   if (length(forceInner) == 1 & !is.logical(forceInner[1])) {
     forceInner <- data[[forceInner]]
@@ -246,7 +247,7 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   ########### preRounded ###########
   if (!is.null(preRounded)) {
     if (is.function(preRounded)) {
-      preRounded <- preRounded(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxBase = maxBase, ...)
+      preRounded <- preRounded(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
     }
     if (length(preRounded) == 1) {
       preRounded <- data[[preRounded]]
@@ -261,7 +262,7 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   ########### plsWeights ###########
   if(!is.null(plsWeights)){
     if (is.function(plsWeights)){
-      plsWeights <- plsWeights(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxBase = maxBase, ...)
+      plsWeights <- plsWeights(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
     }
     if(length(plsWeights)!= length(yPublish)){
       stop("Wrong length of plsWeights")
