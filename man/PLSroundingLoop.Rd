@@ -13,33 +13,44 @@ PLSroundingLoop(
   preRounded = NULL,
   plsWeights = NULL,
   printInc = TRUE,
-  preDifference = TRUE
+  preDifference = TRUE,
+  preOutput = NULL,
+  rndSeed = 123
 )
 }
 \arguments{
-\item{data}{data}
+\item{data}{Input data as a data frame (inner cells)}
 
-\item{loopId}{loopId}
+\item{loopId}{Variable holding id for loops}
 
-\item{...}{dots}
+\item{...}{\code{PLSrounding} parameters}
 
-\item{zeroCandidates}{zeroCandidates}
+\item{zeroCandidates}{\code{PLSrounding} parameter (see details)}
 
-\item{forceInner}{forceInner}
+\item{forceInner}{\code{PLSrounding} parameter (see details)}
 
-\item{preRounded}{preRounded}
+\item{preRounded}{\code{PLSrounding} parameter (see details)}
 
-\item{plsWeights}{plsWeights}
+\item{plsWeights}{\code{PLSrounding} parameter (see details)}
 
-\item{printInc}{printInc}
+\item{printInc}{Printing iteration information to console when TRUE}
 
-\item{preDifference}{preDifference}
+\item{preDifference}{When TRUE, the \code{preDifference} parameter to \code{PLSrounding} is used. Each time with the differences obtained so far.}
+
+\item{preOutput}{preOutput The function can continue from output from a previous run}
+
+\item{rndSeed}{If non-NULL, a random generator seed to be set locally at the beginning of \code{PLSroundingLoop} without affecting the random value stream in R.
+Within \code{PLSroundingLoop}, \code{PLSrounding} is called with \code{rndSeed = NULL}.}
 }
 \value{
 As output from \code{\link{PLSrounding}}
 }
 \description{
-PLSrounding on portions of data at a time
+The \code{\link{PLSrounding}} runs are coordinated by using preliminary differences as input for the next run (parameter \code{preDifference})
+}
+\details{
+Note that in this function \code{zeroCandidates}, \code{forceInner}, \code{preRounded} and \code{plsWeights} cannot be supplied as vectors.
+They may be specified as functions or as variables in the input data.
 }
 \examples{
 mf2 <- ~region + fylke * hovedint

@@ -1,14 +1,22 @@
 #' PLSrounding on portions of data at a time
+#' 
+#' The \code{\link{PLSrounding}} runs are coordinated by using preliminary differences as input for the next run (parameter `preDifference`)
+#' 
+#' Note that in this function `zeroCandidates`, `forceInner`, `preRounded` and `plsWeights` cannot be supplied as vectors.
+#' They may be specified as functions or as variables in the input data.
 #'
-#' @param data data
-#' @param loopId loopId 
-#' @param ... dots
-#' @param zeroCandidates zeroCandidates 
-#' @param forceInner forceInner
-#' @param preRounded preRounded 
-#' @param plsWeights plsWeights 
-#' @param printInc printInc 
-#' @param preDifference preDifference 
+#' @param data Input data as a data frame (inner cells)
+#' @param loopId Variable holding id for loops
+#' @param ... `PLSrounding` parameters 
+#' @param zeroCandidates `PLSrounding` parameter (see details) 
+#' @param forceInner `PLSrounding` parameter (see details)
+#' @param preRounded `PLSrounding` parameter (see details)
+#' @param plsWeights `PLSrounding` parameter (see details)
+#' @param printInc Printing iteration information to console when TRUE
+#' @param preDifference When TRUE, the `preDifference` parameter to `PLSrounding` is used. Each time with the differences obtained so far.  
+#' @param preOutput preOutput The function can continue from output from a previous run
+#' @param rndSeed If non-NULL, a random generator seed to be set locally at the beginning of `PLSroundingLoop` without affecting the random value stream in R.
+#'                Within `PLSroundingLoop`, `PLSrounding` is called with `rndSeed = NULL`.
 #'
 #' @return As output from \code{\link{PLSrounding}} 
 #' @export
@@ -26,7 +34,18 @@ PLSroundingLoop <- function(data,
                             preRounded = NULL, 
                             plsWeights = NULL, 
                             printInc = TRUE,
-                            preDifference = TRUE) {
+                            preDifference = TRUE,
+                            preOutput = NULL,
+                            rndSeed = 123
+                            ) {
+  if (!is.null(rndSeed)) {
+    if (!exists(".Random.seed")) 
+      if (runif(1) < 0) 
+        stop("Now seed exists")
+    exitSeed <- .Random.seed
+    on.exit(.Random.seed <<- exitSeed)
+    set.seed(rndSeed)
+  }
   
   id <- unique(data[[loopId]])
   
@@ -34,15 +53,26 @@ PLSroundingLoop <- function(data,
     updatePreDifference <- preDifference
     preDifference <- NULL
   } else {
-    stop("Supplied preDifference not implemented")  # Without stop Supplied preDifference will only be used when i=1
+    stop("Supplied preDifference not implemented. Use preOutput instead.")  # Without stop Supplied preDifference will only be used when i=1
     updatePreDifference <- TRUE
   }
   
-  a <- NULL
-  a$publish <- preDifference
+  preOutputInInput <- as.numeric(!is.null(preOutput))
+  
+  a <- preOutput
+  
+  lengthStop <- FALSE
+  
+  if (length(zeroCandidates) > 1) lengthStop <- TRUE
+  if (length(forceInner) > 1) lengthStop <- TRUE
+  if (length(preRounded) > 1) lengthStop <- TRUE
+  if (length(plsWeights) > 1) lengthStop <- TRUE
+  
+  if (lengthStop) stop("zeroCandidates, forceInner, preRounded and plsWeights cannot be supplied as vectors in PLSroundingLoop.")
+  
   
   for (i in seq_along(id)) {
-    cat(sprintf("%4d: ", i))
+    if(printInc) cat(sprintf("%4d: ", i))
     ai <- PLSrounding(data = data[data[[loopId]] == id[i], , drop = FALSE], 
                       ..., 
                       zeroCandidates = zeroCandidates, 
@@ -50,8 +80,9 @@ PLSroundingLoop <- function(data,
                       preRounded = preRounded, 
                       plsWeights = plsWeights,
                       printInc = printInc,
-                      preDifference = if (updatePreDifference) a$publish else NULL)  # ifelse(updatePreDifference, a$publish, NULL) does not work since NULL
-    if (i == 1) {
+                      preDifference = if (updatePreDifference) a$publish else NULL,  # ifelse(updatePreDifference, a$publish, NULL) does not work since NULL
+                      rndSeed = NULL) 
+    if (i == (1 - preOutputInInput)) {
       a <- ai
     } else {
       a <- UpdatePLSrounded(a, ai)
