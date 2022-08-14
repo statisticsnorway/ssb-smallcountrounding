@@ -79,10 +79,10 @@
 #' @seealso  See the  user-friendly wrapper \code{\link{PLSrounding}}
 #'   and see \code{Round2} for rounding by other algorithm
 #' @importFrom stats as.formula hat model.frame model.matrix
-#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies Reduce0exact MakeFreq  ModelMatrix
+#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies Reduce0exact MakeFreq  ModelMatrix As_TsparseMatrix
 #' @importFrom utils flush.console
 #' @importFrom  Matrix Matrix sparse.model.matrix Diagonal
-#' @importFrom  methods as hasArg
+#' @importFrom  methods hasArg
 #' @export
 #'
 #' @examples
@@ -712,7 +712,7 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   if(printInc) {cat("*"); flush.console()}
   #startTime <- Sys.time()
   #if(dgT){
-    dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
+  dgTBase <- As_TsparseMatrix(roundBase * Matrix::tcrossprod(x)) # dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
     dgTi <- dgTBase@i +1L
     dgTj <- dgTBase@j +1L
     dgTx <- dgTBase@x
