@@ -30,6 +30,8 @@ RoundViaDummy(
   rndSeed = 123,
   dimVar = NULL,
   plsWeights = NULL,
+  preDifference = NULL,
+  allSmall = FALSE,
   ...
 )
 }
@@ -65,9 +67,11 @@ Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using t
 
 \item{zeroCandidates}{When TRUE, inner cells in input with zero count (and multiple of roundBase when maxRound is in use)
 contributing to publishable cells will be included as candidates to obtain roundBase value.
-With vector input, the rule is specified individually for each cell.}
+With vector input, the rule is specified individually for each cell.
+This can be specified as a vector, a variable in data or a function generating it (see details).}
 
 \item{forceInner}{When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded.
+This can be specified as a vector, a variable in data or a function generating it (see details).
 Can be combined with parameter zeroCandidates to allow zeros and roundBase multiples to be rounded up.}
 
 \item{identifyNew}{When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded
@@ -77,7 +81,8 @@ publishable cells are less than roundBase.}
 After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used
 for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.}
 
-\item{preRounded}{A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells.}
+\item{preRounded}{A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells.
+Can also be specified as a function generating it (see details).}
 
 \item{leverageCheck}{When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 (\code{<=maxRound}) will be rounded.
@@ -96,9 +101,12 @@ Checking is performed after rounding. Extra iterations are performed when needed
 
 \item{dimVar}{The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.}
 
-\item{plsWeights}{A vector of weights for each cell to be published or a function generating it. For use in the algorithm criterion.
-The supplied function takes the following arguments: \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxBase}, and \code{...},
-where the first two are numeric vectors of original counts.}
+\item{plsWeights}{A vector of weights for each cell to be published or a function generating it (see details). For use in the algorithm criterion.}
+
+\item{preDifference}{A data.frame with differences already obtained from rounding another subset of data.
+There must be columns that match \code{crossTable}. Differences must be in the last column.}
+
+\item{allSmall}{When TRUE, all small inner cells (\verb{<= maxRound}) are rounded. This parameter is a simplified alternative to specifying \code{forceInner}  (see details).}
 
 \item{...}{Further parameters sent to \code{\link{ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
@@ -119,6 +127,11 @@ Small count rounding of necessary inner cells are performed so that all small fr
 (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed.
 Thus, additivity and consistency are guaranteed. The matrix multiplication formula is:
 \code{yPublish} \code{=} \code{t(x)} \code{\%*\%}  \code{yInner}, where \code{x} is the dummy matrix.
+
+Parameters \code{zeroCandidates}, \code{forceInner},  \code{preRounded} and \code{plsWeights} can be specified as functions.
+The supplied functions take the following arguments: \code{data}, \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxRound}, and \code{...},
+where the first two are numeric vectors of original counts.
+When \code{allSmall} is \code{TRUE},  \code{forceInner} is set to  \verb{function(yInner, maxRound, ...)} \code{yInner <= maxRound}.
 }
 \note{
 Iterations are needed since after initial rounding of identified cells, new cells are identified.

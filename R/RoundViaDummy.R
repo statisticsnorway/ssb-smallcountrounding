@@ -6,6 +6,12 @@
 #' (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. 
 #' Thus, additivity and consistency are guaranteed. The matrix multiplication formula is: 
 #' \code{yPublish} \code{=} \code{t(x)} \code{\%*\%}  \code{yInner}, where \code{x} is the dummy matrix. 
+#' 
+#' 
+#' Parameters `zeroCandidates`, `forceInner`,  `preRounded` and `plsWeights` can be specified as functions.
+#' The supplied functions take the following arguments: `data`, `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxRound`, and `...`, 
+#'                   where the first two are numeric vectors of original counts. 
+#' When `allSmall` is `TRUE`,  `forceInner` is set to  `function(yInner, maxRound, ...)` `yInner <= maxRound`.                   
 #'
 #' @encoding UTF8
 #' @md
@@ -28,8 +34,10 @@
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded.
 #' @param zeroCandidates When TRUE, inner cells in input with zero count (and multiple of roundBase when maxRound is in use)
 #'             contributing to publishable cells will be included as candidates to obtain roundBase value. 
-#'             With vector input, the rule is specified individually for each cell.   
-#' @param forceInner When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded. 
+#'             With vector input, the rule is specified individually for each cell. 
+#'             This can be specified as a vector, a variable in data or a function generating it (see details).   
+#' @param forceInner When TRUE, all inner cells will be rounded. Use vector input to force individual cells to be rounded.
+#'                   This can be specified as a vector, a variable in data or a function generating it (see details).
 #'                   Can be combined with parameter zeroCandidates to allow zeros and roundBase multiples to be rounded up.
 #' @param identifyNew  When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded 
 #'        publishable cells are less than roundBase.  
@@ -37,6 +45,7 @@
 #'       After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
 #'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
 #' @param preRounded A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells. 
+#'                   Can also be specified as a function generating it (see details).
 #' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 #'        (\code{<=maxRound}) will be rounded. 
 #'        The computation of leverages can be very time and memory consuming. 
@@ -49,9 +58,10 @@
 #' @param printInc Printing iteration information to console when TRUE
 #' @param rndSeed If non-NULL, a random generator seed to be used locally within the function without affecting the random value stream in R.      
 #' @param dimVar The main dimensional variables and additional aggregating variables. This parameter can be  useful when hierarchies and formula are unspecified.   
-#' @param plsWeights A vector of weights for each cell to be published or a function generating it. For use in the algorithm criterion.
-#'                   The supplied function takes the following arguments: `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxBase`, and `...`, 
-#'                   where the first two are numeric vectors of original counts. 
+#' @param plsWeights A vector of weights for each cell to be published or a function generating it (see details). For use in the algorithm criterion.
+#' @param preDifference   A data.frame with differences already obtained from rounding another subset of data. 
+#'                        There must be columns that match `crossTable`. Differences must be in the last column.
+#' @param allSmall When TRUE, all small inner cells (`<= maxRound`) are rounded. This parameter is a simplified alternative to specifying `forceInner`  (see details).                            
 #' @param ... Further parameters sent to \code{\link{ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
@@ -69,10 +79,10 @@
 #' @seealso  See the  user-friendly wrapper \code{\link{PLSrounding}}
 #'   and see \code{Round2} for rounding by other algorithm
 #' @importFrom stats as.formula hat model.frame model.matrix
-#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies Reduce0exact MakeFreq  ModelMatrix
+#' @importFrom SSBtools FormulaSums matlabColon Hierarchies2ModelMatrix FindHierarchies Reduce0exact MakeFreq  ModelMatrix As_TsparseMatrix
 #' @importFrom utils flush.console
 #' @importFrom  Matrix Matrix sparse.model.matrix Diagonal
-#' @importFrom  methods as hasArg
+#' @importFrom  methods hasArg
 #' @export
 #'
 #' @examples
@@ -123,7 +133,10 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
                           leverageCheck = FALSE, 
                           easyCheck = TRUE,
                           printInc = TRUE,  rndSeed = 123, dimVar = NULL, 
-                          plsWeights = NULL, ...) {
+                          plsWeights = NULL, 
+                          preDifference = NULL, 
+                          allSmall = FALSE, 
+                          ...) {
   
   if (!is.null(rndSeed)) {
     if (!exists(".Random.seed")) 
@@ -203,28 +216,98 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
   yInner <- data[, freqVar, drop = TRUE]
   
-  if (!is.null(preRounded)) {
-    if (length(preRounded) == 1) {
-      preRounded <- data[, preRounded, drop = TRUE]
-    }
-  } 
   
   yPublish <- Matrix::crossprod(x, yInner)[, 1, drop = TRUE]
   
+  
+
+  ########### zeroCandidates ###########
+  if (is.function(zeroCandidates)) {
+    zeroCandidates <- zeroCandidates(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
+  }
+  if (length(zeroCandidates) == 1 & !is.logical(zeroCandidates[1])) {
+    zeroCandidates <- data[[zeroCandidates]]
+  } else {
+    if (length(zeroCandidates) != 1 & length(zeroCandidates) != length(yInner)) {
+      stop("Wrong length of zeroCandidates")
+    }
+  }
+  
+
+  ########### forceInner ###########
+  if (allSmall) {
+    if (!identical(forceInner, FALSE)) {
+      warning("forceInner ignored since allSmall is TRUE")
+    }
+    forceInner <- function(yInner, maxRound, ...) yInner <= maxRound
+  }
+  
+  if (is.function(forceInner)) {
+    forceInner <- forceInner(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
+  }
+  if (length(forceInner) == 1 & !is.logical(forceInner[1])) {
+    forceInner <- data[[forceInner]]
+  } else {
+    if (length(forceInner) != 1 & length(forceInner) != length(yInner)) {
+      stop("Wrong length of forceInner")
+    }
+  }
+  
+  
+  ########### preRounded ###########
+  if (!is.null(preRounded)) {
+    if (is.function(preRounded)) {
+      preRounded <- preRounded(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
+    }
+    if (length(preRounded) == 1) {
+      preRounded <- data[[preRounded]]
+    } else {
+      if (length(preRounded) != length(yInner)) {
+        stop("Wrong length of preRounded")
+      }
+    }
+  }
+  
+  
+  ########### plsWeights ###########
   if(!is.null(plsWeights)){
     if (is.function(plsWeights)){
-      plsWeights <- plsWeights(yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxBase = maxBase, ...)
+      plsWeights <- plsWeights(data = data, yPublish = yPublish, yInner = yInner, crossTable = crossTab, x = x, roundBase = roundBase, maxRound = maxRound, ...)
     }
     if(length(plsWeights)!= length(yPublish)){
       stop("Wrong length of plsWeights")
     }
   }
   
+  
+  
+  
+  if (!is.null(preDifference)) {
+    preDifferences <- rep(0L, length(yPublish))
+    ma <- Match(crossTab, preDifference[names(crossTab)])
+    preDifferences[!is.na(ma)] <- preDifference[[ncol(preDifference)]][ma[!is.na(ma)]]
+    
+    maxCsum <- Matrix::colSums(x[, !is.na(ma), drop = FALSE])
+    maxCsumInd <- which.max(maxCsum)
+    maxCsum <- maxCsum[maxCsumInd]
+    if (maxCsum != nrow(x)) {
+      stop("Overall total needed in preDifference")
+    }
+    preDifferenceTot <- preDifferences[!is.na(ma)][maxCsumInd]
+    if (is.null(preRounded) & abs(preDifferenceTot) > roundBase) {
+      warning("Big overall total in preDifference. preRounded-input may trig a better algorithm")
+    }
+  } else {
+    preDifferences <- NULL
+    preDifferenceTot <- NULL
+  }
+  
   a <- PlsRoundSparse(x = x, roundBase = roundBase, yInner = yInner, yPublish = yPublish, singleRandom = singleRandom,maxIter=maxIter, maxIterRows=maxIterRows, 
                       maxBase = maxBase, zeroCandidates = zeroCandidates, forceInner = forceInner, identifyNew = identifyNew, step = step, 
                       preRounded = preRounded,
                       easyCheck = easyCheck,
-                      leverageCheck = leverageCheck,  printInc = printInc, plsWeights = plsWeights)
+                      leverageCheck = leverageCheck,  printInc = printInc, plsWeights = plsWeights,
+                      preDifferences = preDifferences, preDifferenceTot = preDifferenceTot)
   if(printInc){
     cat("]\n")
     flush.console()
@@ -269,11 +352,18 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
                            forceFromFirstIter = TRUE, 
                            preRounded = NULL,
                            plsWeights = NULL,
-                           easyCheck = TRUE, leverageCheck = 0, printInc = TRUE) { # maxIter henger sammen med maxIterRows
+                           easyCheck = TRUE, leverageCheck = 0, printInc = TRUE,
+                           preDifferences = NULL, preDifferenceTot = NULL) { # maxIter henger sammen med maxIterRows
 
-  yInnerExact <- yInner
-  yPublishExact <- yPublish
   
+
+  if (!is.null(preDifferences)) {
+    yInnerExact <- sum(yInner) - preDifferenceTot  # Possible since sum is only usage of yInnerExact
+    yPublishExact <- yPublish - preDifferences
+  } else {
+    yInnerExact <- yInner
+    yPublishExact <- yPublish
+  }
 
   if(any(zeroCandidates)){
     if(length(zeroCandidates)==1){
@@ -622,7 +712,7 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   if(printInc) {cat("*"); flush.console()}
   #startTime <- Sys.time()
   #if(dgT){
-    dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
+  dgTBase <- As_TsparseMatrix(roundBase * Matrix::tcrossprod(x)) # dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
     dgTi <- dgTBase@i +1L
     dgTj <- dgTBase@j +1L
     dgTx <- dgTBase@x

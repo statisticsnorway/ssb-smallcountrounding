@@ -27,7 +27,7 @@ PLS2way = function(obj,  variable = c("rounded", "original", "difference", "code
   
   variable <- match.arg(variable)
   
-  if(class(obj) !=  "PLSrounded")
+  if(!inherits(obj, "PLSrounded"))
     stop("Input must be output from PLSrounding")
   
   if(NCOL(obj$inner) !=  5)

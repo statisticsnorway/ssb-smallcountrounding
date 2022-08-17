@@ -216,7 +216,7 @@ Pls1Round_Version_0.3.0 <- function(x, y, roundBase = 3L, removeOneCols = FALSE,
   if(printInc) {cat("*"); flush.console()}
   #startTime <- Sys.time()
   if(dgT){
-    dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
+    dgTBase <- As_TsparseMatrix(roundBase * Matrix::tcrossprod(x))  #dgTBase <- as(roundBase * Matrix::tcrossprod(x),"dgTMatrix") #flaskehals
     dgTi <- dgTBase@i +1L
     dgTj <- dgTBase@j +1L
     dgTx <- dgTBase@x
