@@ -1,10 +1,11 @@
-## SmallCountRounding	x.x.x
+## SmallCountRounding	1.0.0
 * New function, `PLSroundingLoop`: PLSrounding on portions of data at a time.
   - The \code{\link{PLSrounding}} runs are coordinated by using preliminary differences as input for the next run (parameter `preDifference`)
 * Parameters `zeroCandidates`, `forceInner`,  `preRounded` and `plsWeights` can now be specified as functions.
   - These cannot be supplied as vectors in `PLSroundingLoop`.
 * New parameter, `allSmall`.
   - When TRUE, all small inner cells (`<= maxRound`) are rounded. A simplified alternative to specifying `forceInner`.
+* Adaption needed after Matrix ver. 1.4-2 (not a user-visible change)
 
 ## SmallCountRounding	0.9.0
 * New function, `PLSroundingFits`, for post-processing to expected frequencies
