@@ -68,8 +68,11 @@ test_that("PLSrounding works", {
   a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, identifyNew = FALSE, printInc = printInc)
   expect_equivalent(a$publish$rounded, c(27, 16, 6, 5, 7, 5, 4, 5, 6))
   
-  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7, printInc = printInc)
+  a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7, printInc = printInc, identifyNew = NA)
   expect_equivalent(a$inner$rounded, c(5, 0, 0, 0, 0, 5, 0, 5, 0, 5, 0, 0, 4, 2, 0))
+  
+  a <- PLSrounding(exPSD, "freq", 3, formula = ~rows + cols, maxRound = 4, printInc = printInc)
+  expect_equivalent(a$inner$rounded, c(6, 1, 0, 0, 0, 3, 3, 3, 0, 3, 3, 0, 4, 2, 0))
   
   a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE, printInc = printInc)
   expect_equivalent(a$inner$rounded, c(6, 1, 0, 0, 5, 0, 5, 0, 0, 0, 0, 5, 4, 2, 0))
