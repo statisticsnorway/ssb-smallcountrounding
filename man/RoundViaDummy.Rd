@@ -74,8 +74,10 @@ This can be specified as a vector, a variable in data or a function generating i
 This can be specified as a vector, a variable in data or a function generating it (see details).
 Can be combined with parameter zeroCandidates to allow zeros and roundBase multiples to be rounded up.}
 
-\item{identifyNew}{When TRUE, new cells may be identified after initial rounding to ensure that no nonzero rounded
-publishable cells are less than roundBase.}
+\item{identifyNew}{When \code{TRUE}, new cells may be identified after initial rounding to ensure all rounded publishable
+cells equal to or less than \code{maxRound} to be \code{roundBase} multiples. Use \code{NA} for the a less conservative
+behavior (old behavior). Then it is ensured that no nonzero rounded publishable cells are smaller
+than \code{roundBase}. When \code{maxRound} is default, there is no difference between \code{TRUE} and \code{NA}.}
 
 \item{step}{When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise.
 After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used
