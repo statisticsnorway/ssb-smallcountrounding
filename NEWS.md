@@ -1,3 +1,12 @@
+## SmallCountRounding	1.0.2
+* Improved behavior of the `identifyNew` parameter when the `maxRound` parameter is used. 
+  - New description of the `identifyNew` parameter: 
+                     When `TRUE`, new cells may be identified after initial rounding to ensure all rounded publishable 
+                     cells equal to or less than `maxRound` to be `roundBase` multiples. Use `NA` for the a less conservative 
+                     behavior (old behavior). Then it is ensured that no nonzero rounded publishable cells are smaller 
+                     than `roundBase`. When `maxRound` is default, there is no difference between `TRUE` and `NA`.
+
+
 ## SmallCountRounding	1.0.0
 * New function, `PLSroundingLoop`: PLSrounding on portions of data at a time.
   - The \code{\link{PLSrounding}} runs are coordinated by using preliminary differences as input for the next run (parameter `preDifference`)
