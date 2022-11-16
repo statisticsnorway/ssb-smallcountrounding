@@ -1,3 +1,8 @@
+
+## SmallCountRounding	1.0.3
+* Workaround for old `R` versions where the `isFALSE` function is not defined.
+
+
 ## SmallCountRounding	1.0.2
 * Improved behavior of the `identifyNew` parameter when the `maxRound` parameter is used. 
   - New description of the `identifyNew` parameter: 

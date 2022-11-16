@@ -165,7 +165,8 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
   
   maxBase <- maxRound + 1
   
-  if(!isFALSE(identifyNew))
+  
+  if(!isTRUE(!identifyNew))
     if(maxBase<roundBase)
       stop("maxRound cannot be smaller than roundBase-1 when identifyNew is TRUE")
 
