@@ -17,7 +17,7 @@ See the package vignette:
 install.packages("SmallCountRounding")
 ```
 
-#### Installatin from github
+#### Installation from GitHub
 
 (If needed, install the `devtools` package from CRAN first.)
 
