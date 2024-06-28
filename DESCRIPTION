@@ -1,8 +1,8 @@
 Package: SmallCountRounding
 Type: Package
 Title: Small Count Rounding of Tabular Data
-Version: 1.0.3
-Date: 2022-11-16
+Version: 1.0.4
+Date: 2024-06-28
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Johan", "Heldal", role = c("aut")))
 Author: Øyvind Langsrud [aut, cre], Johan Heldal [aut]
@@ -18,8 +18,8 @@ Suggests:
     testthat
 Description: A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive. The function PLSrounding() performs small count rounding of necessary inner cells so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed. The methodology is described in Langsrud and Heldal (2018) <https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data>.
 License: Apache License 2.0
-URL: https://github.com/statisticsnorway/SmallCountRounding
-BugReports: https://github.com/statisticsnorway/SmallCountRounding/issues
+URL: https://github.com/statisticsnorway/ssb-smallcountrounding
+BugReports: https://github.com/statisticsnorway/ssb-smallcountrounding/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Encoding: UTF-8
