@@ -12,9 +12,9 @@
 #' @importFrom utils data
 #' @importFrom SSBtools Hrc2DimList SSBtoolsData
 #' 
-#' @note Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as \code{\link{SSBtoolsData}}.
+#' @note Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as \code{\link[SSBtools]{SSBtoolsData}}.
 #' 
-#' @seealso \code{\link{SSBtoolsData}}, \code{\link{Hrc2DimList}}
+#' @seealso \code{\link[SSBtools]{SSBtoolsData}}, \code{\link[SSBtools]{Hrc2DimList}}
 #'
 #' @examples
 #'  SmallCountData("z1")
