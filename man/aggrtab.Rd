@@ -11,7 +11,7 @@ aggrtab(A, d, micro = TRUE, nin = "n", nout = "n")
 \item{A}{A data frame representing a micro dataset or a frequency count hypercube. The (first) columns
 define the variables. If A is a hypercube the last column contains the number of units in each cell.}
 
-\item{d}{A list d{[[j]]} whose elements are vectors of variable names from A defining marginal tables/cubes 
+\item{d}{A list d\{[[j]]\} whose elements are vectors of variable names from A defining marginal tables/cubes 
 of A that we are interested in.}
 
 \item{micro}{Logical. TRUE if A is a micro dataset (default). FALSE if A i a frequency count hypercube.}
@@ -21,7 +21,7 @@ of A that we are interested in.}
 \item{nout}{Name of the frequency count variable in the output tables.}
 }
 \value{
-D = {D[[j]]} of marginal tables/cubes of A spesified by the list d = d{[[j]]} generated 
+D = \{D[[j]]\} of marginal tables/cubes of A spesified by the list d = d\{[[j]]\} generated 
      by aggregating over cells in A.
 }
 \description{

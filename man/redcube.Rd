@@ -12,7 +12,7 @@ redcube(A, d, b = 3, micro = TRUE, nin = "n")
 define the variables. If A is a hypercube the last column contains the number of units in each cell.
 If A is a micro dataset it is reduced to hypercube by the function aggrtab.}
 
-\item{d}{A list d{[[j]]} whose elements are vectors of variable names from A defining marginal tables/cubes D
+\item{d}{A list d\{[[j]]\} whose elements are vectors of variable names from A defining marginal tables/cubes D
 of A that we are interested in.}
 
 \item{b}{Rounding base. Counts in A less than b tat are contributing to counts less than b in the marginal 

@@ -19,7 +19,7 @@ The dataset
 Function that returns a dataset
 }
 \note{
-Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as \code{\link{SSBtoolsData}}.
+Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}, the function returns the same datasets as \code{\link[SSBtools]{SSBtoolsData}}.
 }
 \examples{
  SmallCountData("z1")
@@ -30,5 +30,5 @@ Except for \code{"europe6"}, \code{"eHrc"}, \code{"eDimList"} and \code{"exPSD"}
 
 }
 \seealso{
-\code{\link{SSBtoolsData}}, \code{\link{Hrc2DimList}}
+\code{\link[SSBtools]{SSBtoolsData}}, \code{\link[SSBtools]{Hrc2DimList}}
 }

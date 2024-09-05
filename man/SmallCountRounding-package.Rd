@@ -23,3 +23,20 @@ Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Roundi
 Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. September 26-28, 2018.
 \url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/statisticsnorway/ssb-smallcountrounding}
+  \item Report bugs at \url{https://github.com/statisticsnorway/ssb-smallcountrounding/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Øyvind Langsrud \email{oyl@ssb.no}
+
+Authors:
+\itemize{
+  \item Johan Heldal
+}
+
+}

@@ -5,14 +5,14 @@
 #'
 #' @param A A data frame representing a micro dataset or a frequency count hypercube. The (first) columns
 #'          define the variables. If A is a hypercube the last column contains the number of units in each cell.
-#' @param d A list d{[[j]]} whose elements are vectors of variable names from A defining marginal tables/cubes 
+#' @param d A list d\{[[j]]\} whose elements are vectors of variable names from A defining marginal tables/cubes 
 #'          of A that we are interested in.
 #' @param micro Logical. TRUE if A is a micro dataset (default). FALSE if A i a frequency count hypercube.
 #' @param nin Name of count variable if A is a hypercube. Default name: "n".
 #' @param nout  Name of the frequency count variable in the output tables.
 #'
 #' @return
-#'      D = {D[[j]]} of marginal tables/cubes of A spesified by the list d = d{[[j]]} generated 
+#'      D = \{D[[j]]\} of marginal tables/cubes of A spesified by the list d = d\{[[j]]\} generated 
 #'      by aggregating over cells in A.
 #'      
 #' @keywords internal      

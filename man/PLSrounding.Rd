@@ -146,5 +146,5 @@ Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. Septembe
 \url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 }
 \seealso{
-\code{\link{RoundViaDummy}}, \code{\link{PLS2way}}, \code{\link{ModelMatrix}}
+\code{\link{RoundViaDummy}}, \code{\link{PLS2way}}, \code{\link[SSBtools]{ModelMatrix}}
 }

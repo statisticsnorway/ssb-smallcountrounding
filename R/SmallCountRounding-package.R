@@ -9,7 +9,6 @@
 #' 
 #' @name SmallCountRounding-package
 #' @aliases SmallCountRounding
-#' @docType package
 #' 
 #' @references 
 #' Heldal, J. (2017): \dQuote{The European Census Hub 2011 Hypercubes - Norwegian SDC Experiences}. 
@@ -21,4 +20,4 @@
 #' \url{https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data}
 #' 
 #' @encoding UTF8
-NULL
+"_PACKAGE"

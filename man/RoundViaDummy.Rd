@@ -40,7 +40,7 @@ RoundViaDummy(
 
 \item{freqVar}{Variable holding counts (name or number)}
 
-\item{formula}{Model formula defining publishable cells. Will be used to calculate \code{x} (via \code{\link{ModelMatrix}}).
+\item{formula}{Model formula defining publishable cells. Will be used to calculate \code{x} (via \code{\link[SSBtools]{ModelMatrix}}).
 When NULL, x must be supplied.}
 
 \item{roundBase}{Rounding base}
@@ -57,7 +57,7 @@ When NULL, x must be supplied.}
 
 \item{x}{Dummy matrix defining publishable cells}
 
-\item{hierarchies}{List of hierarchies, which can be converted by \code{\link{AutoHierarchies}}.
+\item{hierarchies}{List of hierarchies, which can be converted by \code{\link[SSBtools]{AutoHierarchies}}.
 Thus, a single string as hierarchy input is assumed to be a total code.
 Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using the categories in the data.}
 
@@ -89,7 +89,7 @@ Can also be specified as a function generating it (see details).}
 \item{leverageCheck}{When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 (\code{<=maxRound}) will be rounded.
 The computation of leverages can be very time and memory consuming.
-The function \code{\link{Reduce0exact}} is called.
+The function \code{\link[SSBtools]{Reduce0exact}} is called.
 The default leverage limit is \code{0.999999}. Another limit can be sent as input instead of \code{TRUE}.
 Checking is performed before and after (since new zeros) rounding. Extra iterations are performed when needed.}
 
@@ -110,10 +110,10 @@ There must be columns that match \code{crossTable}. Differences must be in the l
 
 \item{allSmall}{When TRUE, all small inner cells (\verb{<= maxRound}) are rounded. This parameter is a simplified alternative to specifying \code{forceInner}  (see details).}
 
-\item{...}{Further parameters sent to \code{\link{ModelMatrix}}.
+\item{...}{Further parameters sent to \code{\link[SSBtools]{ModelMatrix}}.
 In particular, one can specify \code{removeEmpty=TRUE} to omit empty combinations.
 The parameter \code{inputInOutput} can be used to specify whether to include codes from input.
-The parameter \code{avoidHierarchical} (\code{\link{Formula2ModelMatrix}}) can be combined with formula input.}
+The parameter \code{avoidHierarchical} (\code{\link[SSBtools]{Formula2ModelMatrix}}) can be combined with formula input.}
 }
 \value{
 A list where the two first elements are two column matrices.

@@ -29,7 +29,7 @@
 #'    For example, row "\code{rounded}" and column "\code{inn.4+}" is the number of rounded 
 #'    inner cell frequencies greater than or equal to \code{4}.}
 #'    
-#' @seealso   \code{\link{RoundViaDummy}}, \code{\link{PLS2way}}, \code{\link{ModelMatrix}} 
+#' @seealso   \code{\link{RoundViaDummy}}, \code{\link{PLS2way}}, \code{\link[SSBtools]{ModelMatrix}} 
 #' 
 #' @references 
 #' Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}. 

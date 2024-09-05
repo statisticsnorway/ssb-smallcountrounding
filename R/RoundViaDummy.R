@@ -18,7 +18,7 @@
 #'
 #' @param data Input data as a data frame (inner cells)
 #' @param freqVar Variable holding counts (name or number)
-#' @param formula Model formula defining publishable cells. Will be used to calculate \code{x} (via \code{\link{ModelMatrix}}). 
+#' @param formula Model formula defining publishable cells. Will be used to calculate \code{x} (via \code{\link[SSBtools]{ModelMatrix}}). 
 #' When NULL, x must be supplied.
 #' @param roundBase Rounding base
 #' @param singleRandom Single random draw when TRUE (instead of algorithm)
@@ -27,7 +27,7 @@
 #' @param maxIterRows See details
 #' @param maxIter Maximum number of iterations
 #' @param x Dummy matrix defining publishable cells
-#' @param hierarchies List of hierarchies, which can be converted by \code{\link{AutoHierarchies}}. 
+#' @param hierarchies List of hierarchies, which can be converted by \code{\link[SSBtools]{AutoHierarchies}}. 
 #'        Thus, a single string as hierarchy input is assumed to be a total code. 
 #'        Exceptions are \code{"rowFactor"} or \code{""}, which correspond to only using the categories in the data.
 #' @param xReturn Dummy matrix in output when TRUE (as input parameter \code{x})
@@ -51,7 +51,7 @@
 #' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 #'        (\code{<=maxRound}) will be rounded. 
 #'        The computation of leverages can be very time and memory consuming. 
-#'        The function \code{\link{Reduce0exact}} is called. 
+#'        The function \code{\link[SSBtools]{Reduce0exact}} is called. 
 #'        The default leverage limit is `0.999999`. Another limit can be sent as input instead of `TRUE`.  
 #'        Checking is performed before and after (since new zeros) rounding. Extra iterations are performed when needed.  
 #' @param easyCheck A light version of the above leverage checking. 
@@ -64,10 +64,10 @@
 #' @param preDifference   A data.frame with differences already obtained from rounding another subset of data. 
 #'                        There must be columns that match `crossTable`. Differences must be in the last column.
 #' @param allSmall When TRUE, all small inner cells (`<= maxRound`) are rounded. This parameter is a simplified alternative to specifying `forceInner`  (see details).                            
-#' @param ... Further parameters sent to \code{\link{ModelMatrix}}.
+#' @param ... Further parameters sent to \code{\link[SSBtools]{ModelMatrix}}.
 #'            In particular, one can specify `removeEmpty=TRUE` to omit empty combinations.     
 #'            The parameter `inputInOutput` can be used to specify whether to include codes from input.
-#'            The parameter `avoidHierarchical` (\code{\link{Formula2ModelMatrix}}) can be combined with formula input.
+#'            The parameter `avoidHierarchical` (\code{\link[SSBtools]{Formula2ModelMatrix}}) can be combined with formula input.
 #' @note Iterations are needed since after initial rounding of identified cells, new cells are identified.
 #' If cases of a high number of identified cells the algorithm can be too memory consuming (unless singleRandom=TRUE).
 #' To avoid problems, not more than maxIterRows cells are rounded in each iteration.
