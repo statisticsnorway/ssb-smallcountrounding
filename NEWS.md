@@ -1,3 +1,8 @@
+## SmallCountRounding	1.0.5
+* Minor updates with no changes in functionality
+  - Changed package license to MIT, in accordance with the policy at Statistics Norway.
+  - Some technical changes in documentation to comply with standards.
+
 
 ## SmallCountRounding	1.0.3
 * Workaround for old `R` versions where the `isFALSE` function is not defined.
