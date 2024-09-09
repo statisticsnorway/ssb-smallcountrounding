@@ -862,7 +862,7 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
     if(step > 1)
       if(i%%step == 0){
         doDown = TRUE
-        for(i in seq_len(round(step/2))){
+        for(s in seq_len(round(step/2))){
           if(doDown){ 
             #cat("D")
             doDown =DownBase(TRUE)  
