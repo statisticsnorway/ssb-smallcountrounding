@@ -11,7 +11,26 @@
 #' Parameters `zeroCandidates`, `forceInner`,  `preRounded` and `plsWeights` can be specified as functions.
 #' The supplied functions take the following arguments: `data`, `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxRound`, and `...`, 
 #'                   where the first two are numeric vectors of original counts. 
-#' When `allSmall` is `TRUE`,  `forceInner` is set to  `function(yInner, maxRound, ...)` `yInner <= maxRound`.                   
+#' When `allSmall` is `TRUE`,  `forceInner` is set to  `function(yInner, maxRound, ...)` `yInner <= maxRound`.          
+#' 
+#' 
+#' Details about the `step` parameter:    
+#' - `step` as a numeric vector is converted to three parameters by
+#'   - `step1 <- step[1]`
+#'   - `step2 <- ifelse(length(step)>=2, step[2], round(step/2))`
+#'   - `step3 <- ifelse(length(step)>=3, step[3], step[1])`
+#'   
+#'    After `step1` steps forward, up to `step2` backward steps may be performed.
+#'    At the end of the algorithm;  up to `step3` backward steps may be executed repeatedly.
+#'   
+#' - `step` when provided as a list (of numeric vectors), is adjusted to a length of 3 using `rep_len(step, 3)`. 
+#'   - `step[[1]]` is used in the main iterations. 
+#'   - `step[[2]]`, when non-`NULL`, is used in a final re-run iteration.
+#'   - `step[[3]]` is used in extra iterations caused by `easyCheck` or `leverageCheck`.
+#'   
+#'   Setting `step = list(0)` will result in standard behavior, with the exception that an extra re-run iteration is performed.
+#'   The most detailed setting is achieved by setting `step` to a length-3 list where each element has length 3.
+#'  
 #'
 #' @encoding UTF8
 #' @md
@@ -46,6 +65,9 @@
 #' @param step When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
 #'       After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
 #'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
+#'       For greater control, the `step` parameter can be specified as a vector. 
+#'       Additionally, it can be provided as a list to trigger a final re-run iteration.
+#'       See details.
 #' @param preRounded A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells. 
 #'                   Can also be specified as a function generating it (see details).
 #' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
@@ -466,6 +488,9 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   }
   steplist <- rep_len(steplist, 3)
   step <-  steplist[[1]]
+  if (is.null(steplist[[2]])) {
+    reRun <- FALSE
+  }
   
   i = 0
   while (i<maxIter) {
