@@ -697,6 +697,13 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   # dgT med eller uten tApp/wD er muligheter ved for lite minne til roundBasecrossprod
   # wD fungerer raskt!!
   # cat("Pls1RoundFromUser")
+  
+  step <- pmax(1L, as.integer(step))
+  step1 <- step[1]
+  step2 <- ifelse(length(step)>=2, step[2], round(step/2))
+  step3 <- ifelse(length(step)>=3, step[3], step[1])
+  
+  
   if(printInc) {cat("-"); flush.console()}
   if (is.matrix(x))
     x <- Matrix(x)  # Sparse matrix
@@ -848,8 +855,6 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   }
   
   
-  step = max(1L, as.integer(step))
-  
   i = 0L
   while(nBase<nR){
     i = i + 1L
@@ -859,10 +864,10 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
         flush.console()
       }
     UpBase()
-    if(step > 1)
-      if(i%%step == 0){
+    if(step1 > 1)
+      if(i%%step1 == 0){
         doDown = TRUE
-        for(s in seq_len(round(step/2))){
+        for(s in seq_len(step2)){
           if(doDown){ 
             #cat("D")
             doDown =DownBase(TRUE)  
@@ -878,7 +883,7 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
         flush.console()
       }
     doDown = TRUE
-    for(i in seq_len(step)){
+    for(i in seq_len(step3)){
       if(doDown){ 
         #cat("d")
         doDown =DownBase(TRUE)   
