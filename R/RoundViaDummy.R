@@ -458,8 +458,15 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   if(any(preRounded))
     supRowsForce[preRounded] = FALSE
   
-  reRun <- FALSE
-
+  reRun <- is.list(step)
+  if (!is.list(step)) {
+    steplist <- list(step)
+  } else {
+    steplist <- step
+  }
+  steplist <- rep_len(steplist, 3)
+  step <-  steplist[[1]]
+  
   i = 0
   while (i<maxIter) {
     i = i+1
@@ -535,6 +542,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
           cat("reRun")
           flush.console()
         }
+        step <-  steplist[[2]]
         
         return_a <- FALSE
         reRun <- FALSE
@@ -543,6 +551,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
       
       if (return_a) {
         if ( easyCheck | leverageCheck) { 
+          step <-  steplist[[3]]
           if((printInc  & as.logical(leverageCheck))) cat("{")
           leverage <- Reduce0exact(x, z = Matrix(yPublish,ncol=1),y = Matrix(a[[1]],ncol=1), reduceByLeverage = as.logical(leverageCheck), 
                                    leverageLimit = leverageCheck, reduceByColSums=TRUE, 
