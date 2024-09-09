@@ -458,6 +458,7 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   if(any(preRounded))
     supRowsForce[preRounded] = FALSE
   
+  reRun <- FALSE
 
   i = 0
   while (i<maxIter) {
@@ -503,6 +504,42 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
           }
         }
       }
+      
+      if (return_a & i == 1) {
+        reRun <- FALSE
+      }
+      
+      if (return_a & reRun) {
+        maxDU <- floor(maxIterRows/2)
+        
+        reRunRowsDown <- which(yInner < a[[1]])
+        reRunRowsUp <- which(yInner > a[[1]])
+        
+        if (length(reRunRowsDown) > maxDU) {
+          coe <- x[reRunRowsDown, , drop = FALSE] %*% (yPublishExact - yPublish)
+          reRunRowsDown <- reRunRowsDown[order(coe, decreasing = FALSE)[seq_len(maxDU)]]
+        }
+        if (length(reRunRowsUp) > maxDU) {
+          coe <- x[reRunRowsUp, , drop = FALSE] %*% (yPublishExact - yPublish)
+          reRunRowsUp <- reRunRowsUp[order(coe, decreasing = TRUE)[seq_len(maxDU)]]
+        }
+        
+        supRowsForce[reRunRowsDown] <- TRUE
+        supRowsForce[reRunRowsUp] <- TRUE
+        
+        # reverse earlier rounding
+        yPublish <- yPublish - Matrix::crossprod(x[supRowsForce, , drop = FALSE], a[[1]][supRowsForce] - yInner[supRowsForce])
+        a[[1]][supRowsForce] <- yInner[supRowsForce]
+        
+        if(printInc){
+          cat("reRun")
+          flush.console()
+        }
+        
+        return_a <- FALSE
+        reRun <- FALSE
+      }
+      
       
       if (return_a) {
         if ( easyCheck | leverageCheck) { 
