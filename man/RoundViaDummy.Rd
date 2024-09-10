@@ -81,7 +81,10 @@ than \code{roundBase}. When \code{maxRound} is default, there is no difference b
 
 \item{step}{When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise.
 After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used
-for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.}
+for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
+For greater control, the \code{step} parameter can be specified as a vector.
+Additionally, it can be provided as a list to trigger a final re-run iteration.
+See details.}
 
 \item{preRounded}{A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells.
 Can also be specified as a function generating it (see details).}
@@ -134,6 +137,28 @@ Parameters \code{zeroCandidates}, \code{forceInner},  \code{preRounded} and \cod
 The supplied functions take the following arguments: \code{data}, \code{yPublish},  \code{yInner}, \code{crossTable}, \code{x}, \code{roundBase}, \code{maxRound}, and \code{...},
 where the first two are numeric vectors of original counts.
 When \code{allSmall} is \code{TRUE},  \code{forceInner} is set to  \verb{function(yInner, maxRound, ...)} \code{yInner <= maxRound}.
+
+Details about the \code{step} parameter:
+\itemize{
+\item \code{step} as a numeric vector is converted to three parameters by
+\itemize{
+\item \code{step1 <- step[1]}
+\item \code{step2 <- ifelse(length(step)>=2, step[2], round(step/2))}
+\item \code{step3 <- ifelse(length(step)>=3, step[3], step[1])}
+}
+
+After \code{step1} steps forward, up to \code{step2} backward steps may be performed.
+At the end of the algorithm;  up to \code{step3} backward steps may be executed repeatedly.
+\item \code{step} when provided as a list (of numeric vectors), is adjusted to a length of 3 using \code{rep_len(step, 3)}.
+\itemize{
+\item \code{step[[1]]} is used in the main iterations.
+\item \code{step[[2]]}, when non-\code{NULL}, is used in a final re-run iteration.
+\item \code{step[[3]]} is used in extra iterations caused by \code{easyCheck} or \code{leverageCheck}.
+}
+
+Setting \code{step = list(0)} will result in standard behavior, with the exception that an extra re-run iteration is performed.
+The most detailed setting is achieved by setting \code{step} to a length-3 list where each element has length 3.
+}
 }
 \note{
 Iterations are needed since after initial rounding of identified cells, new cells are identified.

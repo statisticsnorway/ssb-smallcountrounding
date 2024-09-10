@@ -11,7 +11,26 @@
 #' Parameters `zeroCandidates`, `forceInner`,  `preRounded` and `plsWeights` can be specified as functions.
 #' The supplied functions take the following arguments: `data`, `yPublish`,  `yInner`, `crossTable`, `x`, `roundBase`, `maxRound`, and `...`, 
 #'                   where the first two are numeric vectors of original counts. 
-#' When `allSmall` is `TRUE`,  `forceInner` is set to  `function(yInner, maxRound, ...)` `yInner <= maxRound`.                   
+#' When `allSmall` is `TRUE`,  `forceInner` is set to  `function(yInner, maxRound, ...)` `yInner <= maxRound`.          
+#' 
+#' 
+#' Details about the `step` parameter:    
+#' - `step` as a numeric vector is converted to three parameters by
+#'   - `step1 <- step[1]`
+#'   - `step2 <- ifelse(length(step)>=2, step[2], round(step/2))`
+#'   - `step3 <- ifelse(length(step)>=3, step[3], step[1])`
+#'   
+#'    After `step1` steps forward, up to `step2` backward steps may be performed.
+#'    At the end of the algorithm;  up to `step3` backward steps may be executed repeatedly.
+#'   
+#' - `step` when provided as a list (of numeric vectors), is adjusted to a length of 3 using `rep_len(step, 3)`. 
+#'   - `step[[1]]` is used in the main iterations. 
+#'   - `step[[2]]`, when non-`NULL`, is used in a final re-run iteration.
+#'   - `step[[3]]` is used in extra iterations caused by `easyCheck` or `leverageCheck`.
+#'   
+#'   Setting `step = list(0)` will result in standard behavior, with the exception that an extra re-run iteration is performed.
+#'   The most detailed setting is achieved by setting `step` to a length-3 list where each element has length 3.
+#'  
 #'
 #' @encoding UTF8
 #' @md
@@ -46,6 +65,9 @@
 #' @param step When \code{step>1}, the original forward part of the algorithm is replaced by a kind of stepwise. 
 #'       After \code{step} steps forward, backward steps may be performed. The \code{step} parameter is also used 
 #'       for backward-forward iteration at the end of the algorithm; \code{step} backward steps may be performed.
+#'       For greater control, the `step` parameter can be specified as a vector. 
+#'       Additionally, it can be provided as a list to trigger a final re-run iteration.
+#'       See details.
 #' @param preRounded A vector or a variable in data that contains a mixture of missing values and predetermined values of rounded inner cells. 
 #'                   Can also be specified as a function generating it (see details).
 #' @param leverageCheck When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
@@ -458,7 +480,18 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
   if(any(preRounded))
     supRowsForce[preRounded] = FALSE
   
-
+  reRun <- is.list(step)
+  if (!is.list(step)) {
+    steplist <- list(step)
+  } else {
+    steplist <- step
+  }
+  steplist <- rep_len(steplist, 3)
+  step <-  steplist[[1]]
+  if (is.null(steplist[[2]])) {
+    reRun <- FALSE
+  }
+  
   i = 0
   while (i<maxIter) {
     i = i+1
@@ -504,8 +537,46 @@ PlsRoundSparse <- function(x, roundBase = 3, yInner, yPublish = Matrix::crosspro
         }
       }
       
+      if (return_a & i == 1) {
+        reRun <- FALSE
+      }
+      
+      if (return_a & reRun) {
+        maxDU <- floor(maxIterRows/2)
+        
+        reRunRowsDown <- which(yInner < a[[1]])
+        reRunRowsUp <- which(yInner > a[[1]])
+        
+        if (length(reRunRowsDown) > maxDU) {
+          coe <- x[reRunRowsDown, , drop = FALSE] %*% (yPublishExact - yPublish)
+          reRunRowsDown <- reRunRowsDown[order(coe, decreasing = FALSE)[seq_len(maxDU)]]
+        }
+        if (length(reRunRowsUp) > maxDU) {
+          coe <- x[reRunRowsUp, , drop = FALSE] %*% (yPublishExact - yPublish)
+          reRunRowsUp <- reRunRowsUp[order(coe, decreasing = TRUE)[seq_len(maxDU)]]
+        }
+        
+        supRowsForce[reRunRowsDown] <- TRUE
+        supRowsForce[reRunRowsUp] <- TRUE
+        
+        # reverse earlier rounding
+        yPublish <- yPublish - Matrix::crossprod(x[supRowsForce, , drop = FALSE], a[[1]][supRowsForce] - yInner[supRowsForce])
+        a[[1]][supRowsForce] <- yInner[supRowsForce]
+        
+        if(printInc){
+          cat("reRun")
+          flush.console()
+        }
+        step <-  steplist[[2]]
+        
+        return_a <- FALSE
+        reRun <- FALSE
+      }
+      
+      
       if (return_a) {
         if ( easyCheck | leverageCheck) { 
+          step <-  steplist[[3]]
           if((printInc  & as.logical(leverageCheck))) cat("{")
           leverage <- Reduce0exact(x, z = Matrix(yPublish,ncol=1),y = Matrix(a[[1]],ncol=1), reduceByLeverage = as.logical(leverageCheck), 
                                    leverageLimit = leverageCheck, reduceByColSums=TRUE, 
@@ -697,6 +768,13 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   # dgT med eller uten tApp/wD er muligheter ved for lite minne til roundBasecrossprod
   # wD fungerer raskt!!
   # cat("Pls1RoundFromUser")
+  
+  step <- pmax(1L, as.integer(step))
+  step1 <- step[1]
+  step2 <- ifelse(length(step)>=2, step[2], round(step/2))
+  step3 <- ifelse(length(step)>=3, step[3], step[1])
+  
+  
   if(printInc) {cat("-"); flush.console()}
   if (is.matrix(x))
     x <- Matrix(x)  # Sparse matrix
@@ -848,8 +926,6 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
   }
   
   
-  step = max(1L, as.integer(step))
-  
   i = 0L
   while(nBase<nR){
     i = i + 1L
@@ -859,10 +935,10 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
         flush.console()
       }
     UpBase()
-    if(step > 1)
-      if(i%%step == 0){
+    if(step1 > 1)
+      if(i%%step1 == 0){
         doDown = TRUE
-        for(s in seq_len(round(step/2))){
+        for(s in seq_len(step2)){
           if(doDown){ 
             #cat("D")
             doDown =DownBase(TRUE)  
@@ -878,7 +954,7 @@ Pls1Round <- function(x, y, roundBase = 3L, removeOneCols = FALSE, printInc = TR
         flush.console()
       }
     doDown = TRUE
-    for(i in seq_len(step)){
+    for(i in seq_len(step3)){
       if(doDown){ 
         #cat("d")
         doDown =DownBase(TRUE)   

@@ -54,6 +54,18 @@ test_that("PLSrounding works", {
   b2 <- PLSrounding(z, "ant2", 50, formula = mf3, leverageCheck = TRUE, printInc = printInc)
   expect_identical(b1,b2)
   
+  
+  # step parameter tests 
+  meanAbsDiffs <- as.numeric(c(
+    PLSrounding(z, "ant", 15, formula = mf3, maxIterRows = 40, printInc = printInc)$metrics["meanAbsDiff"],
+    PLSrounding(z, "ant", 15, formula = mf3, maxIterRows = 40, printInc = printInc, step = list(1,10))$metrics["meanAbsDiff"],
+    PLSrounding(z, "ant", 15, formula = mf3, maxIterRows = 40, printInc = printInc, step = list(1,NULL,1))$metrics["meanAbsDiff"],
+    PLSrounding(z, "ant", 15, formula = mf3, maxIterRows = 40, printInc = printInc, step = list(10))$metrics["meanAbsDiff"],
+    PLSrounding(z, "ant", 15, formula = mf3, maxIterRows = 40, printInc = printInc, step = list(10,NULL,10))$metrics["meanAbsDiff"],
+    PLSrounding(z, "ant", 15, formula = mf3, maxIterRows = 40, printInc = printInc, step = list(1,1,10))$metrics["meanAbsDiff"]))
+  expect_equivalent(meanAbsDiffs, 
+                    c(5.58333333333333, 5.19444444444444, 5.58333333333333, 5.41880341880342, 5.57264957264957, 5.3034188034188))
+  
   z <- z[z$ant>0, ]
   dL <- FindDimLists(z[,-c(3,6,7)])
   a0 <- PLSrounding( z, "ant", hierarchies= dL, formula = ~region*hovedint*mnd-region:hovedint:mnd, printInc = printInc, removeEmpty=FALSE)
