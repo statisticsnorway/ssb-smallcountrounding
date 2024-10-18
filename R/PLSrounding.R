@@ -16,6 +16,17 @@
 #' @param printInc Printing iteration information to console when TRUE  
 #' @param output Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
 #' @param preAggregate When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables. 
+#' @param aggregatePackage Package used to preAggregate. 
+#'                         Parameter `pkg` to \code{\link[SSBtools]{aggregate_by_pkg}}.
+#' @param aggregateNA Whether to include NAs in the grouping variables while preAggregate. 
+#'                    Parameter `include_na` to \code{\link[SSBtools]{aggregate_by_pkg}}.
+#' @param aggregateBaseOrder Parameter `base_order` to \code{\link[SSBtools]{aggregate_by_pkg}}, used when preAggregate.  
+#'                           The default is set to `FALSE` to avoid unnecessary sorting operations.  
+#'                           When `TRUE`, an attempt is made to return the same result with `data.table` as with base R.
+#'                           This cannot be guaranteed due to potential variations in sorting behavior across different systems.
+#' @param rowGroupsPackage Parameter `pkg` to \code{\link[SSBtools]{RowGroups}}.
+#'               The parameter is input to \code{\link[SSBtools]{Formula2ModelMatrix}} 
+#'               via \code{\link[SSBtools]{ModelMatrix}}. 
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
@@ -38,8 +49,8 @@
 #' 
 #' @encoding UTF8
 #' 
-#' @importFrom SSBtools CharacterDataFrame
-#' @importFrom stats aggregate as.formula delete.response terms
+#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg
+#' @importFrom stats as.formula delete.response terms
 #' @export
 #'
 #' @examples
@@ -117,7 +128,12 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         dimVar = NULL,
                         maxRound = roundBase-1, printInc = nrow(data)>1000, 
                         output = NULL, 
-                        preAggregate = is.null(freqVar), ...) {
+                        preAggregate = is.null(freqVar),
+                        aggregatePackage = "base",
+                        aggregateNA = TRUE,
+                        aggregateBaseOrder = FALSE,
+                        rowGroupsPackage = aggregatePackage,
+                        ...) {
   
   
   force(preAggregate)
@@ -159,10 +175,27 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     
     if (preAggregate) {
       if (is.null(freqVar)) {
-        data <- aggregate(list(f_Re_qVa_r = data[[dVar[1]]]), data[dVar], length)
+        #data <- aggregate(list(f_Re_qVa_r = data[[dVar[1]]]), data[dVar], length)
+        data <- aggregate_by_pkg(
+          data = data,
+          by = dVar,
+          var = dVar[1],
+          pkg =  aggregatePackage,
+          include_na = aggregateNA,
+          fun = length,
+          base_order = aggregateBaseOrder)
         freqVar <- "f_Re_qVa_r"
+        names(data)[length(dVar) + 1] <- freqVar 
       } else {
-        data <- aggregate(data[freqVar], data[dVar], sum)
+        #data <- aggregate(data[freqVar], data[dVar], sum)
+        data <- aggregate_by_pkg(
+          data = data,
+          by = dVar,
+          var = freqVar,
+          pkg =  aggregatePackage,
+          include_na = aggregateNA,
+          fun = sum,
+          base_order = aggregateBaseOrder)
       }
       if (printInc) {
         cat(dim(data)[1], "*", dim(data)[2], "]\n", sep = "")
@@ -191,7 +224,8 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   } else {
     z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies,
                        dimVar = dimVar,
-                     maxRound = maxRound, printInc = printInc, ...)
+                     maxRound = maxRound, printInc = printInc,
+                     rowGroupsPackage = rowGroupsPackage, ...)
   }
   
   

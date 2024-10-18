@@ -18,6 +18,10 @@ PLSrounding(
   printInc = nrow(data) > 1000,
   output = NULL,
   preAggregate = is.null(freqVar),
+  aggregatePackage = "base",
+  aggregateNA = TRUE,
+  aggregateBaseOrder = FALSE,
+  rowGroupsPackage = aggregatePackage,
   ...
 )
 
@@ -45,6 +49,21 @@ PLSroundingPublish(..., output = "publish")
 \item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
 
 \item{preAggregate}{When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables.}
+
+\item{aggregatePackage}{Package used to preAggregate.
+Parameter \code{pkg} to \code{\link[SSBtools]{aggregate_by_pkg}}.}
+
+\item{aggregateNA}{Whether to include NAs in the grouping variables while preAggregate.
+Parameter \code{include_na} to \code{\link[SSBtools]{aggregate_by_pkg}}.}
+
+\item{aggregateBaseOrder}{Parameter \code{base_order} to \code{\link[SSBtools]{aggregate_by_pkg}}, used when preAggregate.
+The default is set to \code{FALSE} to avoid unnecessary sorting operations.
+When \code{TRUE}, an attempt is made to return the same result with \code{data.table} as with base R.
+This cannot be guaranteed due to potential variations in sorting behavior across different systems.}
+
+\item{rowGroupsPackage}{Parameter \code{pkg} to \code{\link[SSBtools]{RowGroups}}.
+The parameter is input to \code{\link[SSBtools]{Formula2ModelMatrix}}
+via \code{\link[SSBtools]{ModelMatrix}}.}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
 }

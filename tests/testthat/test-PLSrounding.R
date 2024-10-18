@@ -108,6 +108,24 @@ test_that("preAggregate works", {
   expect_identical(aM[[2]], aF[[2]][names(aM[[2]])])
   expect_identical(aM[3:4], aF[3:4])
   
+  zM1 <- cbind(zM, freq = 1L)
+  aM1 <- PLSrounding(zM1, "freq", formula = formula, printInc = printInc, preAggregate = TRUE)
+  expect_identical(aM, aM1) 
+  
+  if (requireNamespace("data.table", quietly = TRUE)) {
+    for (aggregateBaseOrder in c(FALSE, TRUE)) {
+      aM <- PLSrounding(zM, formula = formula, printInc = printInc, 
+                        aggregatePackage = "data.table", rowGroupsPackage = "data.table", 
+                        aggregateBaseOrder = aggregateBaseOrder)
+      aM1 <- PLSrounding(zM1, "freq", formula = formula, printInc = printInc, 
+                         preAggregate = TRUE, 
+                         aggregatePackage = "data.table", rowGroupsPackage = "base",
+                         aggregateBaseOrder = aggregateBaseOrder)
+      expect_identical(aM, aM1)
+      expect_identical(aM[3:4], aF[3:4])
+    }
+  }
+  
   aM <- PLSrounding(zM, printInc = printInc)
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[2]], aF[[2]]))))), 0)
