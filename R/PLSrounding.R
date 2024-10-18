@@ -49,7 +49,7 @@
 #' 
 #' @encoding UTF8
 #' 
-#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg
+#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput 
 #' @importFrom stats as.formula delete.response terms
 #' @export
 #'
@@ -153,23 +153,14 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
       cat("[preAggregate ", dim(data)[1], "*", dim(data)[2], "->", sep = "")
       flush.console()
     }
-    if (!is.null(hierarchies)) {
-      dVar <- names(hierarchies)
-    } else {
-      if (!is.null(formula)) {
-        dVar <- row.names(attr(delete.response(terms(as.formula(formula))), "factors"))
-      } else {
-        if (!is.null(dimVar)){
-          dVar <- dimVar
-        } else {
+    dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
+    if (!length(dVar)) {
           if (is.null(freqVar)){
             dVar <- names(data)
           } else {
             freqVarName <- names(data[1, freqVar, drop = FALSE])
             dVar <- names(data[1, !(names(data) %in% freqVarName), drop = FALSE])
           }
-        }
-      }
     }
     dVar <- unique(dVar)
     
