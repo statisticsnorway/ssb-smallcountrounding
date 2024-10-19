@@ -15,6 +15,11 @@
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
 #' @param printInc Printing iteration information to console when TRUE  
 #' @param output Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
+#' @param extend0  When `extend0` is set to `TRUE`, the data is automatically extended. 
+#'                 This is relevant when `zeroCandidates = TRUE` (see \code{\link{RoundViaDummy}}).  
+#'        Additionally, `extend0` can be specified as a list, representing the `varGroups` parameter 
+#'        in the \code{\link[SSBtools]{Extend0}} function. 
+#'        Can also be set to `"all"` which means that input codes in hierarchies are considered in addition to those in data.   
 #' @param preAggregate When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables. 
 #' @param aggregatePackage Package used to preAggregate. 
 #'                         Parameter `pkg` to \code{\link[SSBtools]{aggregate_by_pkg}}.
@@ -128,6 +133,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         dimVar = NULL,
                         maxRound = roundBase-1, printInc = nrow(data)>1000, 
                         output = NULL, 
+                        extend0 = FALSE,
                         preAggregate = is.null(freqVar),
                         aggregatePackage = "base",
                         aggregateNA = TRUE,
@@ -148,7 +154,9 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     output <- ""
   }
   
-  if (preAggregate | output == "input") {
+  isExtend0 <- IsExtend0(extend0)
+  
+  if (preAggregate | output == "input" | isExtend0) {
     if (printInc & preAggregate) {
       cat("[preAggregate ", dim(data)[1], "*", dim(data)[2], "->", sep = "")
       flush.console()
@@ -195,6 +203,26 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     }
   }
   
+  if (isExtend0) {
+    if (printInc) {
+      cat("[extend0 ", dim(data)[1], "*", dim(data)[2], "->", sep = "")
+      flush.console()
+    }
+    
+    data <- Extend0fromModelMatrixInput(data = data, 
+                                        freqName = freqVar, 
+                                        hierarchies = hierarchies, 
+                                        formula = formula,
+                                        dimVar = dimVar,
+                                        extend0 = extend0, 
+                                        dVar = dVar, ...)
+    
+    
+    if (printInc) {
+      cat(dim(data)[1], "*", dim(data)[2], "]\n", sep = "")
+      flush.console()
+    }
+  }
   
   if (output == "input"){
     if (!is.null(freqVar)) {

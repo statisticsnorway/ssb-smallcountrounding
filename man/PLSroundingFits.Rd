@@ -12,8 +12,10 @@ PLSroundingFits(
   formula = NULL,
   dimVar = NULL,
   preAggregate = is.null(freqVar),
+  printInc = nrow(data) > 1000,
   xReturn = FALSE,
-  extend0 = TRUE,
+  extend0 = FALSE,
+  extend0Fits = TRUE,
   limit = 1e-10,
   viaQR = FALSE,
   iter = 1000,
@@ -40,9 +42,19 @@ PLSroundingFits(
 
 \item{preAggregate}{Aggregation}
 
+\item{printInc}{Printing iteration information}
+
 \item{xReturn}{Dummy matrix in output when \code{TRUE}. To return crossTable as well, use \code{xReturn = 2}.}
 
-\item{extend0}{Data is automatically extended by \code{Extend0} when \code{TRUE}. Can also be specified as a list meaning parameter \code{varGroups} to \code{Extend0}.}
+\item{extend0}{\code{PLSrounding} parameter. See below.}
+
+\item{extend0Fits}{When \code{extend0Fits} is set to \code{TRUE} (default), the data is automatically extended.
+Additionally, \code{extend0Fits} can be specified as a list, or set to \code{"all"} (see \code{\link{PLSrounding}}).
+Previously, this functionality was controlled by a parameter called \code{extend0},
+but now \code{extend0} is specific to the \code{\link{PLSrounding}} function.
+When both \code{extend0} and \code{extend0Fits} are used simultaneously,
+\code{extend0Fits} adds an additional extension on top of the one provided by \code{extend0}
+(see example).}
 
 \item{limit}{\code{LSfitNonNeg} parameter}
 
@@ -73,7 +85,7 @@ Thereafter, based on the publishable rounded data, expected inner cell frequenci
 To ensure that empty cells missing in input data are included in the fitting process, the data is first extended using \code{\link[SSBtools]{Extend0}}.
 }
 \details{
-The seven first parameters is documented in more detail in \code{\link{PLSrounding}}.
+The nine first parameters is documented in more detail in \code{\link{PLSrounding}}.
 If iterative proportional fitting succeeds, the maximum difference between rounded counts and \code{ipFit} is less than input parameter \code{eps}.
 }
 \examples{
@@ -88,12 +100,17 @@ PLSroundingFits(z4, "freq", formula = ~eu * year + geo)[c("inner", "publish")]
 
 my_km2 <- SSBtools::SSBtoolsData("my_km2")
 
-# Default automatic extension (extend0 = TRUE)
+# Default automatic extension (extend0Fits = TRUE)
 PLSroundingFits(my_km2, "freq", 
        formula = ~(Sex + Age) * Municipality * Square1000m + Square250m)[c("inner", "publish")]
 
 # Manual specification to avoid Nittedal combined with another_km
 PLSroundingFits(my_km2, "freq", formula = ~(Sex + Age) * Municipality * Square1000m + Square250m, 
-       extend0 = list(c("Sex", "Age"), 
+       extend0Fits = list(c("Sex", "Age"), 
        c("Municipality", "Square1000m", "Square250m")))[c("inner", "publish")]
+       
+# Example with both extend0 (specified) and extend0Fits (default is TRUE)
+PLSroundingFits(my_km2, "freq", formula = ~(Sex + Age) * Municipality * Square1000m + Square250m, 
+       printInc = TRUE, zeroCandidates = TRUE, roundBase = 5, extend0 = list(c("Sex", "Age"), 
+       c("Municipality", "Square1000m", "Square250m")))[c("inner", "publish")]        
 }

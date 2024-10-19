@@ -17,6 +17,7 @@ PLSrounding(
   maxRound = roundBase - 1,
   printInc = nrow(data) > 1000,
   output = NULL,
+  extend0 = FALSE,
   preAggregate = is.null(freqVar),
   aggregatePackage = "base",
   aggregateNA = TRUE,
@@ -47,6 +48,12 @@ PLSroundingPublish(..., output = "publish")
 \item{printInc}{Printing iteration information to console when TRUE}
 
 \item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
+
+\item{extend0}{When \code{extend0} is set to \code{TRUE}, the data is automatically extended.
+This is relevant when \code{zeroCandidates = TRUE} (see \code{\link{RoundViaDummy}}).
+Additionally, \code{extend0} can be specified as a list, representing the \code{varGroups} parameter
+in the \code{\link[SSBtools]{Extend0}} function.
+Can also be set to \code{"all"} which means that input codes in hierarchies are considered in addition to those in data.}
 
 \item{preAggregate}{When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables.}
 
