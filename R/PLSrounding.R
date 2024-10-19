@@ -103,6 +103,12 @@
 #' # Microdata input
 #' PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)
 #' 
+#' # Zero perturbed due to both  extend0 = TRUE and zeroCandidates = TRUE 
+#' set.seed(12345)
+#' PLSroundingInner(z[sample.int(5, 12, replace = TRUE), 1:3], 
+#'                  formula = ~geo + eu + year, roundBase = 5, 
+#'                  extend0 = TRUE, zeroCandidates = TRUE, printInc = TRUE)
+#' 
 #' # Parameter avoidHierarchical (see RoundViaDummy and ModelMatrix) 
 #' PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year, avoidHierarchical = TRUE)
 #' 
