@@ -17,7 +17,12 @@ PLSrounding(
   maxRound = roundBase - 1,
   printInc = nrow(data) > 1000,
   output = NULL,
+  extend0 = FALSE,
   preAggregate = is.null(freqVar),
+  aggregatePackage = "base",
+  aggregateNA = TRUE,
+  aggregateBaseOrder = FALSE,
+  rowGroupsPackage = aggregatePackage,
   ...
 )
 
@@ -44,7 +49,28 @@ PLSroundingPublish(..., output = "publish")
 
 \item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
 
+\item{extend0}{When \code{extend0} is set to \code{TRUE}, the data is automatically extended.
+This is relevant when \code{zeroCandidates = TRUE} (see \code{\link{RoundViaDummy}}).
+Additionally, \code{extend0} can be specified as a list, representing the \code{varGroups} parameter
+in the \code{\link[SSBtools]{Extend0}} function.
+Can also be set to \code{"all"} which means that input codes in hierarchies are considered in addition to those in data.}
+
 \item{preAggregate}{When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables.}
+
+\item{aggregatePackage}{Package used to preAggregate.
+Parameter \code{pkg} to \code{\link[SSBtools]{aggregate_by_pkg}}.}
+
+\item{aggregateNA}{Whether to include NAs in the grouping variables while preAggregate.
+Parameter \code{include_na} to \code{\link[SSBtools]{aggregate_by_pkg}}.}
+
+\item{aggregateBaseOrder}{Parameter \code{base_order} to \code{\link[SSBtools]{aggregate_by_pkg}}, used when preAggregate.
+The default is set to \code{FALSE} to avoid unnecessary sorting operations.
+When \code{TRUE}, an attempt is made to return the same result with \code{data.table} as with base R.
+This cannot be guaranteed due to potential variations in sorting behavior across different systems.}
+
+\item{rowGroupsPackage}{Parameter \code{pkg} to \code{\link[SSBtools]{RowGroups}}.
+The parameter is input to \code{\link[SSBtools]{Formula2ModelMatrix}}
+via \code{\link[SSBtools]{ModelMatrix}}.}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
 }
@@ -112,6 +138,12 @@ PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year)
 
 # Microdata input
 PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)
+
+# Zero perturbed due to both  extend0 = TRUE and zeroCandidates = TRUE 
+set.seed(12345)
+PLSroundingInner(z[sample.int(5, 12, replace = TRUE), 1:3], 
+                 formula = ~geo + eu + year, roundBase = 5, 
+                 extend0 = TRUE, zeroCandidates = TRUE, printInc = TRUE)
 
 # Parameter avoidHierarchical (see RoundViaDummy and ModelMatrix) 
 PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year, avoidHierarchical = TRUE)
