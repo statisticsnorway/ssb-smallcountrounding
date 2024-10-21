@@ -103,6 +103,9 @@ test_that("preAggregate works", {
   aM <- PLSrounding(zM, formula = formula, printInc = printInc)
   aF <- PLSrounding(zF, "freq", formula = formula, printInc = printInc)
   
+  attr(aM$publish, "startRow") <- NULL
+  attr(aF$publish, "startRow") <- NULL
+  
   expect_equal(nrow(aM[[1]]), nrow(zF))
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
   expect_identical(aM[[2]], aF[[2]][names(aM[[2]])])
@@ -110,6 +113,8 @@ test_that("preAggregate works", {
   
   zM1 <- cbind(zM, freq = 1L)
   aM1 <- PLSrounding(zM1, "freq", formula = formula, printInc = printInc, preAggregate = TRUE)
+  attr(aM1$publish, "startRow") <- NULL
+  
   expect_identical(aM, aM1) 
   
   if (requireNamespace("data.table", quietly = TRUE)) {
@@ -199,6 +204,7 @@ PLStest = function(..., seed, Version){
   capture.output({ a <- PLSrounding(..., Version = Version, rndSeed = NULL)})
   set.seed(seed)
   b <-PLSrounding(..., printInc = printInc, rndSeed = NULL)
+  attr(b$publish, "startRow") <- NULL
   expect_identical(a,b)
 }
 
