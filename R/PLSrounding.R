@@ -34,7 +34,8 @@
 #'               via \code{\link[SSBtools]{ModelMatrix}}. 
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
-#' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
+#' @return Output is a four-element list with class attribute "PLSrounded", 
+#'         which ensures informative printing and enables the use of \code{\link[SSBtools]{FormulaSelection}} on this object.
 #'    \item{inner}{Data frame corresponding to input data with the main dimensional variables and with cell 
 #'                frequencies (original, rounded, difference).}
 #'    \item{publish}{Data frame of publishable data with the main dimensional variables and with cell frequencies 
@@ -70,6 +71,11 @@
 #' print(a$publish)
 #' print(a$metrics)
 #' print(a$freqTable)
+#' 
+#' # Using FormulaSelection()
+#' FormulaSelection(a$publish, ~eu + year)
+#' FormulaSelection(a, ~eu + year) # same as above
+#' FormulaSelection(a)             # just a$publish
 #' 
 #' # Recalculation of maxdiff, HDutility, meanAbsDiff and rootMeanSquare
 #' max(abs(a$publish[, "difference"]))
