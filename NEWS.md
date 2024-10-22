@@ -1,3 +1,35 @@
+
+
+## SmallCountRounding	1.0.8
+* `FormulaSelection()` now works with the output from `PLSrounding()`.
+  - The output dataset corresponding to a restricted part of the input formula can now be easily retrieved.
+  - See the examples in the documentation.
+* `extend0`  is new parameter to `PLSrounding()`, enabling data to be automatically extended by zero frequency rows.
+  - This is relevant when `zeroCandidates = TRUE`.
+  - The old parameter in `PLSroundingFits()` has been renamed from `extend0` to `extend0Fits`. Code that used the old parameter will now behave differently.
+  - Note that `extend0` and `extend0Fits` can now be specified in more advanced ways beyond just TRUE/FALSE.
+* Improvements to the `step` parameter, which can be passed to `PLSrounding()` and is documented in the underlying function `RoundViaDummy()`:
+  - A bug that could cause a hang when using `step` has been fixed.
+  - The `step` parameter can now be specified as a vector for greater control.
+  - Additionally, it can be provided as a list to trigger a final re-run iteration.
+  - The `step` parameter can significantly impact performance on large datasets. For example, using `step = list(100)` may be a useful approach.
+* Due to updates in [the SSBtools package](https://CRAN.R-project.org/package=SSBtools) (version 1.5.4), 
+  it is now meaningful to include NA’s in the grouping variables. 
+  - Note the parameter `NAomit` to `SSBtools::Formula2ModelMatrix()`: 
+    * When `TRUE`, NAs in the grouping variables are omitted in output and not included as a separate category.
+    * This parameter can be input to `PLSrounding()` and its wrappers.
+  - `aggregateNA` is new parameter to `PLSrounding()`:
+    * Whether to include NAs in the grouping variables while preAggregate.
+    * Needs to be `TRUE` (default) to utilize the above `NAomit` parameter.
+* Due to updates in [the SSBtools package](https://CRAN.R-project.org/package=SSBtools) (version 1.5.4), 
+  where [data.table](https://cran.r-project.org/package=data.table) is now listed under *Suggests*, 
+  some functionality can be speeded up. 
+  - Set the new parameter `aggregatePackage` to  `"data.table"` to utilize this possibility.
+    * `aggregatePackage` is parameter to `PLSrounding()` and its wrappers.
+    * Also note the related new parameters `aggregateBaseOrder`. 
+
+
+
 ## SmallCountRounding	1.0.5
 * Minor updates with no changes in functionality
   - Changed package license to MIT, in accordance with the policy at Statistics Norway.

@@ -338,6 +338,13 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     flush.console()
   }
   
+  if (crossTable) {
+    startCol <- attr(x, "startCol", exact = TRUE)
+    if (!is.null(startCol)) {
+      attr(crossTab, "startRow") <- startCol
+    }
+  }
+  
   if (xReturn){ # copy of code below with x as extra
     if(crossTable){
       return(list(yInner = IntegerCbind(original = yInner, rounded = a[[1]]),

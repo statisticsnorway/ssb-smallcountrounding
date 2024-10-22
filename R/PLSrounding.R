@@ -34,7 +34,8 @@
 #'               via \code{\link[SSBtools]{ModelMatrix}}. 
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
 #'
-#' @return Output is a four-element list with class attribute "PLSrounded" (to ensure informative printing).
+#' @return Output is a four-element list with class attribute "PLSrounded", 
+#'         which ensures informative printing and enables the use of \code{\link[SSBtools]{FormulaSelection}} on this object.
 #'    \item{inner}{Data frame corresponding to input data with the main dimensional variables and with cell 
 #'                frequencies (original, rounded, difference).}
 #'    \item{publish}{Data frame of publishable data with the main dimensional variables and with cell frequencies 
@@ -70,6 +71,11 @@
 #' print(a$publish)
 #' print(a$metrics)
 #' print(a$freqTable)
+#' 
+#' # Using FormulaSelection()
+#' FormulaSelection(a$publish, ~eu + year)
+#' FormulaSelection(a, ~eu + year) # same as above
+#' FormulaSelection(a)             # just a$publish
 #' 
 #' # Recalculation of maxdiff, HDutility, meanAbsDiff and rootMeanSquare
 #' max(abs(a$publish[, "difference"]))
@@ -284,6 +290,10 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     if (output != "inner"){
       out$publish <- cbind(as.data.frame(z$crossTable[, cNames, drop = FALSE], stringsAsFactors = FALSE), z$yPublish)
       rownames(out$publish) <- NULL
+      startRow <- attr(z$crossTable, "startRow", exact = TRUE)
+      if (!is.null(startRow)) {
+        attr(out$publish, "startRow") <- startRow
+      }
     }
   } else {
     if (output != "publish"){
@@ -355,6 +365,25 @@ print.PLSrounded <- function(x, digits = max(getOption("digits") - 3, 3), ...) {
   print.table(x$freqTable, zero.print = ".", digits = digits, ...)
   cat("\n")
   invisible(x)
+}
+
+
+#' FormulaSelection  method for PLSrounded
+#'
+#' @param x PLSrounded object 
+#' @param formula `formula` parameter to \code{\link[SSBtools]{FormulaSelection}}.
+#'        When `NULL` (default), the publish data frame is returned without any limitation.  
+#' @param intercept `intercept` parameter to `FormulaSelection`.
+#' @param logical `logical` parameter to `FormulaSelection`.
+#'
+#' @return Limited version of the publish data frame
+#' @importFrom SSBtools FormulaSelection
+#' @export
+FormulaSelection.PLSrounded <- function(x, formula = NULL, intercept = NA, logical = FALSE) {
+  if (is.null(formula)) {
+    return(x$publish)
+  }
+  SSBtools::FormulaSelection(x$publish, formula, intercept, logical)
 }
 
 
