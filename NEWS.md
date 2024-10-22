@@ -1,6 +1,6 @@
 
 
-## GaussSuppression	1.0.8
+## SmallCountRounding	1.0.8
 * `FormulaSelection()` now works with the output from `PLSrounding()`.
   - The output dataset corresponding to a restricted part of the input formula can now be easily retrieved.
   - See the examples in the documentation.
