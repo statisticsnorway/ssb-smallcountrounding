@@ -85,9 +85,8 @@
 #' mean(abs(a$publish[, "difference"]))
 #' sqrt(mean((a$publish[, "difference"])^2))
 #' 
-#' # Six lines below produce equivalent results 
+#' # Five lines below produce equivalent results 
 #' # Ordering of rows can be different
-#' PLSrounding(z, "freq") # All variables except "freq" as dimVar  
 #' PLSrounding(z, "freq", dimVar = c("geo", "eu", "year"))
 #' PLSrounding(z, "freq", formula = ~eu * year + geo * year)
 #' PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"))
@@ -143,6 +142,14 @@
 #' PLS2way(a)  # Values in col1 rounded
 #' a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
 #' PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
+#' 
+#' # Using formula followed by FormulaSelection 
+#' output <- PLSrounding(data = SmallCountData("example1"), 
+#'                       formula = ~age * geo * year + eu * year, 
+#'                       freqVar = "freq", 
+#'                       roundBase = 5)
+#' FormulaSelection(output, ~(age + eu) * year)
+#' 
 PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL, formula = NULL, 
                         dimVar = NULL,
                         maxRound = roundBase-1, printInc = nrow(data)>1000, 
