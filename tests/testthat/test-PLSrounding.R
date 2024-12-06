@@ -7,7 +7,7 @@ test_that("PLSrounding works", {
 
   printInc = FALSE
     
-  a <- PLSrounding(z, "freq", printInc = printInc)
+  a <- PLSrounding(z, "freq", dimVar = c("geo", "eu", "year"), printInc = printInc)
   expect_equivalent(a$metrics, PLSrounding(z, "freq", formula = ~eu * year + geo * year, printInc = printInc)$metrics)
   expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"), printInc = printInc)$metrics)
   expect_equivalent(a$metrics, PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), printInc = printInc)$metrics)
@@ -36,8 +36,9 @@ test_that("PLSrounding works", {
   expect_true(a$inner[42, "rounded"] == 2)
   
   z <- z2[-c(1,3,7,11,13,17), ]
-  a0 <- PLSrounding( z, "ant", printInc = printInc, removeEmpty=FALSE)
-  a1 <- PLSrounding( z, "ant", printInc = printInc, removeEmpty=TRUE)
+  dimVar <- c("region", "fylke", "kostragr", "hovedint")
+  a0 <- PLSrounding( z, "ant", dimVar = dimVar, printInc = printInc, removeEmpty=FALSE)
+  a1 <- PLSrounding( z, "ant", dimVar = dimVar, printInc = printInc, removeEmpty=TRUE)
   a2 <- PLSrounding( z, "ant", printInc = printInc, formula = ~region * hovedint + fylke * hovedint + kostragr * hovedint)
   expect_equivalent(a1$freqTable,a2$freqTable)
   expect_false(a0$freqTable[3,10]==a1$freqTable[3,10])
@@ -131,7 +132,7 @@ test_that("preAggregate works", {
     }
   }
   
-  aM <- PLSrounding(zM, printInc = printInc)
+  aM <- PLSrounding(zM, dimVar = names(zM), printInc = printInc)
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[1]], aF[[1]]))))), 0)
   expect_equal(diff(range(diff(sort(SSBtools::Match(aM[[2]], aF[[2]]))))), 0)
   expect_identical(aM[3:4], aF[3:4])
@@ -218,13 +219,17 @@ test_that("Same as Version_0.3.0", {
   PLStest(SmallCountData('z3'), 'ant', 7, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
   mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd
   PLStest(SmallCountData('z3'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('z3'), 'ant', 5, seed= seed, Version = "0.3.0")
+  PLStest(SmallCountData('z3'), 'ant', 5, seed= seed, Version = "0.3.0",
+          dimVar = c("region", "fylke", "kostragr", "hovedint", "mnd", "mnd2"))
 })
 
 
 
 test_that("Same as Version_0.3.0 many tests", {
-  skip("Too many tests") 
+  skip("Too many tests")
+  
+  dimVar = c("region", "fylke", "kostragr", "hovedint", "mnd", "mnd2")
+  
   seed = 123
   mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
   PLStest(SmallCountData('sosialFiktiv'), 'ant', 3, formula = mf, seed= seed, Version = "0.3.0")
@@ -239,8 +244,8 @@ test_that("Same as Version_0.3.0 many tests", {
   PLStest(SmallCountData('sosialFiktiv'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0")
   PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, formula = mf, seed= seed, Version = "0.3.0",  maxIterRows = 10000)
   
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, seed= seed, Version = "0.3.0")
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, seed= seed, Version = "0.3.0")
+  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, seed= seed, Version = "0.3.0", dimVar = dimVar)
+  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, seed= seed, Version = "0.3.0", dimVar = dimVar)
   
   mf <- ~region*mnd + hovedint*mnd + fylke*hovedint*mnd + kostragr*hovedint*mnd
   PLStest(SmallCountData('sosialFiktiv'), 'ant', 3, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
@@ -255,6 +260,6 @@ test_that("Same as Version_0.3.0 many tests", {
   PLStest(SmallCountData('sosialFiktiv'), 'ant', 10, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
   PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, formula = mf, seed= seed, Version = "0.3.0", singleRandom = TRUE)
   
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, seed= seed, Version = "0.3.0", singleRandom = TRUE)
-  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, seed= seed, Version = "0.3.0", singleRandom = TRUE)
+  PLStest(SmallCountData('sosialFiktiv'), 'ant', 5, seed= seed, Version = "0.3.0", singleRandom = TRUE, dimVar = dimVar)
+  PLStest(SmallCountData('sosialFiktiv'), 'ant', 20, seed= seed, Version = "0.3.0", singleRandom = TRUE, dimVar = dimVar)
 })

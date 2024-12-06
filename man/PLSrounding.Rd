@@ -31,7 +31,9 @@ PLSroundingInner(..., output = "inner")
 PLSroundingPublish(..., output = "publish")
 }
 \arguments{
-\item{data}{Input data as a data frame (inner cells)}
+\item{data}{Input data (inner cells), typically a data frame, tibble, or data.table.
+If \code{data} is not a classic data frame, it will be coerced to one internally
+unless \code{preAggregate} is \code{TRUE} and \code{aggregatePackage} is \code{"data.table"}.}
 
 \item{freqVar}{Variable holding counts (inner cells frequencies).  When \code{NULL} (default), microdata is assumed.}
 
@@ -119,9 +121,8 @@ HDutility(a$publish[, "original"], a$publish[, "rounded"])
 mean(abs(a$publish[, "difference"]))
 sqrt(mean((a$publish[, "difference"])^2))
 
-# Six lines below produce equivalent results 
+# Five lines below produce equivalent results 
 # Ordering of rows can be different
-PLSrounding(z, "freq") # All variables except "freq" as dimVar  
 PLSrounding(z, "freq", dimVar = c("geo", "eu", "year"))
 PLSrounding(z, "freq", formula = ~eu * year + geo * year)
 PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eHrc"))
@@ -177,6 +178,14 @@ a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, maxRound = 7)
 PLS2way(a)  # Values in col1 rounded
 a <- PLSrounding(exPSD, "freq", 5, formula = ~rows + cols, zeroCandidates = TRUE)
 PLS2way(a)  # (row3, col4): original is 0 and rounded is 5
+
+# Using formula followed by FormulaSelection 
+output <- PLSrounding(data = SmallCountData("example1"), 
+                      formula = ~age * geo * year + eu * year, 
+                      freqVar = "freq", 
+                      roundBase = 5)
+FormulaSelection(output, ~(age + eu) * year)
+
 }
 \references{
 Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}.

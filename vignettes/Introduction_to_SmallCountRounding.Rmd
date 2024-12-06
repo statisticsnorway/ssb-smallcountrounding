@@ -28,7 +28,7 @@ yellow = "#FFFF88"
 green = "#F0FFE9"
 green2 = "#88FF88"
 z <- SmallCountData("exPSD")
-a <- PLSrounding(z, "freq", 5)
+a <- PLSrounding(z, "freq", 5, dimVar = c("rows", "cols"))
 k <- PLS2way(a, "original") 
 ka <- PLS2way(a)
 b <- PLSrounding(z, "freq", 5, formula = ~rows + cols)
@@ -39,7 +39,7 @@ e6  <-  SmallCountData("e6")
 
 eDimList <- SmallCountData("eDimList")
 
-e6a <-  PLSrounding(e6, "freq", 5)
+e6a <-  PLSrounding(e6, "freq", 5, dimVar = c("geo", "eu", "year"))
 e6b <-  PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)
 e6c <-  PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)
 e6d <-  PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year)
@@ -130,7 +130,7 @@ z
 To avoid any small values in the range 1-4 we can use 5 as rounding base. 
 
 ```{r eval=FALSE, tidy = TRUE}
-a <- PLSrounding(z, freqVar = "freq", roundBase = 5)
+a <- PLSrounding(z, freqVar = "freq", roundBase = 5, dimVar = c("rows", "cols"))
 ```
 
 The result is given in Table 2 and can bee seen in the output elements below.
@@ -281,12 +281,12 @@ eDimList
 As seen above, a hierarchy is specified for both variables. `eDimList$geo` is given in Table 5 and `eDimList$year` is a plain hierarchy with total code. 
 
 
-## Five ways to produce Table 6
+## Four ways to produce Table 6
 
-The five lines below produce the same results with element `publish` as in Table 6.  Ordering of rows can be different.   
+The four lines below produce the same results with element `publish` as in Table 6.  Ordering of rows can be different.   
 
 ```{r comment=NA, tidy = FALSE, eval = FALSE}
-PLSrounding(e6, "freq", 5)                                                      # a) 
+#  PLSrounding(e6, "freq", 5)  #  This is no longer possible                    # a)
 PLSrounding(e6, "freq", 5, dimVar = c("geo", "eu", "year"))                     # b) 
 PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)                   # c)
 PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)                        # d)
@@ -294,7 +294,7 @@ PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList, formula = ~geo * year) 
 ```
 
 
-* In a), b) and d), the function uses hierarchies for the calculations. In a) and b) the hierarchies are found automatically from the input data. 
+* In b) and d), the function uses hierarchies for the calculations. In b) the hierarchies are found automatically from the input data. 
   In a), `dimVar` is assumed to be all variables except `freq`.
 * In c) the cross-classifications are found from the formula. In addition, hierarchical relations in the input data are analysed so that `geo`	and `eu` are combined into the same output column.   
 * In e), how to cross the hierarchies are defined by a formula.
@@ -307,7 +307,8 @@ Below is an example with incomplete input data using both these parameters.
 
 
 ```{r comment=NA, tidy = FALSE, eval = TRUE}
-out <- PLSrounding(e6[-1, ], "freq", 5, removeEmpty = TRUE, inputInOutput = c(FALSE,TRUE))
+out <- PLSrounding(e6[-1, ], "freq", 5, removeEmpty = TRUE, inputInOutput = c(FALSE,TRUE),
+                   dimVar = c("eu", "year"))
 out
 out$inner
 out$publish

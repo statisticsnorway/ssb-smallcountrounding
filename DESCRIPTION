@@ -1,13 +1,13 @@
 Package: SmallCountRounding
 Type: Package
 Title: Small Count Rounding of Tabular Data
-Version: 1.0.8
-Date: 2024-10-22
+Version: 1.0.9
+Date: 2024-12-06
 Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@ssb.no"),
              person("Johan", "Heldal", role = c("aut")))
 Author: Øyvind Langsrud [aut, cre], Johan Heldal [aut]
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
-Depends: Matrix, SSBtools (>= 1.5.5)
+Depends: Matrix, SSBtools (>= 1.6.0)
 Imports: methods
 VignetteBuilder: knitr
 Suggests: 
