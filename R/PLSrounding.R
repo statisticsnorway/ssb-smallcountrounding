@@ -156,6 +156,12 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   
   force(preAggregate)
   
+  if (!hasArg("x")) {
+    if (is.null(dimVar) & is.null(hierarchies) & is.null(formula)) {
+      stop("dimVar, hierarchies or formula must be specified")
+    }
+  }
+  
   names_data <- names(data)
   
   if(!is.null(output)){
