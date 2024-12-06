@@ -31,7 +31,9 @@ PLSroundingInner(..., output = "inner")
 PLSroundingPublish(..., output = "publish")
 }
 \arguments{
-\item{data}{Input data as a data frame (inner cells)}
+\item{data}{Input data (inner cells), typically a data frame, tibble, or data.table.
+If \code{data} is not a classic data frame, it will be coerced to one internally
+unless \code{preAggregate} is \code{TRUE} and \code{aggregatePackage} is \code{"data.table"}.}
 
 \item{freqVar}{Variable holding counts (inner cells frequencies).  When \code{NULL} (default), microdata is assumed.}
 

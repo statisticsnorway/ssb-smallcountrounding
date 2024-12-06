@@ -6,7 +6,9 @@
 #' This function is a user-friendly wrapper for \code{RoundViaDummy} with data frame output and with computed summary of the results.
 #' See \code{\link{RoundViaDummy}} for more details.
 #'
-#' @param data Input data as a data frame (inner cells)
+#' @param data Input data (inner cells), typically a data frame, tibble, or data.table. 
+#'             If `data` is not a classic data frame, it will be coerced to one internally 
+#'             unless `preAggregate` is `TRUE` and `aggregatePackage` is `"data.table"`.
 #' @param freqVar Variable holding counts (inner cells frequencies).  When \code{NULL} (default), microdata is assumed.
 #' @param roundBase Rounding base
 #' @param hierarchies List of hierarchies
@@ -160,6 +162,10 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     if (is.null(dimVar) & is.null(hierarchies) & is.null(formula)) {
       stop("dimVar, hierarchies or formula must be specified")
     }
+  }
+  
+  if (!(preAggregate & aggregatePackage == "data.table")) {
+    data <- as.data.frame(data)
   }
   
   names_data <- names(data)
