@@ -308,7 +308,7 @@ Below is an example with incomplete input data using both these parameters.
 
 ```{r comment=NA, tidy = FALSE, eval = TRUE}
 out <- PLSrounding(e6[-1, ], "freq", 5, removeEmpty = TRUE, inputInOutput = c(FALSE,TRUE),
-                   dimVar = c("eu", "year"))
+                   dimVar = c("geo", "eu", "year"))
 out
 out$inner
 out$publish
