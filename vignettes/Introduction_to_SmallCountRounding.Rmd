@@ -286,7 +286,7 @@ As seen above, a hierarchy is specified for both variables. `eDimList$geo` is gi
 The four lines below produce the same results with element `publish` as in Table 6.  Ordering of rows can be different.   
 
 ```{r comment=NA, tidy = FALSE, eval = FALSE}
-#  PLSrounding(e6, "freq", 5)  #  This is no longer possible                    # a)
+#  PLSrounding(e6, "freq", 5) # This is no longer possible. See ver. 1.1.0 news # a)
 PLSrounding(e6, "freq", 5, dimVar = c("geo", "eu", "year"))                     # b) 
 PLSrounding(e6, "freq", 5, formula = ~eu * year + geo * year)                   # c)
 PLSrounding(e6[, -2], "freq", 5, hierarchies = eDimList)                        # d)

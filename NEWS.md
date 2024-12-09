@@ -1,6 +1,7 @@
 
-## SmallCountRounding	x.x.x
+## SmallCountRounding	1.1.0
 * Added a check to ensure that at least one of `dimVar`, `hierarchies`, or `formula` is specified.
+  - This is a breaking change that may affect previous code.
   - Previously, if all were unspecified, `dimVar` was automatically generated from the remaining columns.
   - While this behavior was correctly implemented, it often stemmed from user input errors and could lead to unexpected behavior or crashes.
   - This change now requires explicit input, making the function more robust and reducing the risk of user errors.
