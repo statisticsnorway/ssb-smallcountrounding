@@ -57,7 +57,7 @@
 #' 
 #' @encoding UTF8
 #' 
-#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput 
+#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0
 #' @importFrom stats as.formula delete.response terms
 #' @export
 #'
