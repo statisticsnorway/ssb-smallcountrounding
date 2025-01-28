@@ -195,6 +195,17 @@ output <- PLSrounding(data = SmallCountData("example1"),
                       roundBase = 5)
 FormulaSelection(output, ~(age + eu) * year)
 
+# Example similar to the one in the documentation of tables_by_formulas,
+# but using PLSroundingPublish with roundBase = 4.
+tables_by_formulas(SSBtoolsData("magnitude1"),
+                   table_fun = PLSroundingPublish, 
+                   table_formulas = list(table_1 = ~region * sector2, 
+                                         table_2 = ~region1:sector4 - 1, 
+                                         table_3 = ~region + sector4 - 1), 
+                   substitute_vars = list(region = c("geo", "eu"), region1 = "eu"), 
+                   collapse_vars = list(sector = c("sector2", "sector4")), 
+                   roundBase = 4) 
+
 }
 \references{
 Langsrud, Ø. and Heldal, J. (2018): \dQuote{An Algorithm for Small Count Rounding of Tabular Data}.
