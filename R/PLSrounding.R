@@ -119,6 +119,15 @@
 #' # Parameter avoidHierarchical (see RoundViaDummy and ModelMatrix) 
 #' PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year, avoidHierarchical = TRUE)
 #' 
+#' 
+#' # To illustrate hierarchical_extend0 
+#' #    (parameter to underlying function, SSBtools::Extend0fromModelMatrixInput)
+#' PLSroundingInner(z[-c(2:3), ], roundBase = 5, formula = ~geo + eu + year, 
+#'    avoidHierarchical = TRUE, zeroCandidates = TRUE, extend0 = TRUE)
+#' PLSroundingInner(z[-c(2:3), ], roundBase = 5, formula = ~geo + eu + year, 
+#'    avoidHierarchical = TRUE, zeroCandidates = TRUE, extend0 = TRUE, 
+#'    hierarchical_extend0 = TRUE)
+#' 
 #' # Package sdcHierarchies can be used to create hierarchies. 
 #' # The small example code below works if this package is available. 
 #' if (require(sdcHierarchies)) {
