@@ -19,7 +19,7 @@ Suggests:
     data.table
 Description: A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive. The function PLSrounding() performs small count rounding of necessary inner cells so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed. The methodology is described in Langsrud and Heldal (2018) <https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data>.
 License: MIT + file LICENSE
-URL: https://github.com/statisticsnorway/ssb-smallcountrounding
+URL: https://github.com/statisticsnorway/ssb-smallcountrounding, https://statisticsnorway.github.io/ssb-smallcountrounding/
 BugReports: https://github.com/statisticsnorway/ssb-smallcountrounding/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
