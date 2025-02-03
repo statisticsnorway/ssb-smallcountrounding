@@ -1,4 +1,13 @@
 # R package SmallCountRounding 
+
+
+| [SmallCountRounding on CRAN](https://cran.r-project.org/package=SmallCountRounding) |  | [pkgdown website](https://statisticsnorway.github.io/ssb-smallcountrounding/) |  | [GitHub Repository](https://github.com/statisticsnorway/ssb-smallcountrounding) |
+|----------------------|---|----------------------|---|----------------------|
+
+
+***
+
+
 [![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
 
 
