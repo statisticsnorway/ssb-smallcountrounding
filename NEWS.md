@@ -1,4 +1,4 @@
-## SmallCountRounding	x.x.x
+## SmallCountRounding	1.2.0
 * New pkgdown website for the package  
   - This package now has a documentation site at [https://statisticsnorway.github.io/ssb-smallcountrounding/](https://statisticsnorway.github.io/ssb-smallcountrounding/).
 * SSBtools and Matrix are moved from Depends to Imports
