@@ -262,7 +262,7 @@ As can be seen below, this output can be generated in several ways. The inner ce
 kable(e6a$publish, "html", caption = "**Table 6**: Ouput data (publish)") %>%
   kable_styling(full_width = F, bootstrap_options = c("bordered"),font_size = 14,  position = "left") %>%
   column_spec(1:2, background = green) %>%
-  cell_background( Match(e6a$inner,e6a$publish),4,c(yellow,green2)[1+(e6a$inner$difference==0)]) 
+  cell_background( SSBtools::Match(e6a$inner,e6a$publish),4,c(yellow,green2)[1+(e6a$inner$difference==0)]) 
 #cell_background( Match(e6a$inner[e6a$inner$difference!=0 , ],e6a$publish),4,yellow) %>%
 #cell_background( Match(e6a$inner[e6a$inner$difference==0 , ],e6a$publish),4,green2) 
 ```

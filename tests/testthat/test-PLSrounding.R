@@ -68,7 +68,7 @@ test_that("PLSrounding works", {
                     c(5.58333333333333, 5.19444444444444, 5.58333333333333, 5.41880341880342, 5.57264957264957, 5.3034188034188))
   
   z <- z[z$ant>0, ]
-  dL <- FindDimLists(z[,-c(3,6,7)])
+  dL <- SSBtools::FindDimLists(z[,-c(3,6,7)])
   a0 <- PLSrounding( z, "ant", hierarchies= dL, formula = ~region*hovedint*mnd-region:hovedint:mnd, printInc = printInc, removeEmpty=FALSE)
   a1 <- PLSrounding( z, "ant", hierarchies= dL, formula = ~region*hovedint*mnd-region:hovedint:mnd, printInc = printInc, removeEmpty=TRUE)
   expect_false(a0$freqTable[1,6]==0)

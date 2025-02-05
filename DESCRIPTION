@@ -7,8 +7,7 @@ Authors@R: c(person("Øyvind", "Langsrud", role = c("aut", "cre"), email = "oyl@
              person("Johan", "Heldal", role = c("aut")))
 Author: Øyvind Langsrud [aut, cre], Johan Heldal [aut]
 Maintainer: Øyvind Langsrud <oyl@ssb.no>
-Depends: Matrix, SSBtools (>= 1.7.0)
-Imports: methods
+Imports: methods, Matrix, SSBtools (>= 1.7.0)
 VignetteBuilder: knitr
 Suggests: 
     knitr,
