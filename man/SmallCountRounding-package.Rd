@@ -27,6 +27,7 @@ Presented at: \emph{Privacy in statistical databases}, Valencia, Spain. Septembe
 Useful links:
 \itemize{
   \item \url{https://github.com/statisticsnorway/ssb-smallcountrounding}
+  \item \url{https://statisticsnorway.github.io/ssb-smallcountrounding/}
   \item Report bugs at \url{https://github.com/statisticsnorway/ssb-smallcountrounding/issues}
 }
 
