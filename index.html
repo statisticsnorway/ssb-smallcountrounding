@@ -79,42 +79,29 @@
 </h2>
 <p>See the package vignette: <a href="https://cran.r-project.org/web/packages/SmallCountRounding/vignettes/Introduction_to_SmallCountRounding.html" class="external-link">Introduction to ‘SmallCountRounding’</a></p>
 <hr>
-<div class="section level4">
-<h4 id="installation-from-cran">Installation from CRAN<a class="anchor" aria-label="anchor" href="#installation-from-cran"></a>
-</h4>
-<p>(Recommended, unless you want to test the newest changes.)</p>
+<div class="section level3">
+<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h3>
+<p>You can install SmallCountRounding from CRAN with</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"SmallCountRounding"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="installation-from-github">Installation from GitHub<a class="anchor" aria-label="anchor" href="#installation-from-github"></a>
-</h4>
-<p>(If needed, install the <code>devtools</code> package from CRAN first.)</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span>                                     <span class="co"># Load package containing install_github</span></span>
-<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"statisticsnorway/SSBtools"</span><span class="op">)</span>           <span class="co"># Install SSBtools from GitHub </span></span>
-<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"statisticsnorway/SmallCountRounding"</span><span class="op">)</span> <span class="co"># Install SmallCountRounding from GitHub</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="load-the-package">Load the package<a class="anchor" aria-label="anchor" href="#load-the-package"></a>
-</h4>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statisticsnorway/ssb-smallcountrounding" class="external-link">SmallCountRounding</a></span><span class="op">)</span>                           <span class="co"># Load SmallCountRounding </span></span>
-<span><span class="op">?</span><span class="va">PLSrounding</span>                                          <span class="co"># Help documentation of function PLSrounding</span></span></code></pre></div>
+<p>Alternatively install from GitHub by<code>devtools::install_github("statisticsnorway/SmallCountRounding")</code> if you want to test the newest changes.</p>
 <hr>
 </div>
-<div class="section level4">
-<h4 id="a-statistical-disclosure-control-tool-to-protect-frequency-tables-in-cases-where-small-values-are-sensitive">A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive<a class="anchor" aria-label="anchor" href="#a-statistical-disclosure-control-tool-to-protect-frequency-tables-in-cases-where-small-values-are-sensitive"></a>
-</h4>
-<p>The main function, PLSrounding(), performs small count rounding of necessary inner cells (Heldal, 2017) so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed. This is performed by an algorithm inspired by partial least squares regression (Langsrud and Heldal, 2018).</p>
-</div>
+<div class="section level3">
+<h3 id="a-statistical-disclosure-control-tool-to-protect-frequency-tables-in-cases-where-small-values-are-sensitive">A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive<a class="anchor" aria-label="anchor" href="#a-statistical-disclosure-control-tool-to-protect-frequency-tables-in-cases-where-small-values-are-sensitive"></a>
+</h3>
+<p>The main function, <a href="https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.html">PLSrounding()</a>, performs small count rounding of necessary inner cells (Heldal, 2017) so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed. This is performed by an algorithm inspired by partial least squares regression (Langsrud and Heldal, 2018).</p>
 <div class="section level4">
 <h4 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h4>
 <p>Heldal, J.: The European Census Hub 2011 Hypercubes - Norwegian SDC Experiences. In: Work Session on Statistical Data Confidentiality (2017), Skopje, The former Yugoslav Republic of Macedonia, September 20-22 , 2017.</p>
 <p>Langsrud, Ø. and Heldal, J.: An Algorithm for Small Count Rounding of Tabular Data. To be presented at: Privacy in statistical databases, Valencia, Spain. September 26-28, 2018. <a href="https://www.researchgate.net/publication/327768398_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data" class="external-link">Full-text</a> and <a href="https://www.researchgate.net/publication/327916165_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data_-_Presentation" class="external-link">presentation</a> available at Researchgate.</p>
 <hr>
+<p>📌 See the <a href="https://statisticsnorway.github.io/ssb-smallcountrounding/reference/index.html">broader list of available functions</a>.</p>
+<hr>
 <p>Official version on CRAN: <a href="https://cran.r-project.org/package=SmallCountRounding" class="external-link">https://cran.r-project.org/package=SmallCountRounding</a></p>
+</div>
 </div>
 </div>
 </div>
