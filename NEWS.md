@@ -1,3 +1,14 @@
+## SmallCountRounding	x.x.x
+* New pkgdown website for the package  
+  - This package now has a documentation site at [https://statisticsnorway.github.io/ssb-smallcountrounding/](https://statisticsnorway.github.io/ssb-smallcountrounding/).
+* SSBtools and Matrix are moved from Depends to Imports
+  - To follow best practices for R packages
+  - Some SSBtools functions are reexported instead. See `?SmallCountRounding::reexports`.
+* Utilizing updates in [the SSBtools package](https://CRAN.R-project.org/package=SSBtools) (version 1.7.0).
+  - The new function `tables_by_formulas()`, which is reexported,  is demonstrated in a `PLSrounding()` example.
+  - The new function `Extend0fromModelMatrixInput()` is now used in data pre-processing.
+    As a result, `hierarchical_extend0` is now a possible parameter, as illustrated in a `PLSrounding()` example. 
+
 
 ## SmallCountRounding	1.1.0
 * Added a check to ensure that at least one of `dimVar`, `hierarchies`, or `formula` is specified.
