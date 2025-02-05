@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SmallCountRounding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,20 @@
       <small>Source: <a href="https://github.com/statisticsnorway/ssb-smallcountrounding/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.2.0" id="smallcountrounding-120">SmallCountRounding 1.2.0<a class="anchor" aria-label="anchor" href="#smallcountrounding-120"></a></h2>
+<ul><li>New pkgdown website for the package
+<ul><li>This package now has a documentation site at <a href="https://statisticsnorway.github.io/ssb-smallcountrounding/">https://statisticsnorway.github.io/ssb-smallcountrounding/</a>.</li>
+</ul></li>
+<li>SSBtools and Matrix are moved from Depends to Imports
+<ul><li>To follow best practices for R packages</li>
+<li>Some SSBtools functions are reexported instead. See <code>?SmallCountRounding::reexports</code>.</li>
+</ul></li>
+<li>Utilizing updates in <a href="https://CRAN.R-project.org/package=SSBtools" class="external-link">the SSBtools package</a> (version 1.7.0).
+<ul><li>The new function <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/tables_by_formulas.html" class="external-link">tables_by_formulas()</a></code>, which is reexported, is demonstrated in a <code><a href="../reference/PLSrounding.html">PLSrounding()</a></code> example.</li>
+<li>The new function <code>Extend0fromModelMatrixInput()</code> is now used in data pre-processing. As a result, <code>hierarchical_extend0</code> is now a possible parameter, as illustrated in a <code><a href="../reference/PLSrounding.html">PLSrounding()</a></code> example.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="smallcountrounding-110">SmallCountRounding 1.1.0<a class="anchor" aria-label="anchor" href="#smallcountrounding-110"></a></h2><p class="text-muted">CRAN release: 2024-12-09</p>
 <ul><li>Added a check to ensure that at least one of <code>dimVar</code>, <code>hierarchies</code>, or <code>formula</code> is specified.
