@@ -155,6 +155,15 @@ PLSroundingInner(z[sample.int(5, 12, replace = TRUE), 1:3],
 # Parameter avoidHierarchical (see RoundViaDummy and ModelMatrix) 
 PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year, avoidHierarchical = TRUE)
 
+
+# To illustrate hierarchical_extend0 
+#    (parameter to underlying function, SSBtools::Extend0fromModelMatrixInput)
+PLSroundingInner(z[-c(2:3), ], roundBase = 5, formula = ~geo + eu + year, 
+   avoidHierarchical = TRUE, zeroCandidates = TRUE, extend0 = TRUE)
+PLSroundingInner(z[-c(2:3), ], roundBase = 5, formula = ~geo + eu + year, 
+   avoidHierarchical = TRUE, zeroCandidates = TRUE, extend0 = TRUE, 
+   hierarchical_extend0 = TRUE)
+
 # Package sdcHierarchies can be used to create hierarchies. 
 # The small example code below works if this package is available. 
 if (require(sdcHierarchies)) {
@@ -185,6 +194,17 @@ output <- PLSrounding(data = SmallCountData("example1"),
                       freqVar = "freq", 
                       roundBase = 5)
 FormulaSelection(output, ~(age + eu) * year)
+
+# Example similar to the one in the documentation of tables_by_formulas,
+# but using PLSroundingPublish with roundBase = 4.
+tables_by_formulas(SSBtoolsData("magnitude1"),
+                   table_fun = PLSroundingPublish, 
+                   table_formulas = list(table_1 = ~region * sector2, 
+                                         table_2 = ~region1:sector4 - 1, 
+                                         table_3 = ~region + sector4 - 1), 
+                   substitute_vars = list(region = c("geo", "eu"), region1 = "eu"), 
+                   collapse_vars = list(sector = c("sector2", "sector4")), 
+                   roundBase = 4) 
 
 }
 \references{
