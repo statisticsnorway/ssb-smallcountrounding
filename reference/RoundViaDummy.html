@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SmallCountRounding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
 
 
 <dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>Model formula defining publishable cells. Will be used to calculate <code>x</code> (via <code><a href="https://rdrr.io/pkg/SSBtools/man/ModelMatrix.html" class="external-link">ModelMatrix</a></code>).
+<dd><p>Model formula defining publishable cells. Will be used to calculate <code>x</code> (via <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/ModelMatrix.html" class="external-link">ModelMatrix</a></code>).
 When NULL, x must be supplied.</p></dd>
 
 
@@ -120,7 +120,7 @@ When NULL, x must be supplied.</p></dd>
 
 
 <dt id="arg-hierarchies">hierarchies<a class="anchor" aria-label="anchor" href="#arg-hierarchies"></a></dt>
-<dd><p>List of hierarchies, which can be converted by <code><a href="https://rdrr.io/pkg/SSBtools/man/AutoHierarchies.html" class="external-link">AutoHierarchies</a></code>.
+<dd><p>List of hierarchies, which can be converted by <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/AutoHierarchies.html" class="external-link">AutoHierarchies</a></code>.
 Thus, a single string as hierarchy input is assumed to be a total code.
 Exceptions are <code>"rowFactor"</code> or <code>""</code>, which correspond to only using the categories in the data.</p></dd>
 
@@ -171,7 +171,7 @@ Can also be specified as a function generating it (see details).</p></dd>
 <dd><p>When TRUE, all inner cells that depends linearly on the published cells and with small frequencies
 (<code>&lt;=maxRound</code>) will be rounded.
 The computation of leverages can be very time and memory consuming.
-The function <code><a href="https://rdrr.io/pkg/SSBtools/man/Reduce0exact.html" class="external-link">Reduce0exact</a></code> is called.
+The function <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/Reduce0exact.html" class="external-link">Reduce0exact</a></code> is called.
 The default leverage limit is <code>0.999999</code>. Another limit can be sent as input instead of <code>TRUE</code>.
 Checking is performed before and after (since new zeros) rounding. Extra iterations are performed when needed.</p></dd>
 
@@ -208,10 +208,10 @@ There must be columns that match <code>crossTable</code>. Differences must be in
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further parameters sent to <code><a href="https://rdrr.io/pkg/SSBtools/man/ModelMatrix.html" class="external-link">ModelMatrix</a></code>.
+<dd><p>Further parameters sent to <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/ModelMatrix.html" class="external-link">ModelMatrix</a></code>.
 In particular, one can specify <code>removeEmpty=TRUE</code> to omit empty combinations.
 The parameter <code>inputInOutput</code> can be used to specify whether to include codes from input.
-The parameter <code>avoidHierarchical</code> (<code><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSums.html" class="external-link">Formula2ModelMatrix</a></code>) can be combined with formula input.</p></dd>
+The parameter <code>avoidHierarchical</code> (<code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSums.html" class="external-link">Formula2ModelMatrix</a></code>) can be combined with formula input.</p></dd>
 
 </dl></div>
     <div class="section level2">

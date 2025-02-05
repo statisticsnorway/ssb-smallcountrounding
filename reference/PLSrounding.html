@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SmallCountRounding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,7 +116,7 @@ unless <code>preAggregate</code> is <code>TRUE</code> and <code>aggregatePackage
 <dd><p>When <code>extend0</code> is set to <code>TRUE</code>, the data is automatically extended.
 This is relevant when <code>zeroCandidates = TRUE</code> (see <code><a href="RoundViaDummy.html">RoundViaDummy</a></code>).
 Additionally, <code>extend0</code> can be specified as a list, representing the <code>varGroups</code> parameter
-in the <code><a href="https://rdrr.io/pkg/SSBtools/man/Extend0.html" class="external-link">Extend0</a></code> function.
+in the <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/Extend0.html" class="external-link">Extend0</a></code> function.
 Can also be set to <code>"all"</code> which means that input codes in hierarchies are considered in addition to those in data.</p></dd>
 
 
@@ -126,25 +126,25 @@ Can also be set to <code>"all"</code> which means that input codes in hierarchie
 
 <dt id="arg-aggregatepackage">aggregatePackage<a class="anchor" aria-label="anchor" href="#arg-aggregatepackage"></a></dt>
 <dd><p>Package used to preAggregate.
-Parameter <code>pkg</code> to <code><a href="https://rdrr.io/pkg/SSBtools/man/aggregate_by_pkg.html" class="external-link">aggregate_by_pkg</a></code>.</p></dd>
+Parameter <code>pkg</code> to <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/aggregate_by_pkg.html" class="external-link">aggregate_by_pkg</a></code>.</p></dd>
 
 
 <dt id="arg-aggregatena">aggregateNA<a class="anchor" aria-label="anchor" href="#arg-aggregatena"></a></dt>
 <dd><p>Whether to include NAs in the grouping variables while preAggregate.
-Parameter <code>include_na</code> to <code><a href="https://rdrr.io/pkg/SSBtools/man/aggregate_by_pkg.html" class="external-link">aggregate_by_pkg</a></code>.</p></dd>
+Parameter <code>include_na</code> to <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/aggregate_by_pkg.html" class="external-link">aggregate_by_pkg</a></code>.</p></dd>
 
 
 <dt id="arg-aggregatebaseorder">aggregateBaseOrder<a class="anchor" aria-label="anchor" href="#arg-aggregatebaseorder"></a></dt>
-<dd><p>Parameter <code>base_order</code> to <code><a href="https://rdrr.io/pkg/SSBtools/man/aggregate_by_pkg.html" class="external-link">aggregate_by_pkg</a></code>, used when preAggregate.
+<dd><p>Parameter <code>base_order</code> to <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/aggregate_by_pkg.html" class="external-link">aggregate_by_pkg</a></code>, used when preAggregate.
 The default is set to <code>FALSE</code> to avoid unnecessary sorting operations.
 When <code>TRUE</code>, an attempt is made to return the same result with <code>data.table</code> as with base R.
 This cannot be guaranteed due to potential variations in sorting behavior across different systems.</p></dd>
 
 
 <dt id="arg-rowgroupspackage">rowGroupsPackage<a class="anchor" aria-label="anchor" href="#arg-rowgroupspackage"></a></dt>
-<dd><p>Parameter <code>pkg</code> to <code><a href="https://rdrr.io/pkg/SSBtools/man/RowGroups.html" class="external-link">RowGroups</a></code>.
-The parameter is input to <code><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSums.html" class="external-link">Formula2ModelMatrix</a></code>
-via <code><a href="https://rdrr.io/pkg/SSBtools/man/ModelMatrix.html" class="external-link">ModelMatrix</a></code>.</p></dd>
+<dd><p>Parameter <code>pkg</code> to <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/RowGroups.html" class="external-link">RowGroups</a></code>.
+The parameter is input to <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSums.html" class="external-link">Formula2ModelMatrix</a></code>
+via <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/ModelMatrix.html" class="external-link">ModelMatrix</a></code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -154,7 +154,7 @@ via <code><a href="https://rdrr.io/pkg/SSBtools/man/ModelMatrix.html" class="ext
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Output is a four-element list with class attribute "PLSrounded",
-which ensures informative printing and enables the use of <code><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSelection.html" class="external-link">FormulaSelection</a></code> on this object.</p>
+which ensures informative printing and enables the use of <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSelection.html" class="external-link">FormulaSelection</a></code> on this object.</p>
 <dl><dt>inner</dt>
 <dd><p>Data frame corresponding to input data with the main dimensional variables and with cell
 frequencies (original, rounded, difference).</p></dd>
@@ -186,7 +186,7 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="RoundViaDummy.html">RoundViaDummy</a></code>, <code><a href="PLS2way.html">PLS2way</a></code>, <code><a href="https://rdrr.io/pkg/SSBtools/man/ModelMatrix.html" class="external-link">ModelMatrix</a></code></p></div>
+    <div class="dont-index"><p><code><a href="RoundViaDummy.html">RoundViaDummy</a></code>, <code><a href="PLS2way.html">PLS2way</a></code>, <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/ModelMatrix.html" class="external-link">ModelMatrix</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -250,21 +250,21 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
 <span class="r-out co"><span class="r-pr">#&gt;</span> absDiff      4       2     0      0       6     3       5     0      0       8</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Using FormulaSelection()</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">publish</span>, <span class="op">~</span><span class="va">eu</span> <span class="op">+</span> <span class="va">year</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">publish</span>, <span class="op">~</span><span class="va">eu</span> <span class="op">+</span> <span class="va">year</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     geo  year original rounded difference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 Total Total       24      26          2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5    EU Total       21      21          0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 nonEU Total        3       5          2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7 Total  2018       12      15          3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8 Total  2019       12      11         -1</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">a</span>, <span class="op">~</span><span class="va">eu</span> <span class="op">+</span> <span class="va">year</span><span class="op">)</span> <span class="co"># same as above</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">a</span>, <span class="op">~</span><span class="va">eu</span> <span class="op">+</span> <span class="va">year</span><span class="op">)</span> <span class="co"># same as above</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     geo  year original rounded difference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 Total Total       24      26          2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5    EU Total       21      21          0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 nonEU Total        3       5          2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7 Total  2018       12      15          3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8 Total  2019       12      11         -1</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>             <span class="co"># just a$publish</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>             <span class="co"># just a$publish</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        geo  year original rounded difference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    Total Total       24      26          2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  Iceland Total        3       5          2</span>
@@ -465,6 +465,35 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7    Total Total  2018        3       5          2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8    Total Total  2019        3       0         -3</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># To illustrate hierarchical_extend0 </span></span></span>
+<span class="r-in"><span><span class="co">#    (parameter to underlying function, SSBtools::Extend0fromModelMatrixInput)</span></span></span>
+<span class="r-in"><span><span class="fu">PLSroundingInner</span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="op">]</span>, roundBase <span class="op">=</span> <span class="fl">5</span>, formula <span class="op">=</span> <span class="op">~</span><span class="va">geo</span> <span class="op">+</span> <span class="va">eu</span> <span class="op">+</span> <span class="va">year</span>, </span></span>
+<span class="r-in"><span>   avoidHierarchical <span class="op">=</span> <span class="cn">TRUE</span>, zeroCandidates <span class="op">=</span> <span class="cn">TRUE</span>, extend0 <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         geo    eu year original rounded difference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Iceland nonEU 2018        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  Portugal    EU 2019        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Spain    EU 2019        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   Iceland nonEU 2019        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  Portugal nonEU 2018        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     Spain nonEU 2018        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   Iceland    EU 2018        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  Portugal    EU 2018        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     Spain    EU 2018        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 Portugal nonEU 2019        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11    Spain nonEU 2019        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  Iceland    EU 2019        0       5          5</span>
+<span class="r-in"><span><span class="fu">PLSroundingInner</span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="op">]</span>, roundBase <span class="op">=</span> <span class="fl">5</span>, formula <span class="op">=</span> <span class="op">~</span><span class="va">geo</span> <span class="op">+</span> <span class="va">eu</span> <span class="op">+</span> <span class="va">year</span>, </span></span>
+<span class="r-in"><span>   avoidHierarchical <span class="op">=</span> <span class="cn">TRUE</span>, zeroCandidates <span class="op">=</span> <span class="cn">TRUE</span>, extend0 <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
+<span class="r-in"><span>   hierarchical_extend0 <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        geo    eu year original rounded difference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  Iceland nonEU 2018        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Portugal    EU 2019        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    Spain    EU 2019        1       0         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Iceland nonEU 2019        1       5          4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Portugal    EU 2018        0       0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    Spain    EU 2018        0       0          0</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Package sdcHierarchies can be used to create hierarchies. </span></span></span>
 <span class="r-in"><span><span class="co"># The small example code below works if this package is available. </span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bernhard-da/sdcHierarchies" class="external-link">sdcHierarchies</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -535,7 +564,7 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
 <span class="r-in"><span>                      formula <span class="op">=</span> <span class="op">~</span><span class="va">age</span> <span class="op">*</span> <span class="va">geo</span> <span class="op">*</span> <span class="va">year</span> <span class="op">+</span> <span class="va">eu</span> <span class="op">*</span> <span class="va">year</span>, </span></span>
 <span class="r-in"><span>                      freqVar <span class="op">=</span> <span class="st">"freq"</span>, </span></span>
 <span class="r-in"><span>                      roundBase <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SSBtools/man/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">output</span>, <span class="op">~</span><span class="op">(</span><span class="va">age</span> <span class="op">+</span> <span class="va">eu</span><span class="op">)</span> <span class="op">*</span> <span class="va">year</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSelection.html" class="external-link">FormulaSelection</a></span><span class="op">(</span><span class="va">output</span>, <span class="op">~</span><span class="op">(</span><span class="va">age</span> <span class="op">+</span> <span class="va">eu</span><span class="op">)</span> <span class="op">*</span> <span class="va">year</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      age   geo  year original rounded difference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  Total Total Total       59      59          0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    old Total Total       38      37         -1</span>
@@ -557,6 +586,44 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
 <span class="r-out co"><span class="r-pr">#&gt;</span> 36 Total nonEU  2015        3       0         -3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 37 Total    EU  2016       16      17          1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 38 Total nonEU  2016        5       5          0</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example similar to the one in the documentation of tables_by_formulas,</span></span></span>
+<span class="r-in"><span><span class="co"># but using PLSroundingPublish with roundBase = 4.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/tables_by_formulas.html" class="external-link">tables_by_formulas</a></span><span class="op">(</span><span class="fu"><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/SSBtoolsData.html" class="external-link">SSBtoolsData</a></span><span class="op">(</span><span class="st">"magnitude1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   table_fun <span class="op">=</span> <span class="va">PLSroundingPublish</span>, </span></span>
+<span class="r-in"><span>                   table_formulas <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>table_1 <span class="op">=</span> <span class="op">~</span><span class="va">region</span> <span class="op">*</span> <span class="va">sector2</span>, </span></span>
+<span class="r-in"><span>                                         table_2 <span class="op">=</span> <span class="op">~</span><span class="va">region1</span><span class="op">:</span><span class="va">sector4</span> <span class="op">-</span> <span class="fl">1</span>, </span></span>
+<span class="r-in"><span>                                         table_3 <span class="op">=</span> <span class="op">~</span><span class="va">region</span> <span class="op">+</span> <span class="va">sector4</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>                   substitute_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo"</span>, <span class="st">"eu"</span><span class="op">)</span>, region1 <span class="op">=</span> <span class="st">"eu"</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>                   collapse_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sector <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sector2"</span>, <span class="st">"sector4"</span><span class="op">)</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>                   roundBase <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      region        sector original rounded difference table_1 table_2 table_3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Total         Total       20      21          1    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Iceland         Total        4       4          0    TRUE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  Portugal         Total        8       8          0    TRUE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     Spain         Total        8       9          1    TRUE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        EU         Total       16      17          1    TRUE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     nonEU         Total        4       4          0    TRUE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7     Total       private       16      17          1    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     Total        public        4       4          0    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     Total   Agriculture        4       4          0   FALSE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10    Total Entertainment        6       5         -1   FALSE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11    Total  Governmental        4       4          0   FALSE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12    Total      Industry        6       8          2   FALSE   FALSE    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13  Iceland       private        4       4          0    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 Portugal       private        6       4         -2    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 Portugal        public        2       4          2    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16    Spain       private        6       9          3    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17    Spain        public        2       0         -2    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18       EU       private       12      13          1    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19       EU        public        4       4          0    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20    nonEU       private        4       4          0    TRUE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21       EU   Agriculture        4       4          0   FALSE    TRUE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22       EU Entertainment        5       5          0   FALSE    TRUE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23       EU  Governmental        4       4          0   FALSE    TRUE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24       EU      Industry        3       4          1   FALSE    TRUE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25    nonEU Entertainment        1       0         -1   FALSE    TRUE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26    nonEU      Industry        3       4          1   FALSE    TRUE   FALSE</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
