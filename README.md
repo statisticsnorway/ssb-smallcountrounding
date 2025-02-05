@@ -17,39 +17,29 @@
 See the package vignette: 
 [Introduction to ‘SmallCountRounding’](https://cran.r-project.org/web/packages/SmallCountRounding/vignettes/Introduction_to_SmallCountRounding.html)
 
------------
 
-#### Installation from CRAN 
-(Recommended, unless you want to test the newest changes.)
+***
+
+
+### Installation
+
+You can install SmallCountRounding from CRAN with
 
 ```r
 install.packages("SmallCountRounding")
 ```
 
-#### Installation from GitHub
-
-(If needed, install the `devtools` package from CRAN first.)
+Alternatively install from GitHub by`devtools::install_github("statisticsnorway/SmallCountRounding")` if you want to test the newest changes.
 
 
-```r
-library(devtools)                                     # Load package containing install_github
-install_github("statisticsnorway/SSBtools")           # Install SSBtools from GitHub 
-install_github("statisticsnorway/SmallCountRounding") # Install SmallCountRounding from GitHub
-```
-
-####  Load the package 
-
-```r
-library(SmallCountRounding)                           # Load SmallCountRounding 
-?PLSrounding                                          # Help documentation of function PLSrounding
-```
+***
 
 
------------
+### A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive
 
-#### A statistical disclosure control tool to protect frequency tables in cases where small values are sensitive
-
-The main function, PLSrounding(), performs small count rounding of necessary inner cells (Heldal, 2017)
+The main function, 
+[PLSrounding()](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.html), 
+performs small count rounding of necessary inner cells (Heldal, 2017)
 so that all small frequencies of cross-classifications to be published (publishable cells) are rounded. This is equivalent to changing micro data since frequencies of unique combinations are changed. Thus, additivity and consistency are guaranteed.
 This is performed by an algorithm inspired by partial least squares regression (Langsrud and Heldal, 2018).
 
@@ -64,6 +54,11 @@ To be presented at: Privacy in statistical databases, Valencia, Spain. September
  and
 [presentation](https://www.researchgate.net/publication/327916165_An_Algorithm_for_Small_Count_Rounding_of_Tabular_Data_-_Presentation) 
  available at Researchgate.
- 
- -----------
+
+*** 
+
+📌 See the [broader list of available functions](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/index.html).
+
+***
+
  Official version on CRAN: [https://cran.r-project.org/package=SmallCountRounding](https://cran.r-project.org/package=SmallCountRounding)
