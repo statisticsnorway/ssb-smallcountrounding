@@ -1,4 +1,4 @@
-# R package SmallCountRounding 
+# R package SmallCountRounding <img src="man/figures/logo.png" align="right" height="150" /> 
 
 
 | [SmallCountRounding on CRAN](https://cran.r-project.org/package=SmallCountRounding) |  | [pkgdown website](https://statisticsnorway.github.io/ssb-smallcountrounding/) |  | [GitHub Repository](https://github.com/statisticsnorway/ssb-smallcountrounding) |
