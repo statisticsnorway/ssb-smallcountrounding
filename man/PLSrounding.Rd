@@ -51,7 +51,9 @@ unless \code{preAggregate} is \code{TRUE} and \code{aggregatePackage} is \code{"
 
 \item{printInc}{Printing iteration information to console when TRUE}
 
-\item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.}
+\item{output}{Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
+When \code{"input"} is chosen, \code{action_unused_dots} is automatically set to \code{"none"},
+since several arguments may then remain unused.}
 
 \item{extend0}{When \code{extend0} is set to \code{TRUE}, the data is automatically extended.
 This is relevant when \code{zeroCandidates = TRUE} (see \code{\link{RoundViaDummy}}).
