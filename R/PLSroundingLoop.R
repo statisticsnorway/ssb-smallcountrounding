@@ -17,6 +17,7 @@
 #' @param preOutput preOutput The function can continue from output from a previous run
 #' @param rndSeed If non-NULL, a random generator seed to be set locally at the beginning of `PLSroundingLoop` without affecting the random value stream in R.
 #'                Within `PLSroundingLoop`, `PLSrounding` is called with `rndSeed = NULL`.
+#' @param action_unused_dots `PLSrounding` parameter.             
 #'
 #' @return As output from \code{\link{PLSrounding}} 
 #' @export
@@ -36,7 +37,8 @@ PLSroundingLoop <- function(data,
                             printInc = TRUE,
                             preDifference = TRUE,
                             preOutput = NULL,
-                            rndSeed = 123
+                            rndSeed = 123,
+                            action_unused_dots = "warn"
                             ) {
   if (!is.null(rndSeed)) {
     if (!exists(".Random.seed")) 
@@ -72,6 +74,9 @@ PLSroundingLoop <- function(data,
   
   
   for (i in seq_along(id)) {
+    if (i == 2) {
+      action_unused_dots <- "none"
+    }
     if(printInc) cat(sprintf("%4d: ", i))
     ai <- PLSrounding(data = data[data[[loopId]] == id[i], , drop = FALSE], 
                       ..., 
@@ -81,7 +86,8 @@ PLSroundingLoop <- function(data,
                       plsWeights = plsWeights,
                       printInc = printInc,
                       preDifference = if (updatePreDifference) a$publish else NULL,  # ifelse(updatePreDifference, a$publish, NULL) does not work since NULL
-                      rndSeed = NULL) 
+                      rndSeed = NULL, 
+                      action_unused_dots = action_unused_dots) 
     if (i == (1 - preOutputInInput)) {
       a <- ai
     } else {
