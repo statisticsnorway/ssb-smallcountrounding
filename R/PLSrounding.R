@@ -317,7 +317,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   }
   
   
-  if(!is.null(list(...)$Version)){   # For testing
+  if (hasArg("Version")) {   # For testing
     z <- RoundViaDummy_Version_0.3.0(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies, ...) 
   } else {
     z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies,

@@ -202,7 +202,8 @@ test_that("Parameter preRounded", {
 
 PLStest = function(..., seed, Version){
   set.seed(seed)
-  capture.output({ a <- PLSrounding(..., Version = Version, rndSeed = NULL)})
+  capture.output({ a <- PLSrounding(..., Version = Version, rndSeed = NULL, 
+                           allowed_unused_dots = c("Version", "rndSeed"))})
   set.seed(seed)
   b <-PLSrounding(..., printInc = printInc, rndSeed = NULL)
   attr(b$publish, "startRow") <- NULL
