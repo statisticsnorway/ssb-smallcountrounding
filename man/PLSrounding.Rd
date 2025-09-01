@@ -23,7 +23,9 @@ PLSrounding(
   aggregateNA = TRUE,
   aggregateBaseOrder = FALSE,
   rowGroupsPackage = aggregatePackage,
-  ...
+  ...,
+  action_unused_dots = "warn",
+  allowed_unused_dots = character(0)
 )
 
 PLSroundingInner(..., output = "inner")
@@ -75,6 +77,16 @@ The parameter is input to \code{\link[SSBtools]{Formula2ModelMatrix}}
 via \code{\link[SSBtools]{ModelMatrix}}.}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
+
+\item{action_unused_dots}{Character string controlling how unused arguments
+in \code{...} are handled. Internally uses \code{\link[ellipsis:check_dots_used]{ellipsis::check_dots_used()}} with a
+custom action. One of "warn", "abort", "inform", or "none". The value "none"
+disables the check entirely. Defaults to "warn".}
+
+\item{allowed_unused_dots}{Character vector of argument names ignored by the
+unused-argument check. May be useful when this function is wrapped by
+another function, or in other cases where a correctly spelled argument is
+nevertheless not registered as used.}
 }
 \value{
 Output is a four-element list with class attribute "PLSrounded",

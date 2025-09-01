@@ -35,6 +35,16 @@
 #'               The parameter is input to \code{\link[SSBtools]{Formula2ModelMatrix}} 
 #'               via \code{\link[SSBtools]{ModelMatrix}}. 
 #' @param ... Further parameters sent to \code{RoundViaDummy}  
+#' 
+#' @param action_unused_dots Character string controlling how unused arguments
+#'   in `...` are handled. Internally uses [ellipsis::check_dots_used()] with a
+#'   custom action. One of "warn", "abort", "inform", or "none". The value "none"
+#'   disables the check entirely. Defaults to "warn".
+#'
+#' @param allowed_unused_dots Character vector of argument names ignored by the
+#'   unused-argument check. May be useful when this function is wrapped by
+#'   another function, or in other cases where a correctly spelled argument is
+#'   nevertheless not registered as used.
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded", 
 #'         which ensures informative printing and enables the use of \code{\link[SSBtools]{FormulaSelection}} on this object.
@@ -57,7 +67,7 @@
 #' 
 #' @encoding UTF8
 #' 
-#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0
+#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0 CheckInput
 #' @importFrom stats as.formula delete.response terms
 #' @export
 #'
@@ -180,7 +190,12 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         aggregateNA = TRUE,
                         aggregateBaseOrder = FALSE,
                         rowGroupsPackage = aggregatePackage,
-                        ...) {
+                        ...,
+                        action_unused_dots = "warn",
+                        allowed_unused_dots = character(0)) {
+  
+  
+  CheckInput(action_unused_dots, type = "character", alt = c("warn", "abort", "inform", "none"), okNULL = FALSE)
   
   
   force(preAggregate)
