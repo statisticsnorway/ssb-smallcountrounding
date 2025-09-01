@@ -197,6 +197,19 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   
   CheckInput(action_unused_dots, type = "character", alt = c("warn", "abort", "inform", "none"), okNULL = FALSE)
   
+  if(action_unused_dots != "none") {
+    if (hasArg("avoidHierarchical") & hasArg("avoid_hierarchical")) {   # i.e. called from SSBtools::tables_by_formulas()
+      allowed_unused_dots <- unique(c(allowed_unused_dots, "avoid_hierarchical", "hierarchical_extend0"))
+    }
+    rlang_warn_extra <- generate_rlang_warn_extra(action_unused_dots, 
+            note = "See arguments `action_unused_dots` and `allowed_unused_dots` in `?PLSrounding`.")
+    ellipsis::check_dots_used(action = rlang_warn_extra)
+    if (length(allowed_unused_dots)) {
+      touch_dots <- generate_touch_dots(allowed_unused_dots)
+      touch_dots(...)
+    }
+  }
+  
   
   force(preAggregate)
   
