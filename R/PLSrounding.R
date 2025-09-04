@@ -237,8 +237,14 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   
   if (!hasArg("x")) {
     if (is.null(dimVar) & is.null(hierarchies) & is.null(formula)) {
+      on.exit(add = FALSE)  # Avoids unused-dots check on error 
       stop("dimVar, hierarchies or formula must be specified")
     }
+  }
+  
+  if (hasArg("roundbase")) {
+    on.exit(add = FALSE)  # Avoids unused-dots check on error
+    stop('Misspelled parameter "roundbase" found. Use "roundBase".')
   }
   
   if (!(preAggregate & aggregatePackage == "data.table")) {
