@@ -41,12 +41,19 @@
 #' @param action_unused_dots Character string controlling how unused arguments
 #'   in `...` are handled. Internally uses [ellipsis::check_dots_used()] with a
 #'   custom action. One of "warn", "abort", "inform", or "none". The value "none"
-#'   disables the check entirely. Defaults to "warn".
+#'   disables the check entirely. The default is taken from
+#'   `getOption("SmallCountRounding.action_unused_dots")`, falling back to "warn"
+#'   if the option is not set. Users can change the default globally with e.g.
+#'   `options(SmallCountRounding.action_unused_dots = "abort")`.
 #'
 #' @param allowed_unused_dots Character vector of argument names ignored by the
 #'   unused-argument check. May be useful when this function is wrapped by
 #'   another function, or in other cases where a correctly spelled argument is
-#'   nevertheless not registered as used.
+#'   nevertheless not registered as used. The default is taken from
+#'   `getOption("SmallCountRounding.allowed_unused_dots")`, falling back to
+#'   `character(0)` if the option is not set. Users can change the default
+#'   globally with e.g.
+#'   `options(SmallCountRounding.allowed_unused_dots = c("plotColor", "lineType"))`.
 #'
 #' @return Output is a four-element list with class attribute "PLSrounded", 
 #'         which ensures informative printing and enables the use of \code{\link[SSBtools]{FormulaSelection}} on this object.
@@ -193,8 +200,9 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         aggregateBaseOrder = FALSE,
                         rowGroupsPackage = aggregatePackage,
                         ...,
-                        action_unused_dots = "warn",
-                        allowed_unused_dots = character(0)) {
+                        action_unused_dots  = getOption("SmallCountRounding.action_unused_dots", "warn"),
+                        allowed_unused_dots = getOption("SmallCountRounding.allowed_unused_dots", character(0))
+                        ) {
   
   
   CheckInput(action_unused_dots, type = "character", alt = c("warn", "abort", "inform", "none"), okNULL = FALSE)
