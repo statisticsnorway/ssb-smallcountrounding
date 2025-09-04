@@ -204,8 +204,16 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   }
   
   if(action_unused_dots != "none") {
-    if (hasArg("avoidHierarchical") & hasArg("avoid_hierarchical")) {   # i.e. called from SSBtools::tables_by_formulas()
-      allowed_unused_dots <- unique(c(allowed_unused_dots, "avoid_hierarchical", "hierarchical_extend0"))
+    # extra_allowed_unused since these arguments may not be registered as used 
+    # in special cases.
+    extra_allowed_unused <- c(
+      "avoidHierarchical",    # SSBtools::Extend0fromModelMatrixInput and  SSBtools::FormulaSums
+      "hierarchical_extend0"  # SSBtools::Extend0fromModelMatrixInput
+    )
+    allowed_unused_dots <- unique(c(allowed_unused_dots, extra_allowed_unused)) 
+    if (hasArg("avoidHierarchical") & hasArg("avoid_hierarchical")) {   
+      # i.e. called from SSBtools::tables_by_formulas()
+      allowed_unused_dots <- unique(c(allowed_unused_dots, "avoid_hierarchical"))
     }
     rlang_warn_extra <- generate_rlang_warn_extra(action_unused_dots, 
             note = "See arguments `action_unused_dots` and `allowed_unused_dots` in `?PLSrounding`.")
