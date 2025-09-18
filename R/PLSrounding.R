@@ -17,8 +17,6 @@
 #' @param maxRound Inner cells contributing to original publishable cells equal to or less than maxRound will be rounded
 #' @param printInc Printing iteration information to console when TRUE  
 #' @param output Possible non-NULL values are \code{"input"}, \code{"inner"} and \code{"publish"}. Then a single data frame is returned.
-#'               When `"input"` is chosen, `action_unused_dots` is automatically set to `"none"`,
-#'               since several arguments may then remain unused.
 #' @param extend0  When `extend0` is set to `TRUE`, the data is automatically extended. 
 #'                 This is relevant when `zeroCandidates = TRUE` (see \code{\link{RoundViaDummy}}).  
 #'        Additionally, `extend0` can be specified as a list, representing the `varGroups` parameter 
