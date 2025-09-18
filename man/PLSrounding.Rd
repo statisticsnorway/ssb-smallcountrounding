@@ -24,7 +24,7 @@ PLSrounding(
   aggregateBaseOrder = FALSE,
   rowGroupsPackage = aggregatePackage,
   ...,
-  action_unused_dots = getOption("SmallCountRounding.action_unused_dots", "warn"),
+  action_unused_dots = getOption("SmallCountRounding.action_unused_dots", "inform"),
   allowed_unused_dots = getOption("SmallCountRounding.allowed_unused_dots", character(0))
 )
 
