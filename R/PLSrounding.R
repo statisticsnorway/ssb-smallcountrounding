@@ -22,7 +22,12 @@
 #'        Additionally, `extend0` can be specified as a list, representing the `varGroups` parameter 
 #'        in the \code{\link[SSBtools]{Extend0}} function. 
 #'        Can also be set to `"all"` which means that input codes in hierarchies are considered in addition to those in data.   
-#' @param preAggregate When \code{TRUE}, the data will be aggregated beforehand within the function by the dimensional variables. 
+#' @param preAggregate When `TRUE`, the data will be aggregated within the function to an appropriate level. 
+#'        This is defined by the dimensional variables according to `dimVar`, `hierarchies` or `formula`.
+#'        When `FALSE`, no aggregation is performed. 
+#'        When `NA` (default), the function will automatically decide whether to aggregate: 
+#'        aggregation is applied unless `freqVar` is present and the data contain no duplicated rows with respect to 
+#'        the dimensional variables.  
 #' @param aggregatePackage Package used to preAggregate. 
 #'                         Parameter `pkg` to \code{\link[SSBtools]{aggregate_by_pkg}}.
 #' @param aggregateNA Whether to include NAs in the grouping variables while preAggregate. 
@@ -74,7 +79,7 @@
 #' 
 #' @encoding UTF8
 #' 
-#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0 CheckInput
+#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0 CheckInput any_duplicated_rows
 #' @importFrom stats as.formula delete.response terms
 #' @export
 #'
@@ -192,7 +197,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         maxRound = roundBase-1, printInc = nrow(data)>1000, 
                         output = NULL, 
                         extend0 = FALSE,
-                        preAggregate = is.null(freqVar),
+                        preAggregate = NA,
                         aggregatePackage = "base",
                         aggregateNA = TRUE,
                         aggregateBaseOrder = FALSE,
@@ -217,6 +222,17 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     stop('Misspelled parameter "roundbase" found. Use "roundBase".')
   }
   
+  dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
+  
+  if (is.na(preAggregate)) {
+    preAggregate <- TRUE
+    if (length(freqVar)) {
+      if (any_duplicated_rows(data, cols = dVar) == 0) {
+        preAggregate <- FALSE
+      } 
+    }
+  }
+  
   if (!(preAggregate & aggregatePackage == "data.table")) {
     data <- as.data.frame(data)
   }
@@ -232,9 +248,6 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   }
   
   isExtend0 <- IsExtend0(extend0)
-  
-  dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
-  
   
   if (preAggregate | output == "input" | isExtend0) {
     if (printInc & preAggregate) {
