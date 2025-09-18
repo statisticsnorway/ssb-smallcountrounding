@@ -233,22 +233,15 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   
   isExtend0 <- IsExtend0(extend0)
   
+  dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
+  
+  
   if (preAggregate | output == "input" | isExtend0) {
     if (printInc & preAggregate) {
       cat("[preAggregate ", dim(data)[1], "*", dim(data)[2], "->", sep = "")
       flush.console()
     }
-    dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
-    if (!length(dVar)) {
-          if (is.null(freqVar)){
-            dVar <- names(data)
-          } else {
-            freqVarName <- names(data[1, freqVar, drop = FALSE])
-            dVar <- names(data[1, !(names(data) %in% freqVarName), drop = FALSE])
-          }
-    }
-    dVar <- unique(dVar)
-    
+
     if (preAggregate) {
       if (is.null(freqVar)) {
         #data <- aggregate(list(f_Re_qVa_r = data[[dVar[1]]]), data[dVar], length)
