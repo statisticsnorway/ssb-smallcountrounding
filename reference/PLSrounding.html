@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SmallCountRounding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,9 @@
 <span>  aggregateNA <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  aggregateBaseOrder <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rowGroupsPackage <span class="op">=</span> <span class="va">aggregatePackage</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  action_unused_dots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"SmallCountRounding.action_unused_dots"</span>, <span class="st">"inform"</span><span class="op">)</span>,</span>
+<span>  allowed_unused_dots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"SmallCountRounding.allowed_unused_dots"</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">PLSroundingInner</span><span class="op">(</span><span class="va">...</span>, output <span class="op">=</span> <span class="st">"inner"</span><span class="op">)</span></span>
@@ -148,6 +150,27 @@ via <code><a href="https://statisticsnorway.github.io/ssb-ssbtools/reference/Mod
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further parameters sent to <code>RoundViaDummy</code></p></dd>
+
+
+<dt id="arg-action-unused-dots">action_unused_dots<a class="anchor" aria-label="anchor" href="#arg-action-unused-dots"></a></dt>
+<dd><p>Character string controlling how unused arguments
+in <code>...</code> are handled. Internally uses <code><a href="https://rlang.r-lib.org/reference/check_dots_used.html" class="external-link">ellipsis::check_dots_used()</a></code> with a
+custom action. One of "warn", "abort", "inform", or "none". The value "none"
+disables the check entirely. The default is taken from
+<code>getOption("SmallCountRounding.action_unused_dots")</code>, falling back to "warn"
+if the option is not set. Users can change the default globally with e.g.
+<code>options(SmallCountRounding.action_unused_dots = "abort")</code>.</p></dd>
+
+
+<dt id="arg-allowed-unused-dots">allowed_unused_dots<a class="anchor" aria-label="anchor" href="#arg-allowed-unused-dots"></a></dt>
+<dd><p>Character vector of argument names ignored by the
+unused-argument check. May be useful when this function is wrapped by
+another function, or in other cases where a correctly spelled argument is
+nevertheless not registered as used. The default is taken from
+<code>getOption("SmallCountRounding.allowed_unused_dots")</code>, falling back to
+<code>character(0)</code> if the option is not set. Users can change the default
+globally with e.g.
+<code>options(SmallCountRounding.allowed_unused_dots = c("plotColor", "lineType"))</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -498,13 +521,13 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bernhard-da/sdcHierarchies" class="external-link">sdcHierarchies</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">z2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>geo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"11"</span>, <span class="st">"21"</span>, <span class="st">"22"</span><span class="op">)</span>, <span class="va">z</span><span class="op">[</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">h2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    geo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_compute.html" class="external-link">hier_compute</a></span><span class="op">(</span>inp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">z2</span><span class="op">$</span><span class="va">geo</span><span class="op">)</span>, dim_spec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, root <span class="op">=</span> <span class="st">"Tot"</span>, as <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_convert.html" class="external-link">hier_convert</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Total"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2018"</span>, <span class="st">"2019"</span><span class="op">)</span><span class="op">)</span>, as <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    geo <span class="op">=</span> <span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_compute.html" class="external-link">hier_compute</a></span><span class="op">(</span>inp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">z2</span><span class="op">$</span><span class="va">geo</span><span class="op">)</span>, dim_spec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, root <span class="op">=</span> <span class="st">"Tot"</span>, as <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    year <span class="op">=</span> <span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_convert.html" class="external-link">hier_convert</a></span><span class="op">(</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Total"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2018"</span>, <span class="st">"2019"</span><span class="op">)</span><span class="op">)</span>, as <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">PLSrounding</span><span class="op">(</span><span class="va">z2</span>, <span class="st">"freq"</span>, hierarchies <span class="op">=</span> <span class="va">h2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: sdcHierarchies</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: shinythemes</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Package 'sdcHierarchies' 0.21.0 has been loaded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Package 'sdcHierarchies' 0.22.0 has been loaded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PLSrounding summary:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -635,7 +658,7 @@ Presented at: <em>Privacy in statistical databases</em>, Valencia, Spain. Septem
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

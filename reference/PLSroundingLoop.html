@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SmallCountRounding</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,8 @@
 <span>  printInc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  preDifference <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  preOutput <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  rndSeed <span class="op">=</span> <span class="fl">123</span></span>
+<span>  rndSeed <span class="op">=</span> <span class="fl">123</span>,</span>
+<span>  action_unused_dots <span class="op">=</span> <span class="st">"warn"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,6 +106,10 @@
 <dd><p>If non-NULL, a random generator seed to be set locally at the beginning of <code>PLSroundingLoop</code> without affecting the random value stream in R.
 Within <code>PLSroundingLoop</code>, <code>PLSrounding</code> is called with <code>rndSeed = NULL</code>.</p></dd>
 
+
+<dt id="arg-action-unused-dots">action_unused_dots<a class="anchor" aria-label="anchor" href="#arg-action-unused-dots"></a></dt>
+<dd><p><code>PLSrounding</code> parameter.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -148,7 +153,7 @@ They may be specified as functions or as variables in the input data.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
