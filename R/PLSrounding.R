@@ -79,7 +79,7 @@
 #' 
 #' @encoding UTF8
 #' 
-#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0 CheckInput any_duplicated_rows
+#' @importFrom SSBtools CharacterDataFrame aggregate_by_pkg NamesFromModelMatrixInput Extend0fromModelMatrixInput IsExtend0 CheckInput any_duplicated_rows get_colnames
 #' @importFrom stats as.formula delete.response terms
 #' @export
 #'
@@ -221,6 +221,10 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   if (hasArg("roundbase")) {
     stop('Misspelled parameter "roundbase" found. Use "roundBase".')
   }
+  
+  # Ensure that dVar is always a character vector of column names,
+  # and not a numeric index (which may cause errors with data.table input)
+  dimVar <- get_colnames(data, cols = dimVar, preserve_NULL = TRUE)
   
   dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
   
