@@ -1,3 +1,18 @@
+
+## SmallCountRounding	1.2.1
+* New checks for unused arguments in `...` using 
+  [ellipsis::check_dots_used()](https://ellipsis.r-lib.org/reference/check_dots_used.html),
+  so that misspelled or irrelevant arguments are not silently ignored.
+  - Introduces new arguments in `PLSrounding()`:
+    - `action_unused_dots` controls how unused arguments are handled. 
+    - `allowed_unused_dots` specifies argument names to ignore in the unused-argument check.
+  - Users can configure global defaults via options 
+     `SmallCountRounding.action_unused_dots` and
+     `SmallCountRounding.allowed_unused_dots`.
+  - Note: The default for `action_unused_dots` is `"inform"` as a cautious starting point.
+  This may change to `"warn"` in a future release.
+
+
 ## SmallCountRounding	1.2.0
 * New pkgdown website for the package  
   - This package now has a documentation site at [https://statisticsnorway.github.io/ssb-smallcountrounding/](https://statisticsnorway.github.io/ssb-smallcountrounding/).

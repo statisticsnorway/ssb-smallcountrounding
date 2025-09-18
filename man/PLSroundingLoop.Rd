@@ -15,7 +15,8 @@ PLSroundingLoop(
   printInc = TRUE,
   preDifference = TRUE,
   preOutput = NULL,
-  rndSeed = 123
+  rndSeed = 123,
+  action_unused_dots = "warn"
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ PLSroundingLoop(
 
 \item{rndSeed}{If non-NULL, a random generator seed to be set locally at the beginning of \code{PLSroundingLoop} without affecting the random value stream in R.
 Within \code{PLSroundingLoop}, \code{PLSrounding} is called with \code{rndSeed = NULL}.}
+
+\item{action_unused_dots}{\code{PLSrounding} parameter.}
 }
 \value{
 As output from \code{\link{PLSrounding}}

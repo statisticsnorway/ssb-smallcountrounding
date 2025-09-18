@@ -23,7 +23,9 @@ PLSrounding(
   aggregateNA = TRUE,
   aggregateBaseOrder = FALSE,
   rowGroupsPackage = aggregatePackage,
-  ...
+  ...,
+  action_unused_dots = getOption("SmallCountRounding.action_unused_dots", "inform"),
+  allowed_unused_dots = getOption("SmallCountRounding.allowed_unused_dots", character(0))
 )
 
 PLSroundingInner(..., output = "inner")
@@ -75,6 +77,23 @@ The parameter is input to \code{\link[SSBtools]{Formula2ModelMatrix}}
 via \code{\link[SSBtools]{ModelMatrix}}.}
 
 \item{...}{Further parameters sent to \code{RoundViaDummy}}
+
+\item{action_unused_dots}{Character string controlling how unused arguments
+in \code{...} are handled. Internally uses \code{\link[ellipsis:check_dots_used]{ellipsis::check_dots_used()}} with a
+custom action. One of "warn", "abort", "inform", or "none". The value "none"
+disables the check entirely. The default is taken from
+\code{getOption("SmallCountRounding.action_unused_dots")}, falling back to "warn"
+if the option is not set. Users can change the default globally with e.g.
+\code{options(SmallCountRounding.action_unused_dots = "abort")}.}
+
+\item{allowed_unused_dots}{Character vector of argument names ignored by the
+unused-argument check. May be useful when this function is wrapped by
+another function, or in other cases where a correctly spelled argument is
+nevertheless not registered as used. The default is taken from
+\code{getOption("SmallCountRounding.allowed_unused_dots")}, falling back to
+\code{character(0)} if the option is not set. Users can change the default
+globally with e.g.
+\code{options(SmallCountRounding.allowed_unused_dots = c("plotColor", "lineType"))}.}
 }
 \value{
 Output is a four-element list with class attribute "PLSrounded",
