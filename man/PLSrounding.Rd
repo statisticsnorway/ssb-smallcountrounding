@@ -64,7 +64,8 @@ This is defined by the dimensional variables according to \code{dimVar}, \code{h
 When \code{FALSE}, no aggregation is performed.
 When \code{NA} (default), the function will automatically decide whether to aggregate:
 aggregation is applied unless \code{freqVar} is present and the data contain no duplicated rows with respect to
-the dimensional variables.}
+the dimensional variables.
+Exception: if a non-\code{NULL} \code{x} (the model matrix) is supplied via \code{...}, \code{NA} is treated as \code{FALSE}.}
 
 \item{aggregatePackage}{Package used to preAggregate.
 Parameter \code{pkg} to \code{\link[SSBtools]{aggregate_by_pkg}}.}

@@ -28,6 +28,7 @@
 #'        When `NA` (default), the function will automatically decide whether to aggregate: 
 #'        aggregation is applied unless `freqVar` is present and the data contain no duplicated rows with respect to 
 #'        the dimensional variables.  
+#'        Exception: if a non-`NULL` `x` (the model matrix) is supplied via `...`, `NA` is treated as `FALSE`.
 #' @param aggregatePackage Package used to preAggregate. 
 #'                         Parameter `pkg` to \code{\link[SSBtools]{aggregate_by_pkg}}.
 #' @param aggregateNA Whether to include NAs in the grouping variables while preAggregate. 
@@ -229,11 +230,18 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
   dVar <- NamesFromModelMatrixInput(hierarchies = hierarchies, formula = formula, dimVar = dimVar)
   
   if (is.na(preAggregate)) {
-    preAggregate <- TRUE
-    if (length(freqVar)) {
-      if (any_duplicated_rows(data, cols = dVar) == 0) {
-        preAggregate <- FALSE
-      } 
+    get_x <- function(..., x = NULL) {
+      x
+    }
+    if (!is.null(get_x(...))) {
+      preAggregate <- FALSE
+    } else {
+      preAggregate <- TRUE
+      if (length(freqVar)) {
+        if (any_duplicated_rows(data, cols = dVar) == 0) {
+          preAggregate <- FALSE
+        } 
+      }
     }
   }
   
