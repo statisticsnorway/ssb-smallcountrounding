@@ -15,11 +15,11 @@ test_that("PLSrounding works", {
   
   expect_equivalent(PLSrounding(z[, -2], "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year, printInc = printInc)$metrics["maxdiff"], 0)
   
-  expect_equivalent(PLSroundingInner(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5)$difference, c(3, 0, 0, -1, 0, 0))
-  expect_equivalent(PLSroundingInner(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5, rndSeed = 1234)$difference, c(-2, 0, 0, 4, 0, 0))
+  expect_equivalent(PLSroundingInner(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5, preAggregate = FALSE)$difference, c(3, 0, 0, -1, 0, 0))
+  expect_equivalent(PLSroundingInner(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5, rndSeed = 1234, preAggregate = FALSE)$difference, c(-2, 0, 0, 4, 0, 0))
   set.seed(12345)
-  expect_equivalent(PLSroundingInner(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5, rndSeed = NULL)$difference, c(-2, 0, 0, 4, 0, 0))
-  expect_equivalent(PLSroundingPublish(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5)$difference, c(2, 0, 2, 2, 0, 0))
+  expect_equivalent(PLSroundingInner(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5, rndSeed = NULL, preAggregate = FALSE)$difference, c(-2, 0, 0, 4, 0, 0))
+  expect_equivalent(PLSroundingPublish(z, "freq", printInc = printInc, dimVar = c("geo", "eu"), roundBase = 5, preAggregate = FALSE)$difference, c(2, 0, 2, 2, 0, 0))
   
 
   mf2 <- ~region + hovedint + fylke * hovedint + kostragr * hovedint

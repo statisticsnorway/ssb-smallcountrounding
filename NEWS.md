@@ -11,6 +11,15 @@
      `SmallCountRounding.allowed_unused_dots`.
   - Note: The default for `action_unused_dots` is `"inform"` as a cautious starting point.
   This may change to `"warn"` in a future release.
+* New duplicate checking method for deciding `preAggregate` in `PLSrounding()`.  
+    - When `preAggregate = NA` (new default), the function now decides automatically: aggregation is applied unless `freqVar` is present 
+      and the data contain no duplicated rows with respect to the relevant variables.  
+    - Previously, duplicate rows were not checked.  
+    - Note that the new default may produce a different `rounded` solution and a different output for `inner`. 
+      In particular, this ensures that the output of type `inner` does not contain duplicate rows, 
+      which is often the desired behavior. 
+      However, be aware that it is no longer guaranteed that the `inner` output matches the input data. 
+      Specify `preAggregate = FALSE` if this behavior is desired.
 
 
 ## SmallCountRounding	1.2.0
