@@ -47,6 +47,11 @@
 <li>Users can configure global defaults via options <code>SmallCountRounding.action_unused_dots</code> and <code>SmallCountRounding.allowed_unused_dots</code>.</li>
 <li>Note: The default for <code>action_unused_dots</code> is <code>"inform"</code> as a cautious starting point. This may change to <code>"warn"</code> in a future release.</li>
 </ul></li>
+<li>New duplicate checking method for deciding <code>preAggregate</code> in <code><a href="../reference/PLSrounding.html">PLSrounding()</a></code>.
+<ul><li>When <code>preAggregate = NA</code> (new default), the function now decides automatically: aggregation is applied unless <code>freqVar</code> is present and the data contain no duplicated rows with respect to the relevant variables.<br></li>
+<li>Previously, duplicate rows were not checked.<br></li>
+<li>Note that the new default may produce a different <code>rounded</code> solution and a different output for <code>inner</code>. In particular, this ensures that the output of type <code>inner</code> does not contain duplicate rows, which is often the desired behavior. However, be aware that it is no longer guaranteed that the <code>inner</code> output matches the input data. Specify <code>preAggregate = FALSE</code> if this behavior is desired.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="smallcountrounding-120">SmallCountRounding 1.2.0<a class="anchor" aria-label="anchor" href="#smallcountrounding-120"></a></h2><p class="text-muted">CRAN release: 2025-02-05</p>

@@ -56,7 +56,7 @@
 <span>  printInc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1000</span>,</span>
 <span>  output <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extend0 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  preAggregate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">freqVar</span><span class="op">)</span>,</span>
+<span>  preAggregate <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  aggregatePackage <span class="op">=</span> <span class="st">"base"</span>,</span>
 <span>  aggregateNA <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  aggregateBaseOrder <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -122,7 +122,13 @@ Can also be set to <code>"all"</code> which means that input codes in hierarchie
 
 
 <dt id="arg-preaggregate">preAggregate<a class="anchor" aria-label="anchor" href="#arg-preaggregate"></a></dt>
-<dd><p>When <code>TRUE</code>, the data will be aggregated beforehand within the function by the dimensional variables.</p></dd>
+<dd><p>When <code>TRUE</code>, the data will be aggregated within the function to an appropriate level.
+This is defined by the dimensional variables according to <code>dimVar</code>, <code>hierarchies</code> or <code>formula</code>.
+When <code>FALSE</code>, no aggregation is performed.
+When <code>NA</code> (default), the function will automatically decide whether to aggregate:
+aggregation is applied unless <code>freqVar</code> is present and the data contain no duplicated rows with respect to
+the dimensional variables.
+Exception: if a non-<code>NULL</code> <code>x</code> (the model matrix) is supplied via <code>...</code>, <code>NA</code> is treated as <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-aggregatepackage">aggregatePackage<a class="anchor" aria-label="anchor" href="#arg-aggregatepackage"></a></dt>
