@@ -29,6 +29,20 @@
 #'        aggregation is applied unless `freqVar` is present and the data contain no duplicated rows with respect to 
 #'        the dimensional variables.  
 #'        Exception: if a non-`NULL` `x` (the model matrix) is supplied via `...`, `NA` is treated as `FALSE`.
+#' @param zeroCandidates When `TRUE`, inner cells with zero frequencies are treated as candidates to be rounded up.
+#'                       See  [RoundViaDummy()] for details.
+#'                       Note: When using microdata input (`freqVar = NULL`), 
+#'                       `extend0` must be specified for `zeroCandidates` to have any effect.
+#' @param forceInner     When `TRUE`, all inner cells are forced to be rounded.
+#'                       See  [RoundViaDummy()] for details.
+#' @param allSmall       When `TRUE`, all small inner cells (`<= maxRound`) are rounded.
+#'                       See  [RoundViaDummy()] for details.
+#' @param step A parameter controlling forward and backward steps within the algorithm. 
+#'       The `step` parameter can significantly impact performance on large datasets. 
+#'       For example, using `step = list(100)` may be a useful approach.
+#'       See the parameter description and details in the underlying function 
+#'       [RoundViaDummy()].        
+#'        
 #' @param aggregatePackage Package used to preAggregate. 
 #'                         Parameter `pkg` to \code{\link[SSBtools]{aggregate_by_pkg}}.
 #' @param aggregateNA Whether to include NAs in the grouping variables while preAggregate. 
@@ -126,9 +140,11 @@
 #' # Also possible to combine hierarchies and formula
 #' PLSrounding(z, "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)
 #' 
-#' # Single data frame output
+#' # Single data frame output and total codes 
 #' PLSroundingInner(z, "freq", roundBase = 5, formula = ~geo + eu + year)
 #' PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year)
+#' PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year,
+#'                    total = c(geo = "Europe", year = "All_years"))
 #' 
 #' # Microdata input
 #' PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)
@@ -199,12 +215,16 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         output = NULL, 
                         extend0 = FALSE,
                         preAggregate = NA,
+                        zeroCandidates = FALSE, 
+                        forceInner = FALSE,
+                        allSmall = FALSE,
+                        step = 0,
                         aggregatePackage = "base",
                         aggregateNA = TRUE,
                         aggregateBaseOrder = FALSE,
                         rowGroupsPackage = aggregatePackage,
                         ...,
-                        action_unused_dots  = getOption("SmallCountRounding.action_unused_dots", "inform"),
+                        action_unused_dots  = getOption("SmallCountRounding.action_unused_dots", "warn"),
                         allowed_unused_dots = getOption("SmallCountRounding.allowed_unused_dots", character(0))
                         ) {
   
@@ -339,6 +359,8 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies,
                        dimVar = dimVar,
                      maxRound = maxRound, printInc = printInc,
+                     zeroCandidates = zeroCandidates, forceInner = forceInner, allSmall = allSmall,
+                     step = step,
                      rowGroupsPackage = rowGroupsPackage, ...)
   }
   

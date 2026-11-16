@@ -22,48 +22,56 @@ export(SmallCountData)
 export(formula_selection)
 export(makeroundtabs)
 export(tables_by_formulas)
-importFrom(Matrix,Diagonal)
-importFrom(Matrix,Matrix)
-importFrom(Matrix,colSums)
-importFrom(Matrix,crossprod)
-importFrom(Matrix,rowSums)
-importFrom(Matrix,sparse.model.matrix)
-importFrom(SSBtools,As_TsparseMatrix)
-importFrom(SSBtools,CharacterDataFrame)
-importFrom(SSBtools,CheckInput)
-importFrom(SSBtools,Extend0)
-importFrom(SSBtools,Extend0fromModelMatrixInput)
-importFrom(SSBtools,FindHierarchies)
-importFrom(SSBtools,FormulaSelection)
-importFrom(SSBtools,FormulaSums)
-importFrom(SSBtools,HierarchicalGroups2)
-importFrom(SSBtools,Hierarchies2ModelMatrix)
-importFrom(SSBtools,Hrc2DimList)
-importFrom(SSBtools,IsExtend0)
-importFrom(SSBtools,MakeFreq)
-importFrom(SSBtools,MakeHierFormula)
-importFrom(SSBtools,Match)
-importFrom(SSBtools,Mipf)
-importFrom(SSBtools,ModelMatrix)
-importFrom(SSBtools,NamesFromModelMatrixInput)
-importFrom(SSBtools,Reduce0exact)
-importFrom(SSBtools,SSBtoolsData)
-importFrom(SSBtools,Unstack)
-importFrom(SSBtools,aggregate_by_pkg)
-importFrom(SSBtools,any_duplicated_rows)
-importFrom(SSBtools,formula_selection)
-importFrom(SSBtools,get_colnames)
-importFrom(SSBtools,matlabColon)
-importFrom(SSBtools,tables_by_formulas)
+importFrom(Matrix,
+  Diagonal,
+  Matrix,
+  colSums,
+  crossprod,
+  rowSums,
+  sparse.model.matrix
+)
+importFrom(SSBtools,
+  As_TsparseMatrix,
+  CharacterDataFrame,
+  CheckInput,
+  Extend0,
+  Extend0fromModelMatrixInput,
+  FindHierarchies,
+  FormulaSelection,
+  FormulaSums,
+  HierarchicalGroups2,
+  Hierarchies2ModelMatrix,
+  Hrc2DimList,
+  IsExtend0,
+  MakeFreq,
+  MakeHierFormula,
+  Match,
+  Mipf,
+  ModelMatrix,
+  NamesFromModelMatrixInput,
+  Reduce0exact,
+  SSBtoolsData,
+  Unstack,
+  aggregate_by_pkg,
+  any_duplicated_rows,
+  formula_selection,
+  get_colnames,
+  matlabColon,
+  tables_by_formulas
+)
 importFrom(methods,hasArg)
-importFrom(stats,aggregate)
-importFrom(stats,as.formula)
-importFrom(stats,delete.response)
-importFrom(stats,hat)
-importFrom(stats,model.frame)
-importFrom(stats,model.matrix)
-importFrom(stats,runif)
-importFrom(stats,terms)
-importFrom(stats,update)
-importFrom(utils,data)
-importFrom(utils,flush.console)
+importFrom(stats,
+  aggregate,
+  as.formula,
+  delete.response,
+  hat,
+  model.frame,
+  model.matrix,
+  runif,
+  terms,
+  update
+)
+importFrom(utils,
+  data,
+  flush.console
+)

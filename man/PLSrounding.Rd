@@ -19,12 +19,16 @@ PLSrounding(
   output = NULL,
   extend0 = FALSE,
   preAggregate = NA,
+  zeroCandidates = FALSE,
+  forceInner = FALSE,
+  allSmall = FALSE,
+  step = 0,
   aggregatePackage = "base",
   aggregateNA = TRUE,
   aggregateBaseOrder = FALSE,
   rowGroupsPackage = aggregatePackage,
   ...,
-  action_unused_dots = getOption("SmallCountRounding.action_unused_dots", "inform"),
+  action_unused_dots = getOption("SmallCountRounding.action_unused_dots", "warn"),
   allowed_unused_dots = getOption("SmallCountRounding.allowed_unused_dots", character(0))
 )
 
@@ -66,6 +70,23 @@ When \code{NA} (default), the function will automatically decide whether to aggr
 aggregation is applied unless \code{freqVar} is present and the data contain no duplicated rows with respect to
 the dimensional variables.
 Exception: if a non-\code{NULL} \code{x} (the model matrix) is supplied via \code{...}, \code{NA} is treated as \code{FALSE}.}
+
+\item{zeroCandidates}{When \code{TRUE}, inner cells with zero frequencies are treated as candidates to be rounded up.
+See  \code{\link[=RoundViaDummy]{RoundViaDummy()}} for details.
+Note: When using microdata input (\code{freqVar = NULL}),
+\code{extend0} must be specified for \code{zeroCandidates} to have any effect.}
+
+\item{forceInner}{When \code{TRUE}, all inner cells are forced to be rounded.
+See  \code{\link[=RoundViaDummy]{RoundViaDummy()}} for details.}
+
+\item{allSmall}{When \code{TRUE}, all small inner cells (\verb{<= maxRound}) are rounded.
+See  \code{\link[=RoundViaDummy]{RoundViaDummy()}} for details.}
+
+\item{step}{A parameter controlling forward and backward steps within the algorithm.
+The \code{step} parameter can significantly impact performance on large datasets.
+For example, using \code{step = list(100)} may be a useful approach.
+See the parameter description and details in the underlying function
+\code{\link[=RoundViaDummy]{RoundViaDummy()}}.}
 
 \item{aggregatePackage}{Package used to preAggregate.
 Parameter \code{pkg} to \code{\link[SSBtools]{aggregate_by_pkg}}.}
@@ -164,9 +185,11 @@ PLSrounding(z, "freq", hierarchies = eHrc2)
 # Also possible to combine hierarchies and formula
 PLSrounding(z, "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)
 
-# Single data frame output
+# Single data frame output and total codes 
 PLSroundingInner(z, "freq", roundBase = 5, formula = ~geo + eu + year)
 PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year)
+PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year,
+                   total = c(geo = "Europe", year = "All_years"))
 
 # Microdata input
 PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)

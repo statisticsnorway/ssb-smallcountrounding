@@ -49,7 +49,7 @@ When NULL, x must be supplied.}
 
 \item{crossTable}{When TRUE, cross table in output and caculations via FormulaSums()}
 
-\item{total}{String used to name totals}
+\item{total}{String(s) used to name totals, passed to \code{\link[SSBtools:ModelMatrix]{SSBtools::ModelMatrix()}}. Named vectors or lists are supported.}
 
 \item{maxIterRows}{See details}
 

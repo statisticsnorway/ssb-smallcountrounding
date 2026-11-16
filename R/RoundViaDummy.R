@@ -42,7 +42,7 @@
 #' @param roundBase Rounding base
 #' @param singleRandom Single random draw when TRUE (instead of algorithm)
 #' @param crossTable	When TRUE, cross table in output and caculations via FormulaSums()
-#' @param total	String used to name totals
+#' @param total	String(s) used to name totals, passed to [SSBtools::ModelMatrix()]. Named vectors or lists are supported.
 #' @param maxIterRows See details
 #' @param maxIter Maximum number of iterations
 #' @param x Dummy matrix defining publishable cells
@@ -201,14 +201,6 @@ RoundViaDummy <- function(data, freqVar, formula = NULL, roundBase = 3, singleRa
     flush.console()
   }
   
-  
-  if (!is.null(formula) & is.null(hierarchies) & is.null(x)){
-    
-    if(length(total)>1){
-      total <- total[1]
-      warning("Only first element of total is used when formula input.")
-    }
-  }
   
   
   if(is.null(freqVar)){       # microdata (freq=1) when empty freqVar 

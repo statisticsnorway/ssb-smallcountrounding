@@ -1,4 +1,17 @@
 
+## SmallCountRounding	1.2.6
+* Improved handling of unused dots
+  - Default for `action_unused_dots` changed from `"inform"` to `"warn"` to make
+  messages easier for users to recognise and interpret as non-critical warnings.
+* Multiple total codes can now be specified due to updates in 
+    [the SSBtools package](https://CRAN.R-project.org/package=SSBtools)
+    (version 1.8.6).   
+  - The `total` parameter can be specified as a named vector or named list.
+  - The reexported function `tables_by_formulas()` has been updated so that named
+    total vectors are handled flexibly with both `substitute_vars` and `collapse_vars`.
+* Now `zeroCandidates`, `forceInner`, `allSmall`, and `step` are explicit parameters to `PLSrounding()`.
+  - These parameters can be particularly useful in practical applications.
+  
 ## SmallCountRounding	1.2.5
 * New checks for unused arguments in `...` using 
   [ellipsis::check_dots_used()](https://ellipsis.r-lib.org/reference/check_dots_used.html),
