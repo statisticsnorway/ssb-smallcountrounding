@@ -204,7 +204,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         aggregateBaseOrder = FALSE,
                         rowGroupsPackage = aggregatePackage,
                         ...,
-                        action_unused_dots  = getOption("SmallCountRounding.action_unused_dots", "inform"),
+                        action_unused_dots  = getOption("SmallCountRounding.action_unused_dots", "warn"),
                         allowed_unused_dots = getOption("SmallCountRounding.allowed_unused_dots", character(0))
                         ) {
   
