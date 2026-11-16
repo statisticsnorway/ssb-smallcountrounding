@@ -37,6 +37,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Øyvind Langsrud \email{oyl@ssb.no}
   \item Johan Heldal
 }
 
