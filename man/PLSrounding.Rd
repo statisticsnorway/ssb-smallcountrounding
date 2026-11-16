@@ -19,6 +19,9 @@ PLSrounding(
   output = NULL,
   extend0 = FALSE,
   preAggregate = NA,
+  zeroCandidates = FALSE,
+  forceInner = FALSE,
+  allSmall = FALSE,
   step = 0,
   aggregatePackage = "base",
   aggregateNA = TRUE,
@@ -67,6 +70,17 @@ When \code{NA} (default), the function will automatically decide whether to aggr
 aggregation is applied unless \code{freqVar} is present and the data contain no duplicated rows with respect to
 the dimensional variables.
 Exception: if a non-\code{NULL} \code{x} (the model matrix) is supplied via \code{...}, \code{NA} is treated as \code{FALSE}.}
+
+\item{zeroCandidates}{When \code{TRUE}, inner cells with zero frequencies are treated as candidates to be rounded up.
+See  \code{\link[=RoundViaDummy]{RoundViaDummy()}} for details.
+Note: When using microdata input (\code{freqVar = NULL}),
+\code{extend0} must be specified for \code{zeroCandidates} to have any effect.}
+
+\item{forceInner}{When \code{TRUE}, all inner cells are forced to be rounded.
+See  \code{\link[=RoundViaDummy]{RoundViaDummy()}} for details.}
+
+\item{allSmall}{When \code{TRUE}, all small inner cells (\verb{<= maxRound}) are rounded.
+See  \code{\link[=RoundViaDummy]{RoundViaDummy()}} for details.}
 
 \item{step}{A parameter controlling forward and backward steps within the algorithm.
 The \code{step} parameter can significantly impact performance on large datasets.

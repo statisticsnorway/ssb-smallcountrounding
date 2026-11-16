@@ -29,6 +29,14 @@
 #'        aggregation is applied unless `freqVar` is present and the data contain no duplicated rows with respect to 
 #'        the dimensional variables.  
 #'        Exception: if a non-`NULL` `x` (the model matrix) is supplied via `...`, `NA` is treated as `FALSE`.
+#' @param zeroCandidates When `TRUE`, inner cells with zero frequencies are treated as candidates to be rounded up.
+#'                       See  [RoundViaDummy()] for details.
+#'                       Note: When using microdata input (`freqVar = NULL`), 
+#'                       `extend0` must be specified for `zeroCandidates` to have any effect.
+#' @param forceInner     When `TRUE`, all inner cells are forced to be rounded.
+#'                       See  [RoundViaDummy()] for details.
+#' @param allSmall       When `TRUE`, all small inner cells (`<= maxRound`) are rounded.
+#'                       See  [RoundViaDummy()] for details.
 #' @param step A parameter controlling forward and backward steps within the algorithm. 
 #'       The `step` parameter can significantly impact performance on large datasets. 
 #'       For example, using `step = list(100)` may be a useful approach.
@@ -207,6 +215,9 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         output = NULL, 
                         extend0 = FALSE,
                         preAggregate = NA,
+                        zeroCandidates = FALSE, 
+                        forceInner = FALSE,
+                        allSmall = FALSE,
                         step = 0,
                         aggregatePackage = "base",
                         aggregateNA = TRUE,
@@ -348,6 +359,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies,
                        dimVar = dimVar,
                      maxRound = maxRound, printInc = printInc,
+                     zeroCandidates = zeroCandidates, forceInner = forceInner, allSmall = allSmall,
                      step = step,
                      rowGroupsPackage = rowGroupsPackage, ...)
   }
