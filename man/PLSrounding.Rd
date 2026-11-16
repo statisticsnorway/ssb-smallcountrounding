@@ -164,9 +164,11 @@ PLSrounding(z, "freq", hierarchies = eHrc2)
 # Also possible to combine hierarchies and formula
 PLSrounding(z, "freq", hierarchies = SmallCountData("eDimList"), formula = ~geo + year)
 
-# Single data frame output
+# Single data frame output and total codes 
 PLSroundingInner(z, "freq", roundBase = 5, formula = ~geo + eu + year)
 PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year)
+PLSroundingPublish(z, roundBase = 5, formula = ~geo + eu + year,
+                   total = c(geo = "Europe", year = "All_years"))
 
 # Microdata input
 PLSroundingInner(rbind(z, z), roundBase = 5, formula = ~geo + eu + year)
