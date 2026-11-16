@@ -9,8 +9,9 @@
   - The `total` parameter can be specified as a named vector or named list.
   - The reexported function `tables_by_formulas()` has been updated so that named
     total vectors are handled flexibly with both `substitute_vars` and `collapse_vars`.
-
-
+* Now `zeroCandidates`, `forceInner`, `allSmall`, and `step` are explicit parameters to `PLSrounding()`.
+  - These parameters can be particularly useful in practical applications.
+  
 ## SmallCountRounding	1.2.5
 * New checks for unused arguments in `...` using 
   [ellipsis::check_dots_used()](https://ellipsis.r-lib.org/reference/check_dots_used.html),
