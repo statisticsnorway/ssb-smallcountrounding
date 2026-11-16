@@ -1,0 +1,58 @@
+# function redcube
+
+This function produces a reduced small count frequency hypercube for
+rounding.
+
+## Usage
+
+``` r
+redcube(A, d, b = 3, micro = TRUE, nin = "n")
+```
+
+## Arguments
+
+- A:
+
+  A data frame representing a micro dataset or a frequency count
+  hypercube. The (first) columns define the variables. If A is a
+  hypercube the last column contains the number of units in each cell.
+  If A is a micro dataset it is reduced to hypercube by the function
+  aggrtab.
+
+- d:
+
+  A list d{\[\[j\]\]} whose elements are vectors of variable names from
+  A defining marginal tables/cubes D of A that we are interested in.
+
+- b:
+
+  Rounding base. Counts in A less than b tat are contributing to counts
+  less than b in the marginal cubes D are selected from A. The selected
+  dataframe is called B
+
+- micro:
+
+  Logical. TRUE if A is a micro dataset (default). FALSE if A i a
+  frequency count hypercube.
+
+- nin:
+
+  Name of count variable if A is a hypercube. Default name: "n".
+
+## Value
+
+A: The input dataframe reduced to a hypercube.
+
+B: The dataframe of small count rows selected from A.
+
+C: The dataframe of rows in A that are nor selected from A.
+
+D: The cubes defined by d.
+
+Dr: The small counts (\<b) in D.
+
+The input elements d, b and nin
+
+## Author
+
+Johan Heldal, November 2017

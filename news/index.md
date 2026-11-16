@@ -1,0 +1,318 @@
+# Changelog
+
+## SmallCountRounding 1.2.6
+
+- Improved handling of unused dots
+  - Default for `action_unused_dots` changed from `"inform"` to `"warn"`
+    to make messages easier for users to recognise and interpret as
+    non-critical warnings.
+- Multiple total codes can now be specified due to updates in [the
+  SSBtools package](https://CRAN.R-project.org/package=SSBtools)
+  (version 1.8.6).
+  - The `total` parameter can be specified as a named vector or named
+    list.
+  - The reexported function
+    [`tables_by_formulas()`](https://statisticsnorway.github.io/ssb-ssbtools/reference/tables_by_formulas.html)
+    has been updated so that named total vectors are handled flexibly
+    with both `substitute_vars` and `collapse_vars`.
+- Now `zeroCandidates`, `forceInner`, `allSmall`, and `step` are
+  explicit parameters to
+  [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md).
+  - These parameters can be particularly useful in practical
+    applications.
+
+## SmallCountRounding 1.2.5
+
+CRAN release: 2025-09-24
+
+- New checks for unused arguments in `...` using
+  [ellipsis::check_dots_used()](https://ellipsis.r-lib.org/reference/check_dots_used.html),
+  so that misspelled or irrelevant arguments are not silently ignored.
+  - Introduces new arguments in
+    [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md):
+    - `action_unused_dots` controls how unused arguments are handled.
+    - `allowed_unused_dots` specifies argument names to ignore in the
+      unused-argument check.
+  - Users can configure global defaults via options
+    `SmallCountRounding.action_unused_dots` and
+    `SmallCountRounding.allowed_unused_dots`.
+  - Note: The default for `action_unused_dots` is `"inform"` as a
+    cautious starting point. This may change to `"warn"` in a future
+    release.
+- New duplicate checking method for deciding `preAggregate` in
+  [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md).
+  - When `preAggregate = NA` (new default), the function now decides
+    automatically: aggregation is applied unless `freqVar` is present
+    and the data contain no duplicated rows with respect to the relevant
+    variables.  
+  - Previously, duplicate rows were not checked.  
+  - Note that the new default may produce a different `rounded` solution
+    and a different output for `inner`. In particular, this ensures that
+    the output of type `inner` does not contain duplicate rows, which is
+    often the desired behavior. However, be aware that it is no longer
+    guaranteed that the `inner` output matches the input data. Specify
+    `preAggregate = FALSE` if this behavior is desired.
+
+## SmallCountRounding 1.2.0
+
+CRAN release: 2025-02-05
+
+- New pkgdown website for the package
+  - This package now has a documentation site at
+    <https://statisticsnorway.github.io/ssb-smallcountrounding/>.
+- SSBtools and Matrix are moved from Depends to Imports
+  - To follow best practices for R packages
+  - Some SSBtools functions are reexported instead. See
+    `?SmallCountRounding::reexports`.
+- Utilizing updates in [the SSBtools
+  package](https://CRAN.R-project.org/package=SSBtools) (version 1.7.0).
+  - The new function
+    [`tables_by_formulas()`](https://statisticsnorway.github.io/ssb-ssbtools/reference/tables_by_formulas.html),
+    which is reexported, is demonstrated in a
+    [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md)
+    example.
+  - The new function `Extend0fromModelMatrixInput()` is now used in data
+    pre-processing. As a result, `hierarchical_extend0` is now a
+    possible parameter, as illustrated in a
+    [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md)
+    example.
+
+## SmallCountRounding 1.1.0
+
+CRAN release: 2024-12-09
+
+- Added a check to ensure that at least one of `dimVar`, `hierarchies`,
+  or `formula` is specified.
+  - This is a breaking change that may affect previous code.
+  - Previously, if all were unspecified, `dimVar` was automatically
+    generated from the remaining columns.
+  - While this behavior was correctly implemented, it often stemmed from
+    user input errors and could lead to unexpected behavior or crashes.
+  - This change now requires explicit input, making the function more
+    robust and reducing the risk of user errors.
+- Improved support for `tibble` and `data.table` input (parameter
+  `data`).
+  - Input is now explicitly coerced to a data frame using
+    [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) where
+    necessary to ensure consistent behavior.
+  - When `preAggregate` is `TRUE` and `aggregatePackage` is
+    `"data.table"`, the use of
+    [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) is
+    skipped to avoid unnecessary back-and-forth conversion of
+    `data.table` objects, preserving efficiency.
+  - Applies to
+    [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md)
+    and its wrappers.
+- Note new hierarchy possibilities due to the new version of [the
+  SSBtools package](https://CRAN.R-project.org/package=SSBtools)
+  (version 1.6.0).
+  - Output from functions like `get_klass()` in the [klassR
+    package](https://cran.r-project.org/package=klassR) or
+    [`hier_create()`](https://bernhard-da.github.io/sdcHierarchies/reference/hier_create.html)
+    in the [sdcHierarchies
+    package](https://cran.r-project.org/package=sdcHierarchies) can now
+    be used directly as input. Example of usage:
+
+    ``` r
+
+     a <- get_klass(classification = "24")
+     b <- hier_create(root = "Total", nodes = LETTERS[1:5])
+     mydata <- data.frame(tree = sample(a$code[nchar(a$code) > 1], 200, replace = TRUE), 
+                          letter = LETTERS[1:5])
+     PLSroundingPublish(mydata, roundBase = 5, hierarchies = list(tree = a, letter = b)) 
+    ```
+
+  - New possibilities for working with both formulas and hierarchies are
+    now available through the `map_hierarchies_to_data()` function.
+
+  - Improved functionality for combining formulas with the
+    `Formula2ModelMatrix()` parameter `avoidHierarchical = TRUE`, thanks
+    to the new `total_collapse()` function which can be applied to
+    output.
+
+## SmallCountRounding 1.0.8
+
+CRAN release: 2024-10-22
+
+- [`FormulaSelection()`](https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSelection.html)
+  now works with the output from
+  [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md).
+  - The output dataset corresponding to a restricted part of the input
+    formula can now be easily retrieved.
+  - See the examples in the documentation.
+- `extend0` is new parameter to
+  [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md),
+  enabling data to be automatically extended by zero frequency rows.
+  - This is relevant when `zeroCandidates = TRUE`.
+  - The old parameter in
+    [`PLSroundingFits()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSroundingFits.md)
+    has been renamed from `extend0` to `extend0Fits`. Code that used the
+    old parameter will now behave differently.
+  - Note that `extend0` and `extend0Fits` can now be specified in more
+    advanced ways beyond just TRUE/FALSE.
+- Improvements to the `step` parameter, which can be passed to
+  [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md)
+  and is documented in the underlying function
+  [`RoundViaDummy()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/RoundViaDummy.md):
+  - A bug that could cause a hang when using `step` has been fixed.
+  - The `step` parameter can now be specified as a vector for greater
+    control.
+  - Additionally, it can be provided as a list to trigger a final re-run
+    iteration.
+  - The `step` parameter can significantly impact performance on large
+    datasets. For example, using `step = list(100)` may be a useful
+    approach.
+- Due to updates in [the SSBtools
+  package](https://CRAN.R-project.org/package=SSBtools) (version 1.5.4),
+  it is now meaningful to include NA’s in the grouping variables.
+  - Note the parameter `NAomit` to
+    [`SSBtools::Formula2ModelMatrix()`](https://statisticsnorway.github.io/ssb-ssbtools/reference/FormulaSums.html):
+    - When `TRUE`, NAs in the grouping variables are omitted in output
+      and not included as a separate category.
+    - This parameter can be input to
+      [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md)
+      and its wrappers.
+  - `aggregateNA` is new parameter to
+    [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md):
+    - Whether to include NAs in the grouping variables while
+      preAggregate.
+    - Needs to be `TRUE` (default) to utilize the above `NAomit`
+      parameter.
+- Due to updates in [the SSBtools
+  package](https://CRAN.R-project.org/package=SSBtools) (version 1.5.4),
+  where [data.table](https://cran.r-project.org/package=data.table) is
+  now listed under *Suggests*, some functionality can be speeded up.
+  - Set the new parameter `aggregatePackage` to `"data.table"` to
+    utilize this possibility.
+    - `aggregatePackage` is parameter to
+      [`PLSrounding()`](https://statisticsnorway.github.io/ssb-smallcountrounding/reference/PLSrounding.md)
+      and its wrappers.
+    - Also note the related new parameters `aggregateBaseOrder`.
+
+## SmallCountRounding 1.0.5
+
+CRAN release: 2024-09-05
+
+- Minor updates with no changes in functionality
+  - Changed package license to MIT, in accordance with the policy at
+    Statistics Norway.
+  - Some technical changes in documentation to comply with standards.
+
+## SmallCountRounding 1.0.3
+
+CRAN release: 2022-11-16
+
+- Workaround for old `R` versions where the `isFALSE` function is not
+  defined.
+
+## SmallCountRounding 1.0.2
+
+CRAN release: 2022-10-12
+
+- Improved behavior of the `identifyNew` parameter when the `maxRound`
+  parameter is used.
+  - New description of the `identifyNew` parameter: When `TRUE`, new
+    cells may be identified after initial rounding to ensure all rounded
+    publishable cells equal to or less than `maxRound` to be `roundBase`
+    multiples. Use `NA` for the a less conservative behavior (old
+    behavior). Then it is ensured that no nonzero rounded publishable
+    cells are smaller than `roundBase`. When `maxRound` is default,
+    there is no difference between `TRUE` and `NA`.
+
+## SmallCountRounding 1.0.0
+
+CRAN release: 2022-08-26
+
+- New function, `PLSroundingLoop`: PLSrounding on portions of data at a
+  time.
+  - The runs are coordinated by using preliminary differences as input
+    for the next run (parameter `preDifference`)
+- Parameters `zeroCandidates`, `forceInner`, `preRounded` and
+  `plsWeights` can now be specified as functions.
+  - These cannot be supplied as vectors in `PLSroundingLoop`.
+- New parameter, `allSmall`.
+  - When TRUE, all small inner cells (`<= maxRound`) are rounded. A
+    simplified alternative to specifying `forceInner`.
+- Adaption needed after Matrix ver. 1.4-2 (not a user-visible change)
+
+## SmallCountRounding 0.9.0
+
+CRAN release: 2021-09-29
+
+- New function, `PLSroundingFits`, for post-processing to expected
+  frequencies
+  - Expected inner cell frequencies are generated by iterative
+    proportional fitting
+- `plsWeights` is new parameter to `RoundViaDummy` (and `PLSrounding`)
+  - A vector of weights for each cell to be published or a function
+    generating it. For use in the algorithm criterion.
+
+## SmallCountRounding 0.8.0
+
+CRAN release: 2021-04-26
+
+- Now, microdata input is allowed. This is due to
+  - Allowing empty `freqVar` in input.
+  - The new parameter `preAggregate`: When `TRUE`, the data will be
+    aggregated beforehand within the function by the dimensional
+    variables.
+- It is possible to avoid handling hierarchical variables when using the
+  formula interface.
+  - This is a consequence of parameter `avoidHierarchical` to
+    `Formula2ModelMatrix` in the SSBtools package.
+
+## SmallCountRounding 0.7.0
+
+CRAN release: 2021-03-09
+
+- Now, a random generator seed is used locally within the function
+  without affecting the random value stream in R.
+  - Handled by `rndSeed`, a new parameter to `RoundViaDummy` (and
+    `PLSrounding`).
+  - By default, `rndSeed = 123`. This means that repeated runs with
+    equal input will result in equal output.
+  - To get back the old behaviour of the function, set `rndSeed` to
+    `NULL`.
+- Possible to return a single data frame: `"inner"` or `"publish"`.
+  - Handled by `output`, a new parameter to `PLSrounding`.
+  - New wrapper functions, `PLSroundingInner` and `PLSroundingPublish`.
+- `dimVar` is new parameter to `RoundViaDummy` and `PLSrounding`
+  - The main dimensional variables and additional aggregating variables.
+    This parameter can be useful when hierarchies and formula are
+    unspecified.
+
+## SmallCountRounding 0.6.0
+
+CRAN release: 2020-10-15
+
+- `preRounded` is new parameter to `RoundViaDummy` (and `PLSrounding`)
+  - A mixture of missing values and predetermined values of rounded
+    inner cells
+
+## SmallCountRounding 0.5.0
+
+CRAN release: 2020-09-21
+
+- Formula combined with hierarchies is now possible
+  - This is a consequence of the function
+    `HierarchiesAndFormula2ModelMatrix` in the SSBtools package
+- `leverageCheck` and `easyCheck` are new parameters to `RoundViaDummy`
+  - This provides protection against possible disclosure of small
+    numbers by linear relationships (difference attack)
+  - The function `Reduce0exact` in the SSBtools package is utilised
+- `printInc` is new parameter to `PLSrounding` and `RoundViaDummy`
+  - Whether to print iteration information to the console
+- Possible to specify `removeEmpty=TRUE` to omit empty combinations
+  - Parameter to `Hierarchies2ModelMatrix` and
+    `HierarchiesAndFormula2ModelMatrix` in the SSBtools package
+- The parameter `inputInOutput` is also mentioned in the RoundViaDummy
+  documentation
+  - Parameter to same functions as above
+  - Can be used to specify whether to include codes from input
+- A vignette, “Introduction to ‘SmallCountRounding’”, is included
+
+## SmallCountRounding 0.4.0
+
+CRAN release: 2019-10-17
+
+- Last version before any news
