@@ -29,6 +29,12 @@
 #'        aggregation is applied unless `freqVar` is present and the data contain no duplicated rows with respect to 
 #'        the dimensional variables.  
 #'        Exception: if a non-`NULL` `x` (the model matrix) is supplied via `...`, `NA` is treated as `FALSE`.
+#' @param step A parameter controlling forward and backward steps within the algorithm. 
+#'       The `step` parameter can significantly impact performance on large datasets. 
+#'       For example, using `step = list(100)` may be a useful approach.
+#'       See the parameter description and details in the underlying function 
+#'       [RoundViaDummy()].        
+#'        
 #' @param aggregatePackage Package used to preAggregate. 
 #'                         Parameter `pkg` to \code{\link[SSBtools]{aggregate_by_pkg}}.
 #' @param aggregateNA Whether to include NAs in the grouping variables while preAggregate. 
@@ -201,6 +207,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
                         output = NULL, 
                         extend0 = FALSE,
                         preAggregate = NA,
+                        step = 0,
                         aggregatePackage = "base",
                         aggregateNA = TRUE,
                         aggregateBaseOrder = FALSE,
@@ -341,6 +348,7 @@ PLSrounding <- function(data, freqVar = NULL, roundBase = 3, hierarchies = NULL,
     z <- RoundViaDummy(data = data, freqVar = freqVar, formula = formula, roundBase = roundBase, hierarchies = hierarchies,
                        dimVar = dimVar,
                      maxRound = maxRound, printInc = printInc,
+                     step = step,
                      rowGroupsPackage = rowGroupsPackage, ...)
   }
   
