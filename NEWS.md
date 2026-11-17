@@ -1,5 +1,5 @@
 
-## SmallCountRounding	1.2.6
+## SmallCountRounding	1.2.7
 * Improved handling of unused dots
   - Default for `action_unused_dots` changed from `"inform"` to `"warn"` to make
   messages easier for users to recognise and interpret as non-critical warnings.
